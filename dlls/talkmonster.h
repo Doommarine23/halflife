@@ -37,7 +37,8 @@
 #define bit_saidHeard			(1<<6)
 #define bit_saidSmelled			(1<<7)
 
-#define TLK_CFRIENDS		3
+// YELLOWSHIFT increased from 3 to X for additional allies. Unsure what its meant for
+#define TLK_CFRIENDS		4
 
 typedef enum
 {

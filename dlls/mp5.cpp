@@ -13,6 +13,8 @@
 *
 ****/
 
+
+
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -149,6 +151,8 @@ void CMP5::PrimaryAttack()
 
 
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
+
+
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -338,7 +342,15 @@ class CMP5Chainammo : public CBasePlayerAmmo
 };
 LINK_ENTITY_TO_CLASS( ammo_9mmbox, CMP5Chainammo );
 
+/*YELLOWSHIFT 
 
+Now uses bodygroups to determine how many grenades to give you. 
+The base code was changed to the Python's and edited because the original MP5 ammo code was causing an issue with the bodygroup check.
+
+Bodygroup 0 = Default 2 Greandes
+Bodygroup 1 = 1 Vertical
+Bodygroup 2 = 1 Horizontal
+*/
 class CMP5AmmoGrenade : public CBasePlayerAmmo
 {
 	void Spawn( void )
@@ -352,34 +364,31 @@ class CMP5AmmoGrenade : public CBasePlayerAmmo
 		PRECACHE_MODEL ("models/w_ARgrenade.mdl");
 		PRECACHE_SOUND("items/9mmclip1.wav");
 	}
+	//Change to a nice switch case system?
 	BOOL AddAmmo( CBaseEntity *pOther ) 
 	{ 
-		int bResult = (pOther->GiveAmmo( AMMO_M203BOX_GIVE, "ARgrenades", M203_GRENADE_MAX_CARRY ) != -1);
-
-		if (bResult)
+		if (pev->body != 0)
+		{
+		if (pOther->GiveAmmo( 1, "ARgrenades", M203_GRENADE_MAX_CARRY ) != -1)
+		
 		{
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			return TRUE;
 		}
-		return bResult;
-	}
+		
+		}
+		
+		else
+	if (pOther->GiveAmmo( AMMO_M203BOX_GIVE, "ARgrenades", M203_GRENADE_MAX_CARRY ) != -1)
+		{
+			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
+			return TRUE;
+		}
+
+		return FALSE;
+	}	
+	
+
 };
 LINK_ENTITY_TO_CLASS( ammo_mp5grenades, CMP5AmmoGrenade );
 LINK_ENTITY_TO_CLASS( ammo_ARgrenades, CMP5AmmoGrenade );
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -352,6 +352,10 @@ public:
 	int ammo_uranium;
 	int ammo_hornets;
 	int ammo_argrens;
+
+	//YELLOWSHIFT
+	int ammo_saw;
+
 	//Special stuff for grenades and satchels.
 	float m_flStartThrow;
 	float m_flReleaseThrow;

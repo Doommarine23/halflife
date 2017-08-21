@@ -198,6 +198,17 @@ void DecalGunshot( TraceResult *pTrace, int iBulletType )
 //
 // EjectBrass - tosses a brass shell from passed origin at passed velocity
 //
+
+/*
+YELLOWSHIFT
+Shells last 2 minutes instead of 2.5 seconds. 
+AI ejected shells last 1 minute 
+This was chosen as the best number that compromises between engine performance/stability and visual wow.
+
+For Reference on default EjectBrass
+25 =  2.5 seconds
+*/
+
 void EjectBrass ( const Vector &vecOrigin, const Vector &vecVelocity, float rotation, int model, int soundtype )
 {
 	// FIX: when the player shoots, their gun isn't in the same position as it is on the model other players see.
@@ -213,7 +224,7 @@ void EjectBrass ( const Vector &vecOrigin, const Vector &vecVelocity, float rota
 		WRITE_ANGLE( rotation );
 		WRITE_SHORT( model );
 		WRITE_BYTE ( soundtype);
-		WRITE_BYTE ( 25 );// 2.5 seconds
+		WRITE_BYTE ( 600 );     // YELLOWSHIFT 1 minute
 	MESSAGE_END();
 }
 
@@ -333,6 +344,18 @@ void W_Precache(void)
 	UTIL_PrecacheOtherWeapon( "weapon_9mmAR" );
 	UTIL_PrecacheOther( "ammo_9mmAR" );
 	UTIL_PrecacheOther( "ammo_ARgrenades" );
+
+	// YELLOWSHIFT BEGIN
+
+	// SAW
+	UTIL_PrecacheOtherWeapon( "weapon_saw" );
+	UTIL_PrecacheOther( "ammo_sawclip" );
+	
+	//DEAGLE
+	UTIL_PrecacheOtherWeapon( "weapon_deagle" );
+	UTIL_PrecacheOther( "ammo_deagle" );
+
+	// YELLOWSHIFT END
 
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 	// python

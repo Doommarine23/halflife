@@ -804,8 +804,15 @@ void ClientPrecache( void )
 	// setup precaches always needed
 	PRECACHE_SOUND("player/sprayer.wav");			// spray paint sound for PreAlpha
 	
-	// PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound
+	PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound 	 //YELLOWSHIFT Now used for harsh landings
 	
+	//YELLOWSHIFT BEGIN additional jump and landing sounds
+	PRECACHE_SOUND("player/pl_jump1.wav"); 
+	PRECACHE_SOUND("player/pl_jump2.wav"); 
+	PRECACHE_SOUND("player/pl_landpuddle1.wav");
+	//YELLOWSHIFT END additional jump and landing sounds
+	
+	PRECACHE_SOUND("player/pl_fallpain1.wav");	
 	PRECACHE_SOUND("player/pl_fallpain2.wav");		
 	PRECACHE_SOUND("player/pl_fallpain3.wav");		
 	
@@ -813,6 +820,7 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("player/pl_step2.wav");
 	PRECACHE_SOUND("player/pl_step3.wav");
 	PRECACHE_SOUND("player/pl_step4.wav");
+	PRECACHE_SOUND("player/pl_step5.wav");
 
 	PRECACHE_SOUND("common/npc_step1.wav");		// NPC walk on concrete
 	PRECACHE_SOUND("common/npc_step2.wav");
@@ -855,6 +863,12 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("player/pl_swim3.wav");
 	PRECACHE_SOUND("player/pl_swim4.wav");
 
+	PRECACHE_SOUND("player/pl_wood1.wav");		// YELLOWSHIFT walk on wood
+	PRECACHE_SOUND("player/pl_wood2.wav");
+	PRECACHE_SOUND("player/pl_wood3.wav");
+	PRECACHE_SOUND("player/pl_wood4.wav");
+
+
 	PRECACHE_SOUND("player/pl_ladder1.wav");	// climb ladder rung
 	PRECACHE_SOUND("player/pl_ladder2.wav");
 	PRECACHE_SOUND("player/pl_ladder3.wav");
@@ -876,6 +890,14 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("debris/glass1.wav");
 	PRECACHE_SOUND("debris/glass2.wav");
 	PRECACHE_SOUND("debris/glass3.wav");
+
+	// YELLOWSHIFT BEGIN	world impact sounds
+
+	PRECACHE_SOUND("impacts/imp_step1.wav");
+	PRECACHE_SOUND("impacts/imp_step2.wav");
+	PRECACHE_SOUND("impacts/imp_step3.wav");
+	PRECACHE_SOUND("impacts/imp_step4.wav");
+	// YELLOWSHIFT END		world imapct sounds
 
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_ON );
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_OFF );

@@ -12,8 +12,6 @@
 *   without written permission from Valve LLC.
 *
 ****/
-#if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
-
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -23,38 +21,41 @@
 #include "gamerules.h"
 
 
-enum python_e {
-	PYTHON_IDLE1 = 0,
-	PYTHON_FIDGET,
-	PYTHON_FIRE1,
-	PYTHON_RELOAD,
-	PYTHON_HOLSTER,
-	PYTHON_DRAW,
-	PYTHON_IDLE2,
-	PYTHON_IDLE3,
+enum deagle_e {
+	DEAGLE_IDLE1 = 0,
+	DEAGLE_IDLE2,
+	DEAGLE_IDLE3,
+	DEAGLE_IDLE4,
+	DEAGLE_IDLE5,
+	DEAGLE_FIRE1,
+	DEAGLE_FIREEMPTY,
+	DEAGLE_RELOADEMPTY,
+	DEAGLE_RELOAD,
+	DEAGLE_DRAW,
+	DEAGLE_HOLSTER,
 };
 
-LINK_ENTITY_TO_CLASS( weapon_python, CPython );
-LINK_ENTITY_TO_CLASS( weapon_357, CPython );
+LINK_ENTITY_TO_CLASS( weapon_deagle, CDeagle );
+LINK_ENTITY_TO_CLASS( weapon_desert_eagle, CDeagle );
 
-int CPython::GetItemInfo(ItemInfo *p)
+int CDeagle::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "357";
 	p->iMaxAmmo1 = _357_MAX_CARRY;
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
-	p->iMaxClip = PYTHON_MAX_CLIP;
+	p->iMaxClip = DEAGLE_MAX_CLIP;
 	p->iFlags = 0;
 	p->iSlot = 1;
-	p->iPosition = 1;
-	p->iId = m_iId = WEAPON_PYTHON;
-	p->iWeight = PYTHON_WEIGHT;
+	p->iPosition = 2;
+	p->iId = m_iId = WEAPON_DEAGLE;
+	p->iWeight = PYTHON_WEIGHT; // Both are equally viable.
 
 	return 1;
 }
 
-int CPython::AddToPlayer( CBasePlayer *pPlayer )
+int CDeagle::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
@@ -66,85 +67,76 @@ int CPython::AddToPlayer( CBasePlayer *pPlayer )
 	return FALSE;
 }
 
-void CPython::Spawn( )
+void CDeagle::Spawn( )
 {
-	pev->classname = MAKE_STRING("weapon_357"); // hack to allow for old names
+	pev->classname = MAKE_STRING("weapon_deagle"); // hack to allow for old names
 	Precache( );
-	m_iId = WEAPON_PYTHON;
-	SET_MODEL(ENT(pev), "models/w_357.mdl");
+	m_iId = WEAPON_DEAGLE;
+	SET_MODEL(ENT(pev), "models/w_desert_eagle.mdl");
 
-	m_iDefaultAmmo = PYTHON_DEFAULT_GIVE;
+	m_iDefaultAmmo = DEAGLE_DEFAULT_GIVE;
 
 	FallInit();// get ready to fall down.
 }
 
 
-void CPython::Precache( void )
+void CDeagle::Precache( void )
 {
-	PRECACHE_MODEL("models/v_357.mdl");
-	PRECACHE_MODEL("models/w_357.mdl");
-	PRECACHE_MODEL("models/p_357.mdl");
+	PRECACHE_MODEL("models/v_desert_eagle.mdl");
+	PRECACHE_MODEL("models/w_desert_eagle.mdl");
+	PRECACHE_MODEL("models/p_desert_eagle.mdl");
 
 	PRECACHE_MODEL("models/w_357ammobox.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");              
 
-//	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shellTE_MODEL
+	m_iShell = PRECACHE_MODEL ("models/shell.mdl");	// brass shellTE_MODEL
 
-	PRECACHE_SOUND ("weapons/357_reload1.wav");
-	PRECACHE_SOUND ("weapons/357_reload2.wav");
+	PRECACHE_SOUND ("weapons/desert_eagle_reload.wav");
+	PRECACHE_SOUND ("weapons/desert_eagle_fire.wav");
+	PRECACHE_SOUND ("weapons/desert_eagle_sight.wav");
+	PRECACHE_SOUND ("weapons/desert_eagle_sight2.wav");
+	
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
-	PRECACHE_SOUND ("weapons/357_shot1.wav");
-	PRECACHE_SOUND ("weapons/357_shot2.wav");
-	PRECACHE_SOUND ("weapons/357_shot3.wav");
 
-	m_usFirePython = PRECACHE_EVENT( 1, "events/python.sc" );
+	m_usFireDeagle = PRECACHE_EVENT( 1, "events/deagle.sc" );
 }
 
-BOOL CPython::Deploy( )
+BOOL CDeagle::Deploy( )
 {
-#ifdef CLIENT_DLL
-	if ( bIsMultiplayer() )
-#else
-	if ( g_pGameRules->IsMultiplayer() )
-#endif
-	{
-		// enable laser sight geometry.
-		pev->body = 1;
-	}
-	else
-	{
-		pev->body = 0;
-	}
-
-	return DefaultDeploy( "models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW, "python", UseDecrement(), pev->body );
+	return DefaultDeploy( "models/v_desert_eagle.mdl", "models/p_desert_eagle.mdl", DEAGLE_DRAW, "deagle" );
 }
 
 
-void CPython::Holster( int skiplocal /* = 0 */ )
+void CDeagle::Holster( int skiplocal /* = 0 */ )
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
-	if ( m_fInZoom )
+	if ( m_fLaser )
 	{
 		SecondaryAttack();
 	}
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-	SendWeaponAnim( PYTHON_HOLSTER );
+	SendWeaponAnim( DEAGLE_HOLSTER );
 }
 
-void CPython::SecondaryAttack( void )
+void CDeagle::SecondaryAttack( void )
 {
-#ifdef CLIENT_DLL
-	if ( !bIsMultiplayer() )
-#else
-	if ( !g_pGameRules->IsMultiplayer() )
-#endif
+	if (m_fLaser == 0 )
 	{
-		return;
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/desert_eagle_sight.wav", 1, ATTN_NORM);
+		m_fLaser = 1;
+	}
+	else if (m_fLaser == 1 )
+	{
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/desert_eagle_sight2.wav", 1, ATTN_NORM);
+		m_fLaser = 0;
 	}
 
+		m_flNextSecondaryAttack = 0.5;
+
+	/*
 	if ( m_pPlayer->pev->fov != 0 )
 	{
 		m_fInZoom = FALSE;
@@ -156,10 +148,10 @@ void CPython::SecondaryAttack( void )
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 40;
 	}
 
-	m_flNextSecondaryAttack = 0.5;
+	m_flNextSecondaryAttack = 0.5;*/
 }
 
-void CPython::PrimaryAttack()
+void CDeagle::PrimaryAttack()
 {
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3)
@@ -169,17 +161,10 @@ void CPython::PrimaryAttack()
 		return;
 	}
 
-
 	if (m_iClip <= 0)
-	{ 	
-		/*if (!m_fFireOnEmpty)
-			Reload( ); //Was non-functional and caused animation issues if the trigger was held down.
-		else*/
-		{
-			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
-			m_flNextPrimaryAttack = 0.15;
-		}
-
+	{
+		PlayEmptySound();
+		m_flNextPrimaryAttack = 0.15;
 		return;
 	}
 
@@ -200,7 +185,11 @@ void CPython::PrimaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
 	Vector vecDir;
-	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+	if (m_fLaser == 1 )
+		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_2DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+	else
+		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_6DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+	
 
     int flags;
 #if defined( CLIENT_WEAPONS )
@@ -209,41 +198,43 @@ void CPython::PrimaryAttack()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFirePython, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireDeagle, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	m_flNextPrimaryAttack = 0.75;
+		if (m_fLaser == 1 )
+				m_flNextPrimaryAttack = 0.70;
+		else
+				m_flNextPrimaryAttack = 0.22;
+
+
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
 
-void CPython::Reload( void )
+void CDeagle::Reload( void )
 {
 	if ( m_pPlayer->ammo_357 <= 0 )
 		return;
 
-	if ( m_pPlayer->pev->fov != 0 )
+	/*if ( m_pPlayer->pev->fov != 0 )
 	{
-		m_fInZoom = FALSE;
+		m_fLaser = FALSE;
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
 
-	int bUseScope = FALSE;
-#ifdef CLIENT_DLL
-	bUseScope = bIsMultiplayer();
-#else
-	bUseScope = g_pGameRules->IsMultiplayer();
-#endif
-	//EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
-	//EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
-	DefaultReload( 6, PYTHON_RELOAD, 2.0, bUseScope );
+	int bUseScope = FALSE;*/
+
+	if (m_iClip == 0)
+	DefaultReload( DEAGLE_MAX_CLIP, DEAGLE_RELOADEMPTY, 1.68, 2 );
+	else
+	DefaultReload( DEAGLE_MAX_CLIP, DEAGLE_RELOAD, 1.68, 2 );
 }
 
 
-void CPython::WeaponIdle( void )
+void CDeagle::WeaponIdle( void )
 {
 	ResetEmptySound( );
 
@@ -256,37 +247,28 @@ void CPython::WeaponIdle( void )
 	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 	if (flRand <= 0.5)
 	{
-		iAnim = PYTHON_IDLE1;
-		m_flTimeWeaponIdle = (70.0/30.0);
+		iAnim = DEAGLE_IDLE1;
+		m_flTimeWeaponIdle = (75.0/30.0);
 	}
 	else if (flRand <= 0.7)
 	{
-		iAnim = PYTHON_IDLE2;
-		m_flTimeWeaponIdle = (60.0/30.0);
+		iAnim = DEAGLE_IDLE2;
+		m_flTimeWeaponIdle = (60.0/24.0);
 	}
 	else if (flRand <= 0.9)
 	{
-		iAnim = PYTHON_IDLE3;
-		m_flTimeWeaponIdle = (88.0/30.0);
+		iAnim = DEAGLE_IDLE3;
+		m_flTimeWeaponIdle = (49.0/30.0);
 	}
 	else
 	{
-		iAnim = PYTHON_FIDGET;
-		m_flTimeWeaponIdle = (170.0/30.0);
+		iAnim = DEAGLE_IDLE4;
+		m_flTimeWeaponIdle = (75.0/30.0);
 	}
-	
-	int bUseScope = FALSE;
-#ifdef CLIENT_DLL
-	bUseScope = bIsMultiplayer();
-#else
-	bUseScope = g_pGameRules->IsMultiplayer();
-#endif
-	
-	SendWeaponAnim( iAnim, UseDecrement() ? 1 : 0, bUseScope );
 }
 
 
-class CPythonAmmo : public CBasePlayerAmmo
+class CDeagleAmmo : public CBasePlayerAmmo
 {
 	void Spawn( void )
 	{ 
@@ -309,7 +291,4 @@ class CPythonAmmo : public CBasePlayerAmmo
 		return FALSE;
 	}
 };
-LINK_ENTITY_TO_CLASS( ammo_357, CPythonAmmo );
-
-
-#endif
+LINK_ENTITY_TO_CLASS( ammo_deagle, CDeagleAmmo );

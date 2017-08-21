@@ -16,6 +16,11 @@
 // cockroach
 //=========================================================
 
+/* YELLOWSHIFT
+
+Maybe add crushed roach bodies? Might cause entity overflow but unlikely unless 100s were spawned.
+Perhaps have crushed bodies dissappear or only let it be a low chance to happen anyway*/
+
 #include	"extdll.h"
 #include	"util.h"
 #include	"cbase.h"

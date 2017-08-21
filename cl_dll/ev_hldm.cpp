@@ -71,6 +71,10 @@ void EV_EgonStop( struct event_args_s *args  );
 void EV_HornetGunFire( struct event_args_s *args  );
 void EV_TripmineFire( struct event_args_s *args  );
 void EV_SnarkFire( struct event_args_s *args  );
+//YELLOWSHIFT
+void EV_FireSAW( struct event_args_s *args  );
+void EV_FireDeagle( struct event_args_s *args  );
+
 
 
 void EV_TrainPitchAdjust( struct event_args_s *args );
@@ -89,6 +93,19 @@ void EV_TrainPitchAdjust( struct event_args_s *args );
 #define VECTOR_CONE_15DEGREES Vector( 0.13053, 0.13053, 0.13053 )
 #define VECTOR_CONE_20DEGREES Vector( 0.17365, 0.17365, 0.17365 )
 
+//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+// mazor begin
+void EV_HLDM_MuzzleFlash(vec3_t pos, float amount)
+{
+	dlight_t *dl = gEngfuncs.pEfxAPI->CL_AllocDlight(0);
+	dl->origin = pos;
+	dl->color.r = 255; // red
+	dl->color.g = 255; // green
+	dl->color.b = 128; // blue
+	dl->radius = amount * 300;
+	dl->die = gEngfuncs.GetClientTime() + 0.02; //0.01
+}
+// mazor end
 
 // play a strike sound based on the texture that was hit by the attack traceline.  VecSrc/VecEnd are the
 // original traceline endpoints used by the attacker, iBulletType is the type of bullet that hit the texture.
@@ -150,13 +167,18 @@ float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *v
 		}
 	}
 	
+	/*YELLOWSHIFT Valve used the player sounds for weapon impacts on materials. This will be changed to proper unique sounds!
+	Precached in the client.cpp for now, as this is where the original pl_x sounds were cached. Cache here instead?
+	 This code is also in the sound.cpp and is edited accordingly.*/
 	switch (chTextureType)
 	{
 	default:
 	case CHAR_TEX_CONCRETE: fvol = 0.9;	fvolbar = 0.6;
-		rgsz[0] = "player/pl_step1.wav";
-		rgsz[1] = "player/pl_step2.wav";
-		cnt = 2;
+		rgsz[0] = "impacts/imp_step1.wav";
+		rgsz[1] = "impacts/imp_step2.wav";
+		rgsz[2] = "impacts/imp_step3.wav";
+		rgsz[3] = "impacts/imp_step4.wav";
+		cnt = 4;
 		break;
 	case CHAR_TEX_METAL: fvol = 0.9; fvolbar = 0.3;
 		rgsz[0] = "player/pl_metal1.wav";
@@ -417,12 +439,12 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 			
 					break;
 			case BULLET_PLAYER_MP5:		
-				
-				if ( !tracer )
-				{
+//YELLOWSHIFT We want decals on every shot. Thanks to johle from Planet Half-Life for the tip on where to look.	
+			//	if ( !tracer )
+			//	{
 					EV_HLDM_PlayTextureSound( idx, &tr, vecSrc, vecEnd, iBulletType );
 					EV_HLDM_DecalGunshot( &tr, iBulletType );
-				}
+			//	}
 				break;
 			case BULLET_PLAYER_BUCKSHOT:
 				
@@ -440,6 +462,167 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 		}
 
 		gEngfuncs.pEventAPI->EV_PopPMStates();
+	}
+}
+
+//YELLOWSHIFT
+
+//======================
+//	   DEAGLE START 
+//	     ( .357 )
+//======================
+void EV_FireDeagle( event_args_t *args )
+{
+	int idx;
+	vec3_t origin;
+	vec3_t angles;
+	vec3_t velocity;
+	int empty;
+	empty = args->bparam1;
+
+	vec3_t ShellVelocity;
+	vec3_t ShellOrigin;
+
+	vec3_t vecSrc, vecAiming;
+	vec3_t up, right, forward;
+	float flSpread = 0.01;
+
+	idx = args->entindex;
+	VectorCopy( args->origin, origin );
+	VectorCopy( args->angles, angles );
+	VectorCopy( args->velocity, velocity );
+	
+	int shell;
+	
+	shell = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/shell.mdl");// brass shell
+
+	AngleVectors( angles, forward, right, up );
+
+	if ( EV_IsLocal( idx ) )
+	{
+		// Add muzzle flash to current weapon model
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? DEAGLE_SHOOTEMPTY : DEAGLE_SHOOT, 2 );
+
+	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
+
+	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
+
+		V_PunchAxis( 0, -3.2 );
+	}
+
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
+		break;
+	case 2:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
+		break;
+	}
+
+	EV_GetGunPosition( args, vecSrc, origin );
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.6 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
+
+
+	
+	VectorCopy( forward, vecAiming );
+
+	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, 0, args->fparam1, args->fparam2 );
+}
+//======================
+//	    DEAGLE END 
+//	     ( .357 )
+//======================
+
+//======================
+//	    SAW START
+//======================
+void EV_FireSAW( event_args_t *args )
+{
+	int idx;
+	vec3_t origin;
+	vec3_t angles;
+	vec3_t velocity;
+
+	vec3_t ShellVelocity;
+	vec3_t ShellOrigin;
+	int shell;
+	int shell_link;
+	vec3_t vecSrc, vecAiming;
+	vec3_t up, right, forward;
+	float flSpread = 0.01;
+
+	idx = args->entindex;
+	VectorCopy( args->origin, origin );
+	VectorCopy( args->angles, angles );
+	VectorCopy( args->velocity, velocity );
+
+	AngleVectors( angles, forward, right, up );
+
+	shell = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/saw_shell.mdl");// brass shell
+	shell_link = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/saw_link.mdl");// brass shell
+	
+	if ( EV_IsLocal( idx ) )
+	{
+		// Add muzzle flash to current weapon model
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( MP5_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
+
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -3.6, 3.6 ) );
+	}
+
+	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
+
+/* Simulate only ejecting Links half the time. This is hacky and randomized so its not truly 50/50. Maybe improve later
+	Give a different set of velocity for it!
+*/
+
+	switch( gEngfuncs.pfnRandomLong( 0, 1 ) )
+	{
+	case 0:
+		EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell_link, TE_BOUNCE_SHELL ); 
+		break;
+	case 1:
+		break;
+	}
+
+	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL );
+
+
+
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire1.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire2.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		break;
+	case 2:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire3.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		break;
+
+	}
+
+	EV_GetGunPosition( args, vecSrc, origin );
+
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.0 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
+
+	VectorCopy( forward, vecAiming );
+
+	if ( gEngfuncs.GetMaxClients() > 1 )
+	{
+		EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_MP5, 2, &tracerCount[idx-1], args->fparam1, args->fparam2 );
+	}
+	else
+	{
+		EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_MP5, 2, &tracerCount[idx-1], args->fparam1, args->fparam2 );
 	}
 }
 
@@ -473,8 +656,7 @@ void EV_FireGlock1( event_args_t *args )
 	if ( EV_IsLocal( idx ) )
 	{
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT, 2 );
-
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
 		V_PunchAxis( 0, -2.0 );
 	}
 
@@ -485,6 +667,10 @@ void EV_FireGlock1( event_args_t *args )
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
 
 	EV_GetGunPosition( args, vecSrc, origin );
+
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.1 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
+
 	
 	VectorCopy( forward, vecAiming );
 
@@ -518,8 +704,11 @@ void EV_FireGlock2( event_args_t *args )
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( GLOCK_SHOOT, 2 );
-
+		//gEngfuncs.pEventAPI->EV_WeaponAnimation( GLOCK_SHOOT, 2 );
+		
+		//YELLOWSHIFT additional firing animations
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
+		
 		V_PunchAxis( 0, -2.0 );
 	}
 
@@ -530,6 +719,9 @@ void EV_FireGlock2( event_args_t *args )
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
 
 	EV_GetGunPosition( args, vecSrc, origin );
+
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.1 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
 	
 	VectorCopy( forward, vecAiming );
 
@@ -572,7 +764,9 @@ void EV_FireShotGunDouble( event_args_t *args )
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE2, 2 );
+		
+		//YELLOWSHIFT additional firing animations
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIREBIG + gEngfuncs.pfnRandomLong(0,1), 2 );
 		V_PunchAxis( 0, -10.0 );
 	}
 
@@ -586,6 +780,8 @@ void EV_FireShotGunDouble( event_args_t *args )
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/dbarrel1.wav", gEngfuncs.pfnRandomFloat(0.98, 1.0), ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong( 0, 0x1f ) );
 
 	EV_GetGunPosition( args, vecSrc, origin );
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.8 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
 	VectorCopy( forward, vecAiming );
 
 	if ( gEngfuncs.GetMaxClients() > 1 )
@@ -594,7 +790,7 @@ void EV_FireShotGunDouble( event_args_t *args )
 	}
 	else
 	{
-		EV_HLDM_FireBullets( idx, forward, right, up, 12, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.08716, 0.08716 );
+		EV_HLDM_FireBullets( idx, forward, right, up, 16, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.08716, 0.08716 );
 	}
 }
 
@@ -626,7 +822,9 @@ void EV_FireShotGunSingle( event_args_t *args )
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE, 2 );
+
+				//YELLOWSHIFT additional firing animations
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE + gEngfuncs.pfnRandomLong(0,4), 2 );
 
 		V_PunchAxis( 0, -5.0 );
 	}
@@ -638,6 +836,9 @@ void EV_FireShotGunSingle( event_args_t *args )
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sbarrel1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong( 0, 0x1f ) );
 
 	EV_GetGunPosition( args, vecSrc, origin );
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.4 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
+	
 	VectorCopy( forward, vecAiming );
 
 	if ( gEngfuncs.GetMaxClients() > 1 )
@@ -646,7 +847,7 @@ void EV_FireShotGunSingle( event_args_t *args )
 	}
 	else
 	{
-		EV_HLDM_FireBullets( idx, forward, right, up, 6, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.08716, 0.08716 );
+		EV_HLDM_FireBullets( idx, forward, right, up, 8, vecSrc, vecAiming, 2048, BULLET_PLAYER_BUCKSHOT, 0, &tracerCount[idx-1], 0.08716, 0.08716 );
 	}
 }
 //======================
@@ -692,7 +893,7 @@ void EV_FireMP5( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 
-	switch( gEngfuncs.pfnRandomLong( 0, 1 ) )
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
 	{
 	case 0:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
@@ -700,9 +901,17 @@ void EV_FireMP5( event_args_t *args )
 	case 1:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
 		break;
+	case 2:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks3.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		break;
+
 	}
 
 	EV_GetGunPosition( args, vecSrc, origin );
+
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.0 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
+
 	VectorCopy( forward, vecAiming );
 
 	if ( gEngfuncs.GetMaxClients() > 1 )
@@ -779,7 +988,7 @@ void EV_FirePython( event_args_t *args )
 		V_PunchAxis( 0, -10.0 );
 	}
 
-	switch( gEngfuncs.pfnRandomLong( 0, 1 ) )
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
 	{
 	case 0:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/357_shot1.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
@@ -787,9 +996,16 @@ void EV_FirePython( event_args_t *args )
 	case 1:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/357_shot2.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
 		break;
+	case 2:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/357_shot3.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
+		break;
 	}
 
 	EV_GetGunPosition( args, vecSrc, origin );
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.6 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
+
+
 	
 	VectorCopy( forward, vecAiming );
 

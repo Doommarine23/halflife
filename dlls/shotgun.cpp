@@ -26,10 +26,16 @@
 #define VECTOR_CONE_DM_SHOTGUN	Vector( 0.08716, 0.04362, 0.00  )// 10 degrees by 5 degrees
 #define VECTOR_CONE_DM_DOUBLESHOTGUN Vector( 0.17365, 0.04362, 0.00 ) // 20 degrees by 5 degrees
 
+//YELLOWSHIFT Additional firing animations and rename of FIRE2 to BIGFIRE to prevent conflicts.
 enum shotgun_e {
 	SHOTGUN_IDLE = 0,
 	SHOTGUN_FIRE,
 	SHOTGUN_FIRE2,
+	SHOTGUN_FIRE3,
+	SHOTGUN_FIRE4,
+	SHOTGUN_FIRE5,
+	SHOTGUN_FIREBIG,
+	SHOTGUN_FIREBIG2,
 	SHOTGUN_RELOAD,
 	SHOTGUN_PUMP,
 	SHOTGUN_START_RELOAD,
@@ -67,13 +73,18 @@ void CShotgun::Precache( void )
 	PRECACHE_SOUND ("weapons/sbarrel1.wav");//shotgun
 
 	PRECACHE_SOUND ("weapons/reload1.wav");	// shotgun reload
+	PRECACHE_SOUND ("weapons/reload2.wav"); // shotgun reload
 	PRECACHE_SOUND ("weapons/reload3.wav");	// shotgun reload
 
 //	PRECACHE_SOUND ("weapons/sshell1.wav");	// shotgun reload - played on client
 //	PRECACHE_SOUND ("weapons/sshell3.wav");	// shotgun reload - played on client
 	
 	PRECACHE_SOUND ("weapons/357_cock1.wav"); // gun empty sound
-	PRECACHE_SOUND ("weapons/scock1.wav");	// cock gun
+	PRECACHE_SOUND ("weapons/scock1.wav");	// cock gun for reload
+	
+	//YELLOWSHIFT
+	PRECACHE_SOUND ("weapons/scock_backward.wav");	//  cock gun back
+	PRECACHE_SOUND ("weapons/scock_forward.wav");	// cock gun forward
 
 	m_usSingleFire = PRECACHE_EVENT( 1, "events/shotgun1.sc" );
 	m_usDoubleFire = PRECACHE_EVENT( 1, "events/shotgun2.sc" );
@@ -165,7 +176,8 @@ void CShotgun::PrimaryAttack()
 	else
 	{
 		// regular old, untouched spread. 
-		vecDir = m_pPlayer->FireBulletsPlayer( 6, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+		// YELLOWSHIFT Bullets increased from 6 to 8 to help balance out the shotgun VS the double barrel.
+		vecDir = m_pPlayer->FireBulletsPlayer( 8, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	}
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usSingleFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
@@ -240,7 +252,8 @@ void CShotgun::SecondaryAttack( void )
 	else
 	{
 		// untouched default single player
-		vecDir = m_pPlayer->FireBulletsPlayer( 12, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+		// YELLOWSHIFT Bullets increased from 12 to 16 to help balance out the shotgun VS the double barrel.
+		vecDir = m_pPlayer->FireBulletsPlayer( 16, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	}
 		
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usDoubleFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
@@ -290,12 +303,12 @@ void CShotgun::Reload( void )
 			return;
 		// was waiting for gun to move to side
 		m_fInSpecialReload = 2;
-
-		if (RANDOM_LONG(0,1))
-			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload1.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f));
-		else
-			EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload3.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f));
-
+	switch(RANDOM_LONG(0,2))
+	{//YELLOWSHIFT The reload2.wav sound was unused, this is now corrected by changing the Random_LONG from IF to Switch
+	case 0:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload1.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
+	case 1:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload2.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
+	case 2:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload3.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
+	}
 		SendWeaponAnim( SHOTGUN_RELOAD );
 
 		m_flNextReload = UTIL_WeaponTimeBase() + 0.5;
@@ -317,10 +330,13 @@ void CShotgun::WeaponIdle( void )
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 
+	
+
 	if ( m_flPumpTime && m_flPumpTime < gpGlobals->time )
 	{
+		//YELLOWSHIFT Now called on the QC and uses edited sounds due to new animation timing. PumpTime for Reload is currently untouched.
 		// play pumping sound
-		EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0,0x1f));
+		//EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0,0x1f));
 		m_flPumpTime = 0;
 	}
 

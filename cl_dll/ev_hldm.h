@@ -28,6 +28,8 @@ enum glock_e {
 	GLOCK_IDLE2,
 	GLOCK_IDLE3,
 	GLOCK_SHOOT,
+	GLOCK_SHOOT2, //YELLOWSHIFT Additional firing animations.
+	GLOCK_SHOOT3,
 	GLOCK_SHOOT_EMPTY,
 	GLOCK_RELOAD,
 	GLOCK_RELOAD_NOT_EMPTY,
@@ -35,11 +37,16 @@ enum glock_e {
 	GLOCK_HOLSTER,
 	GLOCK_ADD_SILENCER
 };
-
+ 
 enum shotgun_e {
 	SHOTGUN_IDLE = 0,
 	SHOTGUN_FIRE,
 	SHOTGUN_FIRE2,
+	SHOTGUN_FIRE3,
+	SHOTGUN_FIRE4, //YELLOWSHIFT Additional firing animations and rename of FIRE2 to BIGFIRE to prevent conflicts.
+	SHOTGUN_FIRE5,
+	SHOTGUN_FIREBIG,
+	SHOTGUN_FIREBIG2,
 	SHOTGUN_RELOAD,
 	SHOTGUN_PUMP,
 	SHOTGUN_START_RELOAD,
@@ -69,7 +76,7 @@ enum python_e {
 	PYTHON_HOLSTER,
 	PYTHON_DRAW,
 	PYTHON_IDLE2,
-	PYTHON_IDLE3
+	PYTHON_IDLE3,
 };
 
 #define	GAUSS_PRIMARY_CHARGE_VOLUME	256// how loud gauss is while charging
@@ -87,9 +94,37 @@ enum gauss_e {
 	GAUSS_DRAW
 };
 
+//YELLOWSHIFT Weapon Entries
+
+enum saw_e	{
+	SAW_LONGIDLE = 0,
+	SAW_IDLE1,
+	SAW_RELOAD,
+	SAW_HOLSTER,
+	SAW_DEPLOY,
+	SAW_FIRE1,
+	SAW_FIRE2,
+	SAW_FIRE3
+}; 
+
+enum deagle_e {
+	DEAGLE_IDLE1 = 0,
+	DEAGLE_IDLE2,
+	DEAGLE_IDLE3,
+	DEAGLE_IDLE4,
+	DEAGLE_IDLE5,
+	DEAGLE_SHOOT,
+	DEAGLE_SHOOTEMPTY,
+	DEAGLE_RELOADEMPTY,
+	DEAGLE_RELOAD,
+	DEAGLE_DRAW,
+	DEAGLE_HOLSTER
+};
+
+
 void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName );
 void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType );
 int EV_HLDM_CheckTracer( int idx, float *vecSrc, float *end, float *forward, float *right, int iBulletType, int iTracerFreq, int *tracerCount );
 void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int cShots, float *vecSrc, float *vecDirShooting, float flDistance, int iBulletType, int iTracerFreq, int *tracerCount, float flSpreadX, float flSpreadY );
-
+void EV_HLDM_MuzzleFlash( vec3_t pos, float amount ); //YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
 #endif // EV_HLDMH

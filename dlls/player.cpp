@@ -2596,15 +2596,31 @@ void CBasePlayer::PostThink()
 
 	if ( (FBitSet(pev->flags, FL_ONGROUND)) && (pev->health > 0) && m_flFallVelocity >= PLAYER_FALL_PUNCH_THRESHHOLD )
 	{
+		if 	(pev->watertype = CONTENTS_EMPTY && (pev->waterlevel == 0))
+		{
 		// ALERT ( at_console, "%f\n", m_flFallVelocity );
+		/*
+		YELLOWSHIFT
+		It seems odd that valve never added this despite intending to. So here we go, repurposing the unused jump landing.
+		Despite Valve's comments of a bug with water, this will be investigated for water landing sounds.
+		*/
+		EMIT_SOUND(ENT(pev), CHAN_ITEM, "player/pl_jumpland2.wav", 1, ATTN_NORM);
+		}
+		//Put on VOICE channel due to Audio conflict with Water splashes on ITEM
 
+		if	(pev->waterlevel <= 2 && (pev->waterlevel != 0))	//YELLOWSHIFT If we land in a puddle.
+		{	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_landpuddle1.wav", 1, ATTN_NORM); }
+
+		if	(pev->waterlevel == 3)		//YELLOWSHIFT if we land in waist or full body NO SOUND YET
+		{	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/saw_reload.wav", 1, ATTN_NORM); }
+		
 		if (pev->watertype == CONTENT_WATER)
 		{
 			// Did he hit the world or a non-moving entity?
 			// BUG - this happens all the time in water, especially when 
 			// BUG - water has current force
 			// if ( !pev->groundentity || VARS(pev->groundentity)->velocity.z == 0 )
-				// EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade1.wav", 1, ATTN_NORM);
+			// EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade1.wav", 1, ATTN_NORM);
 		}
 		else if ( m_flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED )
 		{// after this point, we start doing damage
@@ -3369,8 +3385,9 @@ void CBasePlayer :: FlashlightTurnOn( void )
 	}
 
 	if ( (pev->weapons & (1<<WEAPON_SUIT)) )
-	{
-		EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM );
+	{		/*YELLOWSHIFT changed from WEAPON to VOICE. will attempt a new channel
+			Change to VOICE was to prevent flashlight from cutting out weapon fire*/
+		EMIT_SOUND_DYN( ENT(pev), CHAN_VOICE, SOUND_FLASHLIGHT_ON, 1.0, ATTN_NORM, 0, PITCH_NORM );
 		SetBits(pev->effects, EF_DIMLIGHT);
 		MESSAGE_BEGIN( MSG_ONE, gmsgFlashlight, NULL, pev );
 		WRITE_BYTE(1);
@@ -3384,8 +3401,9 @@ void CBasePlayer :: FlashlightTurnOn( void )
 
 
 void CBasePlayer :: FlashlightTurnOff( void )
-{
-	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, SOUND_FLASHLIGHT_OFF, 1.0, ATTN_NORM, 0, PITCH_NORM );
+{//YELLOWSHIFT changed from WEAPON to VOICE. will attempt a new channel
+	//Change to VOICE was to prevent flashlight from cutting out weapon fire
+	EMIT_SOUND_DYN( ENT(pev), CHAN_VOICE, SOUND_FLASHLIGHT_OFF, 1.0, ATTN_NORM, 0, PITCH_NORM );
     ClearBits(pev->effects, EF_DIMLIGHT);
 	MESSAGE_BEGIN( MSG_ONE, gmsgFlashlight, NULL, pev );
 	WRITE_BYTE(0);

@@ -1146,6 +1146,13 @@ void UTIL_BloodStream( const Vector &origin, const Vector &direction, int color,
 	if ( !UTIL_ShouldShowBlood( color ) )
 		return;
 
+/*YELLOWSHIFT color fix for red blood particles.
+Thanks to XaeroX on a years old HLFX.RU thread pointing out that BloodColor is read in a range of numbers.
+Thanks to [R0n who opened the thread, who pointed out the numbers 70-71 work perfectly.*/
+
+	if (color == BLOOD_COLOR_RED)
+		 color = 70;
+
 	if ( g_Language == LANGUAGE_GERMAN && color == BLOOD_COLOR_RED )
 		color = 0;
 
@@ -1638,6 +1645,63 @@ void UTIL_StripToken( const char *pKey, char *pDest )
 	pDest[i] = 0;
 }
 
+
+//YELLOWSHIFT
+
+//=========================================================
+// UTIL_DynamicMuzzleFlash - Simple way of adding muzzle flashes to ENTITIES NOT PLAYERS
+//=========================================================
+
+void UTIL_DynamicMuzzleFlash( const Vector &vecShootOrigin, float radius, int colorR, int colorG, int colorB, float time, float decay)
+
+{
+		//Suggested Defaults for gun muzzleflashes in comments.
+		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, vecShootOrigin );
+		WRITE_BYTE(TE_DLIGHT);
+		WRITE_COORD(vecShootOrigin.x);	// X = vecShootOrigin.x
+		WRITE_COORD(vecShootOrigin.y);	// Y = vecShootOrigin.y
+		WRITE_COORD(vecShootOrigin.z);	// Z = vecShootOrigin.z
+		WRITE_BYTE( radius );		// radius * 0.1 Suggested 35
+		WRITE_BYTE( colorR );		// R  Suggested 255
+		WRITE_BYTE( colorG );		// G  Suggested 255
+		WRITE_BYTE( colorB );		// B  Suggested 128
+		WRITE_BYTE( time );		// time * 10 = Suggested 1
+		WRITE_BYTE( decay);		// decay * 0.1 - Suggested 00.1
+	MESSAGE_END( );
+}
+
+//=========================================================
+// UTIL_BloodParticles - Spawns lots of chunky blood particles.
+//=========================================================
+
+void UTIL_BloodParticles( const Vector &origin, const Vector &direction, int color, int amount )
+{
+	if ( !UTIL_ShouldShowBlood( color ) )
+		return;
+
+/*YELLOWSHIFT color fix for red blood particles.
+Thanks to XaeroX on a years old HLFX.RU thread pointing out that BloodColor is read in a range of numbers.
+Thanks to [R0n who opened the thread, who pointed out the numbers 70-71 work perfectly.*/
+
+	if (color == BLOOD_COLOR_RED)
+		 color = 70;
+
+	if ( g_Language == LANGUAGE_GERMAN && color == BLOOD_COLOR_RED )
+		color = 0;
+
+	
+	MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, origin );
+		WRITE_BYTE( TE_BLOOD );
+		WRITE_COORD( origin.x );
+		WRITE_COORD( origin.y );
+		WRITE_COORD( origin.z );
+		WRITE_COORD( direction.x );
+		WRITE_COORD( direction.y );
+		WRITE_COORD( direction.z );
+		WRITE_BYTE( color );
+		WRITE_BYTE( min( amount, 255 ) );
+	MESSAGE_END();
+}
 
 // --------------------------------------------------------------
 //

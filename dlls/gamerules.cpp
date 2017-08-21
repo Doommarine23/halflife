@@ -222,6 +222,14 @@ void CGameRules::RefreshSkillData ( void )
 	// Sentry Turret
 	gSkillData.sentryHealth = GetSkillCvar( "sk_sentry_health");
 
+	//YELLOWSHIFT New Entries
+
+	// Barney Zombie
+	gSkillData.zombiebarneyHealth = GetSkillCvar( "sk_zombie_barney_health");
+	gSkillData.zombiebarneyDmgOneSlash = GetSkillCvar( "sk_zombie_barney_dmg_one_slash");
+	gSkillData.zombiebarneyDmgBothSlash = GetSkillCvar( "sk_zombie_barney_dmg_both_slash");
+
+
 // PLAYER WEAPONS
 
 	// Crowbar whack

@@ -171,17 +171,23 @@ void CItem::Materialize( void )
 
 #define SF_SUIT_SHORTLOGON		0x0001
 
+/*
+YELLOWSHIFT
+To maintain the ability to play the original HL Campaign and maps designed for it this item class is entirely the same
+besides the model being changed to represent security vests.
+*/
+
 class CItemSuit : public CItem
 {
 	void Spawn( void )
 	{ 
 		Precache( );
-		SET_MODEL(ENT(pev), "models/w_suit.mdl");
+		SET_MODEL(ENT(pev), "models/barney_vest.mdl");
 		CItem::Spawn( );
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL ("models/w_suit.mdl");
+		PRECACHE_MODEL ("models/barney_vest.mdl");
 	}
 	BOOL MyTouch( CBasePlayer *pPlayer )
 	{
@@ -201,18 +207,26 @@ class CItemSuit : public CItem
 LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
 
 
+/*
+YELLOWSHIFT
+
+To maintain the ability to play the original HL Campaign and maps designed for it this item class is entirely the same
+besides the model being changed to represent security helmets. 
+However there has been an increase in "battery power" given in the skills.cfg
+
+*/
 
 class CItemBattery : public CItem
 {
 	void Spawn( void )
 	{ 
 		Precache( );
-		SET_MODEL(ENT(pev), "models/w_battery.mdl");
+		SET_MODEL(ENT(pev), "models/barney_helmet.mdl");
 		CItem::Spawn( );
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL ("models/w_battery.mdl");
+		PRECACHE_MODEL ("models/barney_helmet.mdl");
 		PRECACHE_SOUND( "items/gunpickup2.wav" );
 	}
 	BOOL MyTouch( CBasePlayer *pPlayer )
@@ -256,6 +270,63 @@ class CItemBattery : public CItem
 };
 
 LINK_ENTITY_TO_CLASS(item_battery, CItemBattery);
+
+//YELLOWSHIFT new battery item meant to represent new vests. Grants more armor than helmets.
+class CItemBatteryBig : public CItem
+{
+	void Spawn( void )
+	{ 
+		Precache( );
+		SET_MODEL(ENT(pev), "models/barney_vest.mdl");
+		CItem::Spawn( );
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL ("models/barney_vest.mdl");
+		PRECACHE_SOUND( "items/gunpickup2.wav" );
+	}
+	BOOL MyTouch( CBasePlayer *pPlayer )
+	{
+		if ( pPlayer->pev->deadflag != DEAD_NO )
+		{
+			return FALSE;
+		}
+
+		if ((pPlayer->pev->armorvalue < MAX_NORMAL_BATTERY) &&
+			(pPlayer->pev->weapons & (1<<WEAPON_SUIT)))
+		{
+			int pct;
+			char szcharge[64];
+
+			pPlayer->pev->armorvalue += gSkillData.batteryCapacity; // YELLOWSHIFT CHANGE THIS
+			pPlayer->pev->armorvalue = min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
+
+			EMIT_SOUND( pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM );
+
+			MESSAGE_BEGIN( MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev );
+				WRITE_STRING( STRING(pev->classname) );
+			MESSAGE_END();
+
+			
+			// Suit reports new power level
+			// For some reason this wasn't working in release build -- round it.
+			pct = (int)( (float)(pPlayer->pev->armorvalue * 100.0) * (1.0/MAX_NORMAL_BATTERY) + 0.5);
+			pct = (pct / 5);
+			if (pct > 0)
+				pct--;
+		
+			sprintf( szcharge,"!HEV_%1dP", pct );
+			
+			//EMIT_SOUND_SUIT(ENT(pev), szcharge);
+			pPlayer->SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
+			return TRUE;		
+		}
+		return FALSE;
+	}
+};
+
+LINK_ENTITY_TO_CLASS(item_battery_big, CItemBatteryBig);
+
 
 
 class CItemAntidote : public CItem

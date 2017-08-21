@@ -276,6 +276,10 @@ extern float		UTIL_Approach( float target, float value, float speed );
 extern float		UTIL_ApproachAngle( float target, float value, float speed );
 extern float		UTIL_AngleDistance( float next, float cur );
 
+//YELLOWSHIFT
+extern void UTIL_DynamicMuzzleFlash( const Vector &vecShootOrigin, float radius, int colorR, int colorG, int colorB, float time, float decay);
+extern void	UTIL_BloodParticles( const Vector &origin, const Vector &direction, int color, int amount );
+
 extern char			*UTIL_VarArgs( char *format, ... );
 extern void			UTIL_Remove( CBaseEntity *pEntity );
 extern BOOL			UTIL_IsValidEntity( edict_t *pent );

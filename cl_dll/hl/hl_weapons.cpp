@@ -67,6 +67,10 @@ CSatchel g_Satchel;
 CTripmine g_Tripmine;
 CSqueak g_Snark;
 
+//YELLOWSHIFT BEGIN
+CSAW g_SAW; 
+CDeagle g_Deagle;
+//YELLOWSHIFT END
 
 /*
 ======================
@@ -619,6 +623,12 @@ void HUD_InitClientWeapons( void )
 	HUD_PrepEntity( &g_Satchel	, &player );
 	HUD_PrepEntity( &g_Tripmine	, &player );
 	HUD_PrepEntity( &g_Snark	, &player );
+	
+	//YELLOWSHIFT
+	HUD_PrepEntity( &g_SAW	, &player );
+	HUD_PrepEntity( &g_Deagle	, &player );
+
+
 }
 
 /*
@@ -739,6 +749,14 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 		case WEAPON_SNARK:
 			pWeapon = &g_Snark;
 			break;
+			//YELLOWSHIFT
+		case WEAPON_SAW:
+			pWeapon = &g_SAW;
+			break;
+		case WEAPON_DEAGLE:
+			pWeapon = &g_Deagle;
+			break;
+
 	}
 
 	// Store pointer to our destination entity_state_t so we can get our origin, etc. from it
@@ -907,6 +925,10 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	to->client.vuser1[1]				= player.ammo_357;
 	to->client.vuser1[2]				= player.ammo_argrens;
 
+	//YELLOWSHIFT BEGIN
+	//to->client.vuser1[3]				= player.ammo_saw;
+
+	//YELLOWSHIFT END
 	to->client.ammo_nails				= player.ammo_bolts;
 	to->client.ammo_shells				= player.ammo_buckshot;
 	to->client.ammo_cells				= player.ammo_uranium;

@@ -110,6 +110,7 @@ typedef struct hull_s
 #define STEP_SLOSH		6		// shallow liquid puddle
 #define STEP_WADE		7		// wading in liquid
 #define STEP_LADDER		8		// climbing ladder
+#define STEP_WOOD		9		// YELLOWSHIFT stepping on solid wood
 
 #define PLAYER_FATAL_FALL_SPEED		1024// approx 60 feet
 #define PLAYER_MAX_SAFE_FALL_SPEED	580// approx 20 feet
@@ -344,6 +345,17 @@ void PM_PlayStepSound( int step, float fvol )
 		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_metal4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
 		}
 		break;
+	case STEP_WOOD: //YELLOWSHIFT new wood footsteps
+		switch(irand)
+		{
+		// right foot
+		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wood1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
+		case 1:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wood3.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
+		// left foot
+		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wood2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
+		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_wood4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
+		}
+		break;
 	case STEP_DIRT:
 		switch(irand)
 		{
@@ -450,6 +462,7 @@ int PM_MapTextureTypeStepType(char chTextureType)
 		case CHAR_TEX_GRATE: return STEP_GRATE;	
 		case CHAR_TEX_TILE: return STEP_TILE;
 		case CHAR_TEX_SLOSH: return STEP_SLOSH;
+		case CHAR_TEX_WOOD: return STEP_WOOD;
 	}
 }
 
@@ -2561,8 +2574,21 @@ void PM_Jump (void)
 	{
 		pmove->PM_PlaySound( CHAN_BODY, "player/plyrjmp8.wav", 0.5, ATTN_NORM, 0, PITCH_NORM );
 	}
-	else
-	{
+	else 
+		if (pmove->waterlevel == 0) //YELLOWSHIFT We don't want these sounds playing when you're in any kind of water, makes no sense.
+									// Unique sounds for water will be added later.
+	{	//YELLOWSHIFT re-enabled jumping sounds. On the VOICE channel which causes conflicts with the flashlight audio but better than anywhere else.
+		switch ( pmove->RandomLong(0,1) )
+		{
+
+		case 0:
+		pmove->PM_PlaySound( CHAN_VOICE, "player/pl_jump1.wav", 0.6, ATTN_NORM, 0, PITCH_NORM );
+				break;
+		case 1:
+		pmove->PM_PlaySound( CHAN_VOICE, "player/pl_jump2.wav", 0.6, ATTN_NORM, 0, PITCH_NORM );
+				break;
+		}
+		
 		PM_PlayStepSound( PM_MapTextureTypeStepType( pmove->chtexturetype ), 1.0 );
 	}
 
@@ -2689,17 +2715,24 @@ void PM_CheckFalling( void )
 		}
 		else if ( pmove->flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED )
 		{
+			//YELLOWSHIFT this was an easy fix as VALVE fixed the no breaks listed below.
+			//RandomLong is used elsewhere in this file, making it clear they just didn't update here.
+			
 			// NOTE:  In the original game dll , there were no breaks after these cases, causing the first one to 
 			// cascade into the second
-			//switch ( RandomLong(0,1) )
-			//{
-			//case 0:
-				//pmove->PM_PlaySound( CHAN_VOICE, "player/pl_fallpain2.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-				//break;
-			//case 1:
+		switch ( pmove->RandomLong(0,2) )
+			{
+
+		case 0:
+				pmove->PM_PlaySound( CHAN_VOICE, "player/pl_fallpain1.wav", 1, ATTN_NORM, 0, PITCH_NORM );
+				break;
+		case 1:
+				pmove->PM_PlaySound( CHAN_VOICE, "player/pl_fallpain2.wav", 1, ATTN_NORM, 0, PITCH_NORM );
+				break;
+		case 2:
 				pmove->PM_PlaySound( CHAN_VOICE, "player/pl_fallpain3.wav", 1, ATTN_NORM, 0, PITCH_NORM );
-			//	break;
-			//}
+				break;
+			}
 			fvol = 1.0;
 		}
 		else if ( pmove->flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED / 2 )

@@ -796,6 +796,9 @@ void CHGrunt :: Shoot ( void )
 
 	UTIL_MakeVectors ( pev->angles );
 
+	//YELLOWSHIFT New fancy dynamic lighting, oh my!
+	UTIL_DynamicMuzzleFlash( vecShootOrigin, 25,  255,  255,  128,  1, 0.080);
+
 	Vector	vecShellVelocity = gpGlobals->v_right * RANDOM_FLOAT(40,90) + gpGlobals->v_up * RANDOM_FLOAT(75,200) + gpGlobals->v_forward * RANDOM_FLOAT(-40, 40);
 	EjectBrass ( vecShootOrigin - vecShootDir * 24, vecShellVelocity, pev->angles.y, m_iBrassShell, TE_BOUNCE_SHELL); 
 	FireBullets(1, vecShootOrigin, vecShootDir, VECTOR_CONE_10DEGREES, 2048, BULLET_MONSTER_MP5 ); // shoot +-5 degrees
@@ -822,6 +825,9 @@ void CHGrunt :: Shotgun ( void )
 	Vector vecShootDir = ShootAtEnemy( vecShootOrigin );
 
 	UTIL_MakeVectors ( pev->angles );
+
+	//YELLOWSHIFT New fancy dynamic lighting, oh my!
+	UTIL_DynamicMuzzleFlash( vecShootOrigin, 29,  255,  255,  128,  1, 0.1);
 
 	Vector	vecShellVelocity = gpGlobals->v_right * RANDOM_FLOAT(40,90) + gpGlobals->v_up * RANDOM_FLOAT(75,200) + gpGlobals->v_forward * RANDOM_FLOAT(-40, 40);
 	EjectBrass ( vecShootOrigin - vecShootDir * 24, vecShellVelocity, pev->angles.y, m_iShotgunShell, TE_BOUNCE_SHOTSHELL); 
@@ -1610,7 +1616,6 @@ Schedule_t slGruntHideReload[] =
 		ARRAYSIZE ( tlGruntHideReload ),
 		bits_COND_HEAVY_DAMAGE	|
 		bits_COND_HEAR_SOUND,
-
 		bits_SOUND_DANGER,
 		"GruntHideReload"
 	}

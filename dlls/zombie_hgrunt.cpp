@@ -18,13 +18,6 @@
 
 // UNDONE: Don't flinch every time you get hit
 
-/*YELLOWSHIFT splashes green blood from headcrab, red from body.
-
-Cool new blood splash particles on Zombies (and others!)
-
-Headcrabs hop off if not killed via headshot */
-
-
 #include	"extdll.h"
 #include	"util.h"
 #include	"cbase.h"
@@ -160,38 +153,21 @@ int CZombie :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, floa
 	return CBaseMonster::TakeDamage( pevInflictor, pevAttacker, flDamage, bitsDamageType );
 }
 
-/*YELLOWSHIFT Used to splash alien blood from headcrab and some additional juicy blood.
-Thanks to Jonathan 'Teh_Freak' Smith for a similar example in his tutorial on tracing the headcrab.
+/*YELLOWSHIFT Used to splash alien blood from headcrab. 
+Thanks to Jonathan 'Teh_Freak' Smith for a similar example in his tutorial. :)
 */
-
 void CZombie::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
-
-	//YELLOWSHIFT Look into making blood spray actually leave decals.
-
-/*	Vector	vecSplatDir;
-	vecSplatDir = Vector ( 0 , 0 , -1 );
-	vecSplatDir = vecSplatDir + (RANDOM_FLOAT(-1,1) * 0.6 * gpGlobals->v_right) + (RANDOM_FLOAT(-1,1) * 0.6 * gpGlobals->v_forward);// randomize a bit
-	*/
-
-	Vector vecBlood = (ptr->vecEndPos - pev->origin).Normalize( );
-
 	switch( ptr->iHitgroup)
 	{
 	case HITGROUP_HEAD:
 	m_bloodColor = BLOOD_COLOR_GREEN;
-	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
-	//UTIL_BloodParticles( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
-	break;
-	
+		break;
 	default:
 	m_bloodColor = BLOOD_COLOR_RED;
-	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
-	//UTIL_BloodParticles( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
-	//UTIL_TraceLine( pev->origin + Vector ( 0, 0 , 64) , pev->origin + vecSplatDir * 256, ignore_monsters, ENT(pev), ptr);
-	//UTIL_BloodDecalTrace( ptr, BLOOD_COLOR_RED );
-	break;
+		break;
 	}
+
 	CBaseMonster::TraceAttack( pevAttacker, flDamage, vecDir, ptr, bitsDamageType );
 }
 

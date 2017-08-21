@@ -86,6 +86,11 @@ struct skilldata_t
 	float zombieDmgOneSlash;
 	float zombieDmgBothSlash;
 
+	//YELLOWSHIFT Zombie Barney
+	float zombiebarneyHealth;
+	float zombiebarneyDmgOneSlash;
+	float zombiebarneyDmgBothSlash;
+
 	float turretHealth;
 	float miniturretHealth;
 	float sentryHealth;

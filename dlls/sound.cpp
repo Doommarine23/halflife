@@ -1684,13 +1684,18 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr,  Vector vecSrc, Vector vecEnd, int
 		}
 	}
 
+	/*YELLOWSHIFT Valve used the player sounds for weapon impacts on materials. This will be changed to proper unique sounds!
+	Precached in the client.cpp for now, as this is where the original pl_x sounds were cached. Cache here instead?
+	 This code is also in the ev_hldm.cpp and is edited accordingly.*/
 	switch (chTextureType)
 	{
 	default:
 	case CHAR_TEX_CONCRETE: fvol = 0.9;	fvolbar = 0.6;
-		rgsz[0] = "player/pl_step1.wav";
-		rgsz[1] = "player/pl_step2.wav";
-		cnt = 2;
+		rgsz[0] = "impacts/imp_step1.wav";
+		rgsz[1] = "impacts/imp_step2.wav";
+		rgsz[2] = "impacts/imp_step3.wav";
+		rgsz[3] = "impacts/imp_step4.wav";
+		cnt = 4;
 		break;
 	case CHAR_TEX_METAL: fvol = 0.9; fvolbar = 0.3;
 		rgsz[0] = "player/pl_metal1.wav";

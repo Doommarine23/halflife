@@ -1009,12 +1009,17 @@ void CBaseTurret :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector 
 
 int CBaseTurret::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
+	Vector vecSrc, vecAng;
+	GetAttachment( 1, vecSrc, vecAng );
+
+
 	if ( !pev->takedamage )
 		return 0;
 
 	if (!m_iOn)
 		flDamage /= 10.0;
 
+	UTIL_Sparks( vecSrc );
 	pev->health -= flDamage;
 	if (pev->health <= 0)
 	{
@@ -1147,6 +1152,9 @@ class CSentry : public CBaseTurret
 public:
 	void Spawn( );
 	void Precache(void);
+	virtual void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType); 	
+	//YELLOWSHIFT Used to trace sparks.
+
 	// other functions
 	void Shoot(Vector &vecSrc, Vector &vecDirToEnemy);
 	int TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType);
@@ -1196,9 +1204,19 @@ void CSentry::Shoot(Vector &vecSrc, Vector &vecDirToEnemy)
 	}
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
 }
+	
+//YELLOWSHIFT Sparks and effects when you shoot turrets.
+void CSentry::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
+{
+	UTIL_Ricochet( ptr->vecEndPos, 1.0 );
+	UTIL_Sparks( ptr->vecEndPos );
+	CBaseMonster::TraceAttack( pevAttacker, flDamage, vecDir, ptr, bitsDamageType );
+}
 
 int CSentry::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType)
 {
+
+
 	if ( !pev->takedamage )
 		return 0;
 
@@ -1208,6 +1226,10 @@ int CSentry::TakeDamage(entvars_t *pevInflictor, entvars_t *pevAttacker, float f
 		SetUse( NULL );
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
+	Vector vecSrc, vecAng;
+	GetAttachment( 1, vecSrc, vecAng );
+	
+
 
 	pev->health -= flDamage;
 	if (pev->health <= 0)

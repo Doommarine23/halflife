@@ -21,11 +21,15 @@
 #include "nodes.h"
 #include "player.h"
 
+
+//YELLOWSHIFT Additional firing animations.
 enum glock_e {
 	GLOCK_IDLE1 = 0,
 	GLOCK_IDLE2,
 	GLOCK_IDLE3,
 	GLOCK_SHOOT,
+	GLOCK_SHOOT2,
+	GLOCK_SHOOT3,
 	GLOCK_SHOOT_EMPTY,
 	GLOCK_RELOAD,
 	GLOCK_RELOAD_NOT_EMPTY,
@@ -94,8 +98,8 @@ BOOL CGlock::Deploy( )
 }
 
 void CGlock::SecondaryAttack( void )
-{
-	GlockFire( 0.1, 0.2, FALSE );
+{ //YELLOWSHIFT Testing out a higher RoF for the Glock.
+	GlockFire( 0.15, 0.1, FALSE );
 }
 
 void CGlock::PrimaryAttack( void )

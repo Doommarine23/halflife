@@ -590,6 +590,9 @@ void CHoundeye :: SonicAttack ( void )
 		WRITE_BYTE( 0 );		// speed
 	MESSAGE_END();
 
+	//YELLOWSHIFT fancy lighting when houndeyes attack
+	UTIL_DynamicMuzzleFlash( pev->origin, 38,  0,  55,  200,  2, 00.1);
+
 	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
 		WRITE_BYTE( TE_BEAMCYLINDER );
 		WRITE_COORD( pev->origin.x);

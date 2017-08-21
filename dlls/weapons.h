@@ -79,6 +79,13 @@ public:
 #define	WEAPON_SATCHEL			14
 #define	WEAPON_SNARK			15
 
+//YELLOWSHIFT BEGIN
+
+#define WEAPON_SAW				16 
+#define WEAPON_DEAGLE			17
+
+//YELLOWSHIFT END
+
 #define WEAPON_ALLWEAPONS		(~(1<<WEAPON_SUIT))
 
 #define WEAPON_SUIT				31	// ?????
@@ -105,6 +112,8 @@ public:
 #define SATCHEL_WEIGHT		-10
 #define TRIPMINE_WEIGHT		-10
 
+#define SAW_WEIGHT 20 //YELLOWSHIFT
+
 
 // weapon clip/carry ammo capacities
 #define URANIUM_MAX_CARRY		100
@@ -119,6 +128,7 @@ public:
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
+#define	SAW_MAX_CARRY			200
 
 // the maximum amount of ammo each weapon's clip can hold
 #define WEAPON_NOCLIP			-1
@@ -139,6 +149,14 @@ public:
 #define TRIPMINE_MAX_CLIP		WEAPON_NOCLIP
 #define SNARK_MAX_CLIP			WEAPON_NOCLIP
 
+//YELLOWSHIFT BEGIN
+#define SAW_MAX_CLIP			100
+#define SAW_DEFAULT_AMMO		50
+
+#define DEAGLE_MAX_CLIP			9
+#define	DEAGLE_DEFAULT_AMMO		4
+//YELLOWSHIFT END
+
 
 // the default amount of ammo that comes with each gun when it spawns
 #define GLOCK_DEFAULT_GIVE			17
@@ -157,6 +175,12 @@ public:
 #define SNARK_DEFAULT_GIVE			5
 #define HIVEHAND_DEFAULT_GIVE		8
 
+//YELLOWSHIFT BEGIN
+#define SAW_DEFAULT_GIVE 50
+#define DEAGLE_DEFAULT_GIVE 4
+
+//YELLOWSHIFT END
+
 // The amount of ammo given to a player by an ammo item.
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_GLOCKCLIP_GIVE		GLOCK_MAX_CLIP
@@ -170,6 +194,12 @@ public:
 #define AMMO_URANIUMBOX_GIVE	20
 #define AMMO_SNARKBOX_GIVE		5
 
+//YELLOWSHIFT BEGIN
+#define AMMO_SAWCLIP_GIVE	SAW_MAX_CLIP
+//YELLOWSHIFT END
+
+
+
 // bullet types
 typedef	enum
 {
@@ -179,6 +209,7 @@ typedef	enum
 	BULLET_PLAYER_357, // python
 	BULLET_PLAYER_BUCKSHOT, // shotgun
 	BULLET_PLAYER_CROWBAR, // crowbar swipe
+	BULLET_PLAYER_SAW, // m249 SAW YELLOWSHIFT
 
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
@@ -466,7 +497,6 @@ public:
 bool bIsMultiplayer ( void );
 void LoadVModel ( char *szViewModel, CBasePlayer *m_pPlayer );
 #endif
-
 class CGlock : public CBasePlayerWeapon
 {
 public:
@@ -543,7 +573,6 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
-
 	BOOL m_fInZoom;// don't save this. 
 
 	virtual BOOL UseDecrement( void )
@@ -1014,6 +1043,76 @@ public:
 private:
 	unsigned short m_usSnarkFire;
 };
+
+//YELLOWSHIFT BEGIN
+
+class CDeagle : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 2; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+	int m_fLaser; // don't save this
+	int m_iShell;
+
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usFireDeagle;
+};
+
+
+
+
+class CSAW : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 3; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Reload( void );
+	void WeaponIdle( void );
+	float m_flNextAnimTime;
+	int m_iShell;
+	int m_iShellLink;
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usSAW;
+
+};
+
+// END YELLOWSHIFT
 
 
 #endif // WEAPONS_H

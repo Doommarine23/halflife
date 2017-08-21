@@ -55,6 +55,7 @@ char *CTalkMonster::m_szFriends[TLK_CFRIENDS] =
 	"monster_barney",
 	"monster_scientist",
 	"monster_sitting_scientist",
+	"monster_otis", // YELLOWSHIFT just added otis to friendly monster list for proper relationship functioning
 };
 
 
@@ -723,9 +724,11 @@ void CTalkMonster::ShutUpFriends( void )
 
 // UNDONE: Keep a follow time in each follower, make a list of followers in this function and do LRU
 // UNDONE: Check this in Restore to keep restored monsters from joining a full list of followers
+
+//YELLOWSHIFT Commented out for testing. By being disabled the player is allowed to have unlimited followers but there may be bugs.
 void CTalkMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 {
-	CBaseEntity *pFriend = NULL;
+	/*CBaseEntity *pFriend = NULL;
 	int i, count;
 
 	count = 0;
@@ -745,7 +748,7 @@ void CTalkMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 				}
 			}
 		}
-	}
+	}*/
 }
 
 

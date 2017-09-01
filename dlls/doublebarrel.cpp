@@ -96,8 +96,8 @@ void CDoubleBarrel::Precache( void )
 	PRECACHE_SOUND ("weapons/scock_backward.wav");	//  cock gun back
 	PRECACHE_SOUND ("weapons/scock_forward.wav");	// cock gun forward
 
-	m_usSingleFire = PRECACHE_EVENT( 1, "events/shotgun1.sc" );
-	m_usDoubleFire = PRECACHE_EVENT( 1, "events/shotgun2.sc" );
+	m_usSingleFire = PRECACHE_EVENT( 1, "events/doublebarrel1.sc" );
+	m_usDoubleFire = PRECACHE_EVENT( 1, "events/doublebarrel2.sc" );
 }
 
 int CDoubleBarrel::AddToPlayer( CBasePlayer *pPlayer )

@@ -41,6 +41,8 @@ void EV_SnarkFire( struct event_args_s *args );
 //YELLOWSHIFT BEGIN
 void EV_FireSAW( struct event_args_s *args  );
 void EV_FireDeagle( struct event_args_s *args  );
+void EV_FireDoubleBarrel( struct event_args_s *args	);
+void EV_FireDoubleBarrelBig( struct event_args_s *args );
 
 //YELLOWSHIFT END
 
@@ -84,4 +86,6 @@ void Game_HookEvents( void )
 	//YELLOWSHIFT
 	gEngfuncs.pfnHookEvent( "events/saw.sc",					EV_FireSAW );
 	gEngfuncs.pfnHookEvent( "events/deagle.sc",					EV_FireDeagle );
+	gEngfuncs.pfnHookEvent( "events/doublebarrel1.sc",			EV_FireDoubleBarrel);
+	gEngfuncs.pfnHookEvent( "events/doublebarrel2.sc",			EV_FireDoubleBarrelBig);
 }

@@ -355,6 +355,11 @@ void W_Precache(void)
 	UTIL_PrecacheOtherWeapon( "weapon_deagle" );
 	UTIL_PrecacheOther( "ammo_deagle" );
 
+	//DOUBLE BARREL
+	UTIL_PrecacheOtherWeapon( "weapon_doublebarrel" );
+	//UTIL_PrecacheOther( "ammo_buckshot" ); // Probably don't need this
+
+
 	// YELLOWSHIFT END
 
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )

@@ -20,6 +20,16 @@
 #include "player.h"
 #include "gamerules.h"
 
+/* TODO:
+
+1. Add laser sight
+2. Ensure weapon functions correctly
+3. Improve non-code functions (better model, edited animations, etc)
+4. Balance pass
+
+*/
+
+
 
 enum deagle_e {
 	DEAGLE_IDLE1 = 0,

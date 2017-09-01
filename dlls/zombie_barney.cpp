@@ -20,9 +20,9 @@
 
 /* YELLOWSHIFT
 
-Zombie Guards, were these even used in OP4/BS?
+Zombie Barneys. Were these even used in OP4/BS?
 
-Differences vs Regular Zombie:
+Differences vs Regular Zombie: This is just a placeholder. These must be play tested!
 
 Higher HP
 Faster Attack Animation + More Damage

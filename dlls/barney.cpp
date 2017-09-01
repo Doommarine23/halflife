@@ -20,9 +20,16 @@
 /*
 YELLOWSHIFT CHANGE/ADDITIONS
 
-Reloading after 17 shots
+Reloading after 17 shots - Requires ACT_RELOAD flag on model.
 Shell Ejection during firing event
 Dynamic Lighting message sent during firing event
+
+TODO:
+1. Additional heads
+2. Additional gear & helmets
+3. Finish & port features from Otis, e.g mourning dead allies and player.
+
+4. New weapons (Should instead be a new actor all together?)
 
 All changes marked with //YELLOWSHIFT 
 
@@ -67,7 +74,7 @@ public:
 	int  Classify ( void );
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
 	int	 m_iBrassShell; // YELLOWSHIFT used for ejecting shells
-	int	 m_iEmptyMag; //YELLOWSHIFT unused until later. Will eject out empty magazines on reload
+	int	 m_iEmptyMag; //YELLOWSHIFT UNUSED until later. Will eject out empty magazines on reload
 	
 	void RunTask( Task_t *pTask );
 	void StartTask( Task_t *pTask );

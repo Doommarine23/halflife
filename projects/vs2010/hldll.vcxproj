@@ -93,7 +93,7 @@
       <ModuleDefinitionFile>$(ProjectDir)..\..\dlls\hl.def</ModuleDefinitionFile>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "D:\GAMES\Services\Steam\SteamLibrary\steamapps\common\Half-Life\yshift\dlls\$(TargetName).dll"</Command>
+      <Command>copy "$(TargetPath)" "D:\GAMES\Services\Steam\steamapps\common\Half-Life\yshift\dlls\$(TargetName).dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Performing Post-Build Event</Message>
@@ -122,6 +122,7 @@
     <ClCompile Include="..\..\dlls\deagle.cpp" />
     <ClCompile Include="..\..\dlls\defaultai.cpp" />
     <ClCompile Include="..\..\dlls\doors.cpp" />
+    <ClCompile Include="..\..\dlls\doublebarrel.cpp" />
     <ClCompile Include="..\..\dlls\effects.cpp" />
     <ClCompile Include="..\..\dlls\egon.cpp" />
     <ClCompile Include="..\..\dlls\explode.cpp" />

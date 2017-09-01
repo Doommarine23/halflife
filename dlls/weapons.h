@@ -156,6 +156,9 @@ public:
 
 #define DEAGLE_MAX_CLIP			9
 #define	DEAGLE_DEFAULT_AMMO		4
+
+#define DOUBLEBARREL_MAX_CLIP	2
+#define DOUBLEBARREL_DEFAULT_AMMO 16
 //YELLOWSHIFT END
 
 
@@ -179,6 +182,7 @@ public:
 //YELLOWSHIFT BEGIN
 #define SAW_DEFAULT_GIVE 50
 #define DEAGLE_DEFAULT_GIVE 4
+#define DOUBLEBARREL_DEFAULT_GIVE 16
 
 //YELLOWSHIFT END
 
@@ -1117,14 +1121,6 @@ private:
 class CDoubleBarrel : public CBasePlayerWeapon
 {
 public:
-
-#ifndef CLIENT_DLL
-	int		Save( CSave &save );
-	int		Restore( CRestore &restore );
-	static	TYPEDESCRIPTION m_SaveData[];
-#endif
-
-
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( ) { return 3; }

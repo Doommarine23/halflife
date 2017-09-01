@@ -70,6 +70,7 @@ CSqueak g_Snark;
 //YELLOWSHIFT BEGIN
 CSAW g_SAW; 
 CDeagle g_Deagle;
+CDoubleBarrel g_DoubleBarrel;
 //YELLOWSHIFT END
 
 /*
@@ -627,6 +628,7 @@ void HUD_InitClientWeapons( void )
 	//YELLOWSHIFT
 	HUD_PrepEntity( &g_SAW	, &player );
 	HUD_PrepEntity( &g_Deagle	, &player );
+	HUD_PrepEntity( &g_DoubleBarrel	, &player);
 
 
 }
@@ -756,7 +758,9 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 		case WEAPON_DEAGLE:
 			pWeapon = &g_Deagle;
 			break;
-
+		case WEAPON_DOUBLEBARREL:
+			pWeapon = &g_DoubleBarrel;
+			break;
 	}
 
 	// Store pointer to our destination entity_state_t so we can get our origin, etc. from it

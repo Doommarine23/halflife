@@ -124,8 +124,8 @@ int CDoubleBarrel::GetItemInfo(ItemInfo *p)
 	p->iSlot = 2;
 	p->iPosition = 1;
 	p->iFlags = 0;
-	p->iId = m_iId = WEAPON_SHOTGUN;
-	p->iWeight = DOUBLEBARREL_WEIGHT;
+	p->iId = m_iId = WEAPON_DOUBLEBARREL;
+	p->iWeight = SHOTGUN_WEIGHT; // Its equally as viable in its own way. Doesn't need a unique weight for auto select.
 
 	return 1;
 }
@@ -286,6 +286,7 @@ void CDoubleBarrel::SecondaryAttack( void )
 
 }
 
+// Rewrite this entire section.
 
 void CDoubleBarrel::Reload( void )
 {
@@ -395,33 +396,5 @@ void CDoubleBarrel::WeaponIdle( void )
 			SendWeaponAnim( iAnim );
 		}
 	}
-}
-
-
-
-class CDoubleBarrelAmmo : public CBasePlayerAmmo
-{
-	void Spawn( void )
-	{ 
-		Precache( );
-		SET_MODEL(ENT(pev), "models/w_shotbox.mdl");
-		CBasePlayerAmmo::Spawn( );
-	}
-	void Precache( void )
-	{
-		PRECACHE_MODEL ("models/w_shotbox.mdl");
-		PRECACHE_SOUND("items/9mmclip1.wav");
-	}
-	BOOL AddAmmo( CBaseEntity *pOther ) 
-	{ 
-		if (pOther->GiveAmmo( AMMO_BUCKSHOTBOX_GIVE, "buckshot", BUCKSHOT_MAX_CARRY ) != -1)
-		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
-			return TRUE;
-		}
-		return FALSE;
-	}
 };
-LINK_ENTITY_TO_CLASS( ammo_buckshot, CDoubleBarrelAmmo );
-
 

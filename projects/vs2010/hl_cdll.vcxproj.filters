@@ -312,6 +312,9 @@
     <ClCompile Include="..\..\dlls\deagle.cpp">
       <Filter>Source Files\_hl\dlls</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\dlls\doublebarrel.cpp">
+      <Filter>Source Files\_hl\dlls</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\cl_dll\kbutton.h">

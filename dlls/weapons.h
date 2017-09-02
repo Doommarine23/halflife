@@ -1132,8 +1132,6 @@ public:
 	BOOL Deploy( );
 	void Reload( void );
 	void WeaponIdle( void );
-	int m_fInReload;
-	float m_flNextReload;
 	int m_iShell;
 
 	virtual BOOL UseDecrement( void )

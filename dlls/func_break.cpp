@@ -62,6 +62,7 @@ const char *CBreakable::pSpawnObjects[] =
 	//YELLOWSHIFT BEGIN
 	"weapon_saw",		// 22
 	"weapon_deagle",	// 23
+	"weapon_doublebarrel", // 24
 
 	//YELLOWSHIFT END
 };

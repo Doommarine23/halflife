@@ -197,16 +197,12 @@ void CDoubleBarrel::PrimaryAttack()
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	if (m_iClip != 0)
-		m_flPumpTime = gpGlobals->time + 0.5;
-
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.75);
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.75;
 	if (m_iClip != 0)
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 5.0;
 	else
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.75;
-	m_fInSpecialReload = 0;
 }
 
 
@@ -272,9 +268,6 @@ void CDoubleBarrel::SecondaryAttack( void )
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	if (m_iClip != 0)
-		m_flPumpTime = gpGlobals->time + 0.95;
-
 	m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
 	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.5;
 	if (m_iClip != 0)
@@ -282,55 +275,23 @@ void CDoubleBarrel::SecondaryAttack( void )
 	else
 		m_flTimeWeaponIdle = 1.5;
 
-	m_fInSpecialReload = 0;
-
 }
-
-// Rewrite this entire section.
 
 void CDoubleBarrel::Reload( void )
 {
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == DOUBLEBARREL_MAX_CLIP)
-		return;
+	if ( m_pPlayer->ammo_buckshot <= 0 )
+		 return;
 
-	// don't reload until recoil is done
-	if (m_flNextPrimaryAttack > UTIL_WeaponTimeBase())
-		return;
+	int iResult;
 
-	// check to see if we're ready to reload
-	if (m_fInSpecialReload == 0)
-	{
-		SendWeaponAnim( DOUBLEBARREL_START_RELOAD );
-		m_fInSpecialReload = 1;
-		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.6;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.6;
-		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
-		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.0;
-		return;
-	}
-	else if (m_fInSpecialReload == 1)
-	{
-		if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase())
-			return;
-		// was waiting for gun to move to side
-		m_fInSpecialReload = 2;
-	switch(RANDOM_LONG(0,2))
-	{//YELLOWSHIFT The reload2.wav sound was unused, this is now corrected by changing the Random_LONG from IF to Switch
-	case 0:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload1.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
-	case 1:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload2.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
-	case 2:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload3.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
-	}
-		SendWeaponAnim( DOUBLEBARREL_RELOAD );
-
-		m_flNextReload = UTIL_WeaponTimeBase() + 0.5;
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
-	}
+	if (m_iClip == 0)
+		iResult = DefaultReload( 2, DOUBLEBARREL_RELOAD, 1.5 );
 	else
+		iResult = DefaultReload( 2, DOUBLEBARREL_RELOAD, 1.5 );
+
+	if (iResult)
 	{
-		// Add them to the clip
-		m_iClip += 1;
-		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= 1;
-		m_fInSpecialReload = 1;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 	}
 }
 
@@ -341,41 +302,8 @@ void CDoubleBarrel::WeaponIdle( void )
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 
-	
-
-	if ( m_flPumpTime && m_flPumpTime < gpGlobals->time )
-	{
-		//YELLOWSHIFT Now called on the QC and uses edited sounds due to new animation timing. PumpTime for Reload is currently untouched.
-		// play pumping sound
-		//EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0,0x1f));
-		m_flPumpTime = 0;
-	}
-
-	if (m_flTimeWeaponIdle <  UTIL_WeaponTimeBase() )
-	{
-		if (m_iClip == 0 && m_fInSpecialReload == 0 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
-		{
-			Reload( );
-		}
-		else if (m_fInSpecialReload != 0)
-		{
-			if (m_iClip != 8 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
-			{
-				Reload( );
-			}
-			else
-			{
-				// reload debounce has timed out
-				SendWeaponAnim( DOUBLEBARREL_PUMP );
-				
-				// play cocking sound
-				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0,0x1f));
-				m_fInSpecialReload = 0;
-				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
-			}
-		}
-		else
-		{
+	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+		return;
 			int iAnim;
 			float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 			if (flRand <= 0.8)
@@ -395,6 +323,3 @@ void CDoubleBarrel::WeaponIdle( void )
 			}
 			SendWeaponAnim( iAnim );
 		}
-	}
-};
-

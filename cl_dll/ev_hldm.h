@@ -139,6 +139,18 @@ enum doublebarrel_e {
 	DOUBLEBARREL_IDLE_DEEP
 };
 
+
+enum m40a1_e {
+	M40A1_IDLE1 = 0,
+	M40A1_FIDGET,
+	M40A1_FIRE1,
+	M40A1_RELOAD,
+	M40A1_HOLSTER,
+	M40A1_DRAW,
+	M40A1_IDLE2,
+	M40A1_IDLE3,
+};
+
 void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName );
 void EV_HLDM_DecalGunshot( pmtrace_t *pTrace, int iBulletType );
 int EV_HLDM_CheckTracer( int idx, float *vecSrc, float *end, float *forward, float *right, int iBulletType, int iTracerFreq, int *tracerCount );

@@ -355,6 +355,10 @@ void W_Precache(void)
 	UTIL_PrecacheOtherWeapon( "weapon_deagle" );
 	UTIL_PrecacheOther( "ammo_deagle" );
 
+	//M40A1
+	UTIL_PrecacheOtherWeapon("weapon_m40a1" );
+//	UTIL_PrecacheOther( "ammo_m40a1" ); Not coded in yet
+
 	//DOUBLE BARREL
 	UTIL_PrecacheOtherWeapon( "weapon_doublebarrel" );
 	//UTIL_PrecacheOther( "ammo_buckshot" ); // Probably don't need this

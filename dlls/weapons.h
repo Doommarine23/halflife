@@ -84,6 +84,7 @@ public:
 #define WEAPON_SAW				16 
 #define WEAPON_DEAGLE			17
 #define WEAPON_DOUBLEBARREL		18
+#define WEAPON_M40A1			19
 
 //YELLOWSHIFT END
 
@@ -113,7 +114,9 @@ public:
 #define SATCHEL_WEIGHT		-10
 #define TRIPMINE_WEIGHT		-10
 
-#define SAW_WEIGHT 20 //YELLOWSHIFT
+//YELLOWSHIFT
+#define SAW_WEIGHT 20 
+#define M40A1_WEIGHT 20
 
 
 // weapon clip/carry ammo capacities
@@ -129,6 +132,9 @@ public:
 #define SNARK_MAX_CARRY			15
 #define HORNET_MAX_CARRY		8
 #define M203_GRENADE_MAX_CARRY	10
+
+//YELLOWSHIFT
+#define M40A1_MAX_CARRY			25
 #define	SAW_MAX_CARRY			200
 
 // the maximum amount of ammo each weapon's clip can hold
@@ -154,11 +160,14 @@ public:
 #define SAW_MAX_CLIP			100
 #define SAW_DEFAULT_AMMO		50
 
+#define M40A1_MAX_CLIP			5
+#define M40A1_DEFAULT_AMMO		5
+
 #define DEAGLE_MAX_CLIP			9
 #define	DEAGLE_DEFAULT_AMMO		4
 
 #define DOUBLEBARREL_MAX_CLIP	2
-#define DOUBLEBARREL_DEFAULT_AMMO 16
+#define DOUBLEBARREL_DEFAULT_AMMO 8
 //YELLOWSHIFT END
 
 
@@ -183,6 +192,7 @@ public:
 #define SAW_DEFAULT_GIVE 50
 #define DEAGLE_DEFAULT_GIVE 4
 #define DOUBLEBARREL_DEFAULT_GIVE 16
+#define M40A1_DEFAULT_GIVE	5
 
 //YELLOWSHIFT END
 
@@ -1147,6 +1157,36 @@ private:
 	unsigned short m_usDoubleFire;
 	unsigned short m_usSingleFire;
 };
+
+class CM40A1 : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 2; }
+	int GetItemInfo(ItemInfo *p);
+	int AddToPlayer( CBasePlayer *pPlayer );
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	BOOL Deploy( void );
+	void Holster( int skiplocal = 0 );
+	void Reload( void );
+	void WeaponIdle( void );
+	BOOL m_fInZoom;// don't save this. 
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	unsigned short m_usFirePython;
+};
+
 
 // END YELLOWSHIFT
 

@@ -30,38 +30,38 @@ OP4 M40A1 */
 
 
 
-enum python_e {
-	PYTHON_IDLE1 = 0,
-	PYTHON_FIDGET,
-	PYTHON_FIRE1,
-	PYTHON_RELOAD,
-	PYTHON_HOLSTER,
-	PYTHON_DRAW,
-	PYTHON_IDLE2,
-	PYTHON_IDLE3,
+enum m40a1_e {
+	M40A1_IDLE1 = 0,
+	M40A1_FIDGET,
+	M40A1_FIRE1,
+	M40A1_RELOAD,
+	M40A1_HOLSTER,
+	M40A1_DRAW,
+	M40A1_IDLE2,
+	M40A1_IDLE3,
 };
 
-LINK_ENTITY_TO_CLASS( weapon_python, CPython );
-LINK_ENTITY_TO_CLASS( weapon_357, CPython );
+LINK_ENTITY_TO_CLASS( weapon_sniperrifle, CM40A1);
+LINK_ENTITY_TO_CLASS( weapon_m40a1, CM40A1 );
 
-int CPython::GetItemInfo(ItemInfo *p)
+int CM40A1::GetItemInfo(ItemInfo *p)
 {
 	p->pszName = STRING(pev->classname);
 	p->pszAmmo1 = "357";
-	p->iMaxAmmo1 = _357_MAX_CARRY;
+	p->iMaxAmmo1 = M40A1_MAX_CARRY;
 	p->pszAmmo2 = NULL;
 	p->iMaxAmmo2 = -1;
-	p->iMaxClip = PYTHON_MAX_CLIP;
+	p->iMaxClip = M40A1_MAX_CLIP;
 	p->iFlags = 0;
-	p->iSlot = 1;
+	p->iSlot = 5;
 	p->iPosition = 1;
-	p->iId = m_iId = WEAPON_PYTHON;
-	p->iWeight = PYTHON_WEIGHT;
+	p->iId = m_iId = WEAPON_M40A1;
+	p->iWeight = M40A1_WEIGHT;
 
 	return 1;
 }
 
-int CPython::AddToPlayer( CBasePlayer *pPlayer )
+int CM40A1::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
@@ -73,22 +73,22 @@ int CPython::AddToPlayer( CBasePlayer *pPlayer )
 	return FALSE;
 }
 
-void CPython::Spawn( )
+void CM40A1::Spawn( )
 {
-	pev->classname = MAKE_STRING("weapon_357"); // hack to allow for old names
+	pev->classname = MAKE_STRING("weapon_m40a1"); // hack to allow for old names
 	Precache( );
-	m_iId = WEAPON_PYTHON;
+	m_iId = WEAPON_M40A1;
 	SET_MODEL(ENT(pev), "models/w_357.mdl");
 
-	m_iDefaultAmmo = PYTHON_DEFAULT_GIVE;
+	m_iDefaultAmmo = M40A1_DEFAULT_GIVE;
 
 	FallInit();// get ready to fall down.
 }
 
 
-void CPython::Precache( void )
+void CM40A1::Precache( void )
 {
-	PRECACHE_MODEL("models/v_357.mdl");
+	PRECACHE_MODEL("models/v_m40a1.mdl");
 	PRECACHE_MODEL("models/w_357.mdl");
 	PRECACHE_MODEL("models/p_357.mdl");
 
@@ -107,27 +107,13 @@ void CPython::Precache( void )
 	m_usFirePython = PRECACHE_EVENT( 1, "events/python.sc" );
 }
 
-BOOL CPython::Deploy( )
+BOOL CM40A1::Deploy( )
 {
-#ifdef CLIENT_DLL
-	if ( bIsMultiplayer() )
-#else
-	if ( g_pGameRules->IsMultiplayer() )
-#endif
-	{
-		// enable laser sight geometry.
-		pev->body = 1;
-	}
-	else
-	{
-		pev->body = 0;
-	}
-
-	return DefaultDeploy( "models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW, "python", UseDecrement(), pev->body );
+	return DefaultDeploy( "models/v_m40a1.mdl", "models/p_357.mdl", M40A1_DRAW, "m40a1" );
 }
 
 
-void CPython::Holster( int skiplocal /* = 0 */ )
+void CM40A1::Holster( int skiplocal /* = 0 */ )
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
@@ -138,20 +124,11 @@ void CPython::Holster( int skiplocal /* = 0 */ )
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-	SendWeaponAnim( PYTHON_HOLSTER );
+	SendWeaponAnim( M40A1_HOLSTER );
 }
 
-void CPython::SecondaryAttack( void )
+void CM40A1::SecondaryAttack( void )
 {
-#ifdef CLIENT_DLL
-	if ( !bIsMultiplayer() )
-#else
-	if ( !g_pGameRules->IsMultiplayer() )
-#endif
-	{
-		return;
-	}
-
 	if ( m_pPlayer->pev->fov != 0 )
 	{
 		m_fInZoom = FALSE;
@@ -166,7 +143,7 @@ void CPython::SecondaryAttack( void )
 	m_flNextSecondaryAttack = 0.5;
 }
 
-void CPython::PrimaryAttack()
+void CM40A1::PrimaryAttack()
 {
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3)
@@ -227,7 +204,7 @@ void CPython::PrimaryAttack()
 }
 
 
-void CPython::Reload( void )
+void CM40A1::Reload( void )
 {
 	if ( m_pPlayer->ammo_357 <= 0 )
 		return;
@@ -246,11 +223,11 @@ void CPython::Reload( void )
 #endif
 	//EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
 	//EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
-	DefaultReload( 6, PYTHON_RELOAD, 2.0, bUseScope );
+	DefaultReload( 6, M40A1_RELOAD, 2.0, bUseScope );
 }
 
 
-void CPython::WeaponIdle( void )
+void CM40A1::WeaponIdle( void )
 {
 	ResetEmptySound( );
 
@@ -263,60 +240,26 @@ void CPython::WeaponIdle( void )
 	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 	if (flRand <= 0.5)
 	{
-		iAnim = PYTHON_IDLE1;
+		iAnim = M40A1_IDLE1;
 		m_flTimeWeaponIdle = (70.0/30.0);
 	}
 	else if (flRand <= 0.7)
 	{
-		iAnim = PYTHON_IDLE2;
+		iAnim = M40A1_IDLE2;
 		m_flTimeWeaponIdle = (60.0/30.0);
 	}
 	else if (flRand <= 0.9)
 	{
-		iAnim = PYTHON_IDLE3;
+		iAnim = M40A1_IDLE3;
 		m_flTimeWeaponIdle = (88.0/30.0);
 	}
 	else
 	{
-		iAnim = PYTHON_FIDGET;
+		iAnim = M40A1_FIDGET;
 		m_flTimeWeaponIdle = (170.0/30.0);
 	}
 	
 	int bUseScope = FALSE;
-#ifdef CLIENT_DLL
-	bUseScope = bIsMultiplayer();
-#else
-	bUseScope = g_pGameRules->IsMultiplayer();
-#endif
-	
 	SendWeaponAnim( iAnim, UseDecrement() ? 1 : 0, bUseScope );
 }
-
-
-class CPythonAmmo : public CBasePlayerAmmo
-{
-	void Spawn( void )
-	{ 
-		Precache( );
-		SET_MODEL(ENT(pev), "models/w_357ammobox.mdl");
-		CBasePlayerAmmo::Spawn( );
-	}
-	void Precache( void )
-	{
-		PRECACHE_MODEL ("models/w_357ammobox.mdl");
-		PRECACHE_SOUND("items/9mmclip1.wav");
-	}
-	BOOL AddAmmo( CBaseEntity *pOther ) 
-	{ 
-		if (pOther->GiveAmmo( AMMO_357BOX_GIVE, "357", _357_MAX_CARRY ) != -1)
-		{
-			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
-			return TRUE;
-		}
-		return FALSE;
-	}
-};
-LINK_ENTITY_TO_CLASS( ammo_357, CPythonAmmo );
-
-
 #endif

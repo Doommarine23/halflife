@@ -480,62 +480,47 @@ void EV_FireDeagle( event_args_t *args )
 	vec3_t angles;
 	vec3_t velocity;
 	int empty;
-	empty = args->bparam1;
 
 	vec3_t ShellVelocity;
 	vec3_t ShellOrigin;
-
+	int shell;
 	vec3_t vecSrc, vecAiming;
 	vec3_t up, right, forward;
-	float flSpread = 0.01;
-
+	
 	idx = args->entindex;
 	VectorCopy( args->origin, origin );
 	VectorCopy( args->angles, angles );
 	VectorCopy( args->velocity, velocity );
-	
-	int shell;
-	
-	shell = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/shell.mdl");// brass shell
 
+	empty = args->bparam1;
 	AngleVectors( angles, forward, right, up );
+
+	shell = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/shell.mdl");// brass shell
 
 	if ( EV_IsLocal( idx ) )
 	{
-		// Add muzzle flash to current weapon model
-		EV_MuzzleFlash();
+		EV_MuzzleFlash(); //+ gEngfuncs.pfnRandomLong(0,2), 2 random firing animations later
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? DEAGLE_SHOOTEMPTY : DEAGLE_SHOOT, 2 );
+		V_PunchAxis( 0, -2.0 );
+	}
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 
-		V_PunchAxis( 0, -3.2 );
-	}
-
-	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
-	{
-	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
-		break;
-	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
-		break;
-	case 2:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
-		break;
-	}
+	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/desert_eagle_fire.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
 
 	EV_GetGunPosition( args, vecSrc, origin );
+
 	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
 	EV_HLDM_MuzzleFlash( vecSrc, 1.6 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
-
 
 	
 	VectorCopy( forward, vecAiming );
 
-	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, 0, args->fparam1, args->fparam2 );
+	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_9MM, 0, 0, args->fparam1, args->fparam2 );
 }
+
 //======================
 //	    DEAGLE END 
 //	     ( .357 )
@@ -1012,8 +997,11 @@ void EV_FireMP5( event_args_t *args )
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( MP5_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
 
+		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work. Float does. Just a tip ;)
 		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -2, 2 ) );
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.5, 0.5 ) ); // X Axis
 	}
+
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
 
@@ -1099,7 +1087,7 @@ void EV_FirePython( event_args_t *args )
 	VectorCopy( args->origin, origin );
 	VectorCopy( args->angles, angles );
 	VectorCopy( args->velocity, velocity );
-
+	
 	AngleVectors( angles, forward, right, up );
 
 	if ( EV_IsLocal( idx ) )
@@ -1111,19 +1099,18 @@ void EV_FirePython( event_args_t *args )
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( PYTHON_FIRE1, multiplayer ? 1 : 0 );
 
-		V_PunchAxis( 0, -10.0 );
+		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work. Float does. Just a tip ;)
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -7.5, -10 ) ); // Y Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -1.5, 3 ) ); // X Axis
 	}
 
-	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
+	switch( gEngfuncs.pfnRandomLong( 0, 1 ) )
 	{
 	case 0:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/357_shot1.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
 		break;
 	case 1:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/357_shot2.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
-		break;
-	case 2:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/357_shot3.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
 		break;
 	}
 

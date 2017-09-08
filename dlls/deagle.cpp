@@ -37,12 +37,12 @@ enum deagle_e {
 	DEAGLE_IDLE3,
 	DEAGLE_IDLE4,
 	DEAGLE_IDLE5,
-	DEAGLE_FIRE1,
-	DEAGLE_FIREEMPTY,
+	DEAGLE_SHOOT,
+	DEAGLE_SHOOTEMPTY,
 	DEAGLE_RELOADEMPTY,
 	DEAGLE_RELOAD,
 	DEAGLE_DRAW,
-	DEAGLE_HOLSTER,
+	DEAGLE_HOLSTER
 };
 
 LINK_ENTITY_TO_CLASS( weapon_deagle, CDeagle );
@@ -207,7 +207,6 @@ void CDeagle::PrimaryAttack()
 #else
 	flags = 0;
 #endif
-
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireDeagle, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)

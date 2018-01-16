@@ -442,6 +442,13 @@ void COtis :: SetYawSpeed ( void )
 //=========================================================
 BOOL COtis :: CheckRangeAttack1 ( float flDot, float flDist )
 {
+
+	if (GetBodygroup( GUN_GROUP ) == GUN_GROUP_GUNGONE)
+	{
+	return FALSE;
+	}
+
+
 	if ( flDist <= 1024 && flDot >= 0.5 )
 	{
 		if ( gpGlobals->time > m_checkAttackTime )
@@ -503,6 +510,24 @@ void COtis :: OtisFirePistol ( void )
 	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "otis/ot_attack1.wav", 1, ATTN_NORM, 0, 100  );
 
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, 384, 0.3 );
+
+	//TESTING 
+
+		
+	if (GetBodygroup( GUN_GROUP ) != GUN_GROUP_GUNGONE)
+	{	// drop the gun!
+		Vector vecGunPos;
+		Vector vecGunAngles;
+
+		SetBodygroup( GUN_GROUP, GUN_GROUP_GUNGONE );
+		//pev->body = OTIS_BODY_GUNGONE;
+
+		GetAttachment( 0, vecGunPos, vecGunAngles );
+		//PLACEHOLDER
+		CBaseEntity *pGun = DropItem( "weapon_deagle", vecGunPos, vecGunAngles );
+	}
+
+
 
 	// UNDONE: Reload?
 	// DONE: Reload!

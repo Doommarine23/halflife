@@ -997,7 +997,7 @@ void EV_FireMP5( event_args_t *args )
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( MP5_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
 
-		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work. Float does. Just a tip ;)
+		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work, use RandomFloat if you get the same idea.
 		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -2, 2 ) );
 		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.5, 0.5 ) ); // X Axis
 	}

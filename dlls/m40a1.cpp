@@ -53,8 +53,8 @@ int CM40A1::GetItemInfo(ItemInfo *p)
 	p->iMaxAmmo2 = -1;
 	p->iMaxClip = M40A1_MAX_CLIP;
 	p->iFlags = 0;
-	p->iSlot = 5;
-	p->iPosition = 1;
+	p->iSlot = 2;
+	p->iPosition = 4;
 	p->iId = m_iId = WEAPON_M40A1;
 	p->iWeight = M40A1_WEIGHT;
 

@@ -112,8 +112,8 @@ int CSAW::GetItemInfo(ItemInfo *p)
 	p->pszAmmo1 = "9mm";
 	p->iMaxAmmo1 = SAW_MAX_CARRY;
 	p->iMaxClip = SAW_MAX_CLIP;
-	p->iSlot = 5;
-	p->iPosition = 0; 
+	p->iSlot = 2;
+	p->iPosition = 3; 
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_SAW;
 	p->iWeight = SAW_WEIGHT;

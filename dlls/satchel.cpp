@@ -13,7 +13,7 @@
 *
 ****/
 
-//YELLOW-SHIFT You can pick up satchels now, check ggrenade.cpp for more detail.
+//YELLOWSHIFT You can pick up satchels now, check ggrenade.cpp for more detail.
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 
 #include "extdll.h"
@@ -81,7 +81,7 @@ void CSatchelCharge :: Spawn( void )
 	UTIL_SetOrigin( pev, pev->origin );
 
 	SetTouch( &CSatchelCharge::SatchelSlide );
-	SetUse( &CSatchelCharge::DetonateUse ); // YELLOW-SHIFT this function has been modified for picking up satchels
+	SetUse( &CSatchelCharge::DetonateUse ); // YELLOWSHIFT this function has been modified for picking up satchels
 	SetThink( &CSatchelCharge::SatchelThink );
 	pev->nextthink = gpGlobals->time + 0.1;
 

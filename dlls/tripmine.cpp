@@ -108,7 +108,7 @@ void CTripmineGrenade :: Spawn( void )
 	pev->sequence = TRIPMINE_WORLD;
 	ResetSequenceInfo( );
 	pev->framerate = 0;
-	SetUse( &CTripmineGrenade::PlayerUse ); // YELLOW-SHIFT allows you to press use on Tripmine objects
+	SetUse( &CTripmineGrenade::PlayerUse ); // YELLOWSHIFT allows you to press use on Tripmine objects
 	
 	UTIL_SetSize(pev, Vector( -8, -8, -8), Vector(8, 8, 8));
 	UTIL_SetOrigin( pev, pev->origin );
@@ -167,13 +167,14 @@ void CTripmineGrenade :: WarningThink( void  )
 }
 
 
-//YELLOW-SHIFT You can pickup Tripmines
+//YELLOWSHIFT You can pickup Tripmines
 void CTripmineGrenade :: PlayerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value  ) 
 {
 		STOP_SOUND( ENT(pev), CHAN_VOICE, "weapons/mine_deploy.wav" );
 		STOP_SOUND( ENT(pev), CHAN_BODY, "weapons/mine_charge.wav" );
 		KillBeam();
-		CBaseEntity *pGun = DropItem( "weapon_tripmine", pev->origin, pev->angles );
+		CBaseEntity *pMine = Create( "weapon_tripmine", pev->origin + m_vecDir * 24, pev->angles );
+		//CBaseEntity *pGun = DropItem( "weapon_tripmine", pev->origin, pev->angles );
 		UTIL_Remove( this );
 		return;
 

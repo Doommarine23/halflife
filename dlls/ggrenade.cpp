@@ -179,6 +179,8 @@ void CGrenade::DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 
 }
 
+
+
 void CGrenade::PreDetonate( void )
 {
 	CSoundEnt::InsertSound ( bits_SOUND_DANGER, pev->origin, 400, 0.3 );
@@ -402,6 +404,14 @@ CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector v
 }
 
 
+void CGrenade:: BounceKick( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
+{
+	this->pev->velocity = Vector( 500, 500, 50 );
+	this->pev->angles = UTIL_VecToAngles(this->pev->velocity);
+	return;
+
+}
+
 CGrenade * CGrenade:: ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity, float time )
 {
 	CGrenade *pGrenade = GetClassPtr( (CGrenade *)NULL );
@@ -410,13 +420,11 @@ CGrenade * CGrenade:: ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector v
 	pGrenade->pev->velocity = vecVelocity;
 	pGrenade->pev->angles = UTIL_VecToAngles(pGrenade->pev->velocity);
 	pGrenade->pev->owner = ENT(pevOwner);
-	
+	pGrenade->SetUse( &CGrenade::BounceKick ); // YELLOWSHIFT Let players kick grenades away.
 	pGrenade->SetTouch( &CGrenade::BounceTouch );	// Bounce if touched
-	
 	// Take one second off of the desired detonation time and set the think to PreDetonate. PreDetonate
 	// will insert a DANGER sound into the world sound list and delay detonation for one second so that 
 	// the grenade explodes after the exact amount of time specified in the call to ShootTimed(). 
-
 	pGrenade->pev->dmgtime = gpGlobals->time + time;
 	pGrenade->SetThink( &CGrenade::TumbleThink );
 	pGrenade->pev->nextthink = gpGlobals->time + 0.1;

@@ -34,11 +34,10 @@ public:
 	static CGrenade *ShootContact( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
 	static CGrenade *ShootSatchelCharge( entvars_t *pevOwner, Vector vecStart, Vector vecVelocity );
 	static void UseSatchelCharges( entvars_t *pevOwner, SATCHELCODE code );
-
 	void Explode( Vector vecSrc, Vector vecAim );
 	void Explode( TraceResult *pTrace, int bitsDamageType );
 	void EXPORT Smoke( void );
-
+	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() |FCAP_IMPULSE_USE; }
 	void EXPORT BounceTouch( CBaseEntity *pOther );
 	void EXPORT SlideTouch( CBaseEntity *pOther );
 	void EXPORT ExplodeTouch( CBaseEntity *pOther );
@@ -46,8 +45,8 @@ public:
 	void EXPORT PreDetonate( void );
 	void EXPORT Detonate( void );
 	void EXPORT DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT BounceKick( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT TumbleThink( void );
-
 
 	virtual void BounceSound( void );
 	virtual int	BloodColor( void ) { return DONT_BLEED; }
@@ -951,7 +950,6 @@ public:
 	BOOL CanHolster( void );
 	void Holster( int skiplocal = 0 );
 	void WeaponIdle( void );
-	
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )

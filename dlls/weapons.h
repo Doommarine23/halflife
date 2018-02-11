@@ -1017,7 +1017,7 @@ public:
 	BOOL Deploy( void );
 	void Holster( int skiplocal = 0 );
 	void WeaponIdle( void );
-
+	void PlayerUse( void ); //YELLOW-SHIFT new function for picking up tripmines
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )

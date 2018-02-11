@@ -54,10 +54,12 @@ class CTripmineGrenade : public CGrenade
 	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
 	
 	void EXPORT WarningThink( void );
+	void EXPORT PlayerUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 	void EXPORT PowerupThink( void );
 	void EXPORT BeamBreakThink( void );
 	void EXPORT DelayDeathThink( void );
 	void Killed( entvars_t *pevAttacker, int iGib );
+	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() |FCAP_IMPULSE_USE; } //YELLOWSHIFT ObjectCaps and Use are used for picking up Tripmines
 
 	void MakeBeam( void );
 	void KillBeam( void );
@@ -72,6 +74,7 @@ class CTripmineGrenade : public CGrenade
 	Vector		m_posOwner;
 	Vector		m_angleOwner;
 	edict_t		*m_pRealOwner;// tracelines don't hit PEV->OWNER, which means a player couldn't detonate his own trip mine, so we store the owner here.
+
 };
 
 LINK_ENTITY_TO_CLASS( monster_tripmine, CTripmineGrenade );
@@ -105,6 +108,7 @@ void CTripmineGrenade :: Spawn( void )
 	pev->sequence = TRIPMINE_WORLD;
 	ResetSequenceInfo( );
 	pev->framerate = 0;
+	SetUse( &CTripmineGrenade::PlayerUse ); // YELLOW-SHIFT allows you to press use on Tripmine objects
 	
 	UTIL_SetSize(pev, Vector( -8, -8, -8), Vector(8, 8, 8));
 	UTIL_SetOrigin( pev, pev->origin );
@@ -162,6 +166,18 @@ void CTripmineGrenade :: WarningThink( void  )
 	pev->nextthink = gpGlobals->time + 1.0;
 }
 
+
+//YELLOW-SHIFT You can pickup Tripmines
+void CTripmineGrenade :: PlayerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value  ) 
+{
+		STOP_SOUND( ENT(pev), CHAN_VOICE, "weapons/mine_deploy.wav" );
+		STOP_SOUND( ENT(pev), CHAN_BODY, "weapons/mine_charge.wav" );
+		KillBeam();
+		CBaseEntity *pGun = DropItem( "weapon_tripmine", pev->origin, pev->angles );
+		UTIL_Remove( this );
+		return;
+
+}
 
 void CTripmineGrenade :: PowerupThink( void  )
 {

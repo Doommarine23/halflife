@@ -250,8 +250,8 @@ void CHAssassin :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		break;
 	case ASSASSIN_AE_TOSS1:
 		{
-			UTIL_MakeVectors( pev->angles );
-			CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 2.0 );
+			UTIL_MakeVectors( pev->angles ); // YELLOWSHIFT time was 2.0 changed to 3.0 to give players additional second to kick grenades back
+			CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 34 + Vector (0, 0, 32), m_vecTossVelocity, 3.0 );
 
 			m_flNextGrenadeCheck = gpGlobals->time + 6;// wait six seconds before even looking again to see if a grenade can be thrown.
 			m_fThrowGrenade = FALSE;

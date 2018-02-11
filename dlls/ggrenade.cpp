@@ -403,7 +403,7 @@ CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector v
 	return pGrenade;
 }
 
-
+//YELLOWSHIFT Used for kicking handgrenades away from the player.
 void CGrenade:: BounceKick( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	this->pev->velocity = Vector( 500, 500, 50 );
@@ -422,6 +422,7 @@ CGrenade * CGrenade:: ShootTimed( entvars_t *pevOwner, Vector vecStart, Vector v
 	pGrenade->pev->owner = ENT(pevOwner);
 	pGrenade->SetUse( &CGrenade::BounceKick ); // YELLOWSHIFT Let players kick grenades away.
 	pGrenade->SetTouch( &CGrenade::BounceTouch );	// Bounce if touched
+
 	// Take one second off of the desired detonation time and set the think to PreDetonate. PreDetonate
 	// will insert a DANGER sound into the world sound list and delay detonation for one second so that 
 	// the grenade explodes after the exact amount of time specified in the call to ShootTimed(). 

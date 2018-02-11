@@ -37,7 +37,7 @@ public:
 	void Explode( Vector vecSrc, Vector vecAim );
 	void Explode( TraceResult *pTrace, int bitsDamageType );
 	void EXPORT Smoke( void );
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() |FCAP_IMPULSE_USE; }
+	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() |FCAP_IMPULSE_USE; } //YELLOWSHIFT used for kicking HandGrenades
 	void EXPORT BounceTouch( CBaseEntity *pOther );
 	void EXPORT SlideTouch( CBaseEntity *pOther );
 	void EXPORT ExplodeTouch( CBaseEntity *pOther );

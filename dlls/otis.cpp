@@ -92,6 +92,7 @@ public:
 	void OtisFirePistol( void );
 	void AlertSound( void );
 	int  Classify ( void );
+	int IgnoreConditions ( void );
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
 	int	 m_iBrassShell; // YELLOWSHIFT used for ejecting shells
 	int	 m_iEmptyMag; //YELLOWSHIFT unused until later. Will eject out empty magazines on reload
@@ -134,6 +135,7 @@ public:
 	int	    m_GriefTime; //timer used for mourning dead allies
 	int		m_PlayerGrief; //We already mourned the player, time to stand up.
 	float	m_forgiveplayertime; //timer used for forgiving player for friendly fire by suspicious monsters.
+	float	m_flLastHurtTime;// yoinked from Bullsquid, keep track of when last hurt.
 
 	CUSTOM_SCHEDULES;
 };
@@ -142,6 +144,7 @@ enum // YELLOWSHIFT For Reload
 {
 
 SCHED_OTIS_RELOAD = LAST_TALKMONSTER_SCHEDULE + 1,
+SCHED_OTIS_GRAB_WEAPON,
 SCHED_OTIS_MOURN_PLAYER,
 LAST_OTIS_SCHEDULE,
 
@@ -159,6 +162,7 @@ TYPEDESCRIPTION	COtis::m_SaveData[] =
 	DEFINE_FIELD( COtis, m_checkAttackTime, FIELD_TIME ),
 	DEFINE_FIELD( COtis, m_lastAttackCheck, FIELD_BOOLEAN ),
 	DEFINE_FIELD( COtis, m_flPlayerDamage, FIELD_FLOAT ),
+	DEFINE_FIELD( COtis, m_flLastHurtTime, FIELD_TIME ),
 };
 
 IMPLEMENT_SAVERESTORE( COtis, CTalkMonster );
@@ -261,7 +265,9 @@ Schedule_t	slIdleOtStand[] =
 		bits_SOUND_DANGER		|
 		bits_SOUND_MEAT			|// scents
 		bits_SOUND_CARCASS		|
-		bits_SOUND_GARBAGE,
+		bits_SOUND_GARBAGE		|
+		bits_SOUND_WEAPON,
+		
 		"IdleStand"
 	},
 };
@@ -289,6 +295,7 @@ Schedule_t slOtisReload[] =
 		bits_COND_HEAVY_DAMAGE	|
 		bits_COND_HEAR_SOUND,
 		bits_SOUND_DANGER,
+
 		"OtisReload"
 	}
 };
@@ -318,6 +325,18 @@ Schedule_t slOtisMournPlayer[] =
 	}
 };
 
+Schedule_t slOtisGrabWeapon[] = 
+{
+	{
+		tlOtisMournPlayer,
+		ARRAYSIZE ( tlOtisMournPlayer ),
+		bits_COND_HEAVY_DAMAGE	|
+		bits_COND_HEAR_SOUND,
+		bits_SOUND_DANGER,
+		"OtisGrabWeapon"
+	}
+};
+
 
 
 DEFINE_CUSTOM_SCHEDULES( COtis )
@@ -330,6 +349,7 @@ DEFINE_CUSTOM_SCHEDULES( COtis )
 	//YELLOWSHIFT
 	slOtisReload,
 	slOtisMournPlayer,
+	slOtisGrabWeapon,
 };
 
 
@@ -438,14 +458,32 @@ void COtis :: SetYawSpeed ( void )
 
 
 //=========================================================
+// IgnoreConditions 
+//=========================================================
+int COtis::IgnoreConditions ( void )
+{
+	int iIgnore = CBaseMonster::IgnoreConditions();
+
+	if ( gpGlobals->time - m_flLastHurtTime <= 1 )
+	{
+		// haven't been hurt in 20 seconds, so lets pick up a new gun
+		iIgnore = bits_COND_SMELL | bits_COND_SMELL_FOOD;
+	}
+
+	return iIgnore;
+}
+
+
+//=========================================================
 // CheckRangeAttack1
 //=========================================================
 BOOL COtis :: CheckRangeAttack1 ( float flDot, float flDist )
 {
-
+	//Testing for AI dropping weapons
 	if (GetBodygroup( GUN_GROUP ) == GUN_GROUP_GUNGONE)
 	{
-	return FALSE;
+	m_lastAttackCheck = FALSE;
+	m_checkAttackTime = gpGlobals->time + 43.5;
 	}
 
 
@@ -497,16 +535,17 @@ void COtis :: OtisFirePistol ( void )
 	//HACK HACK, shoots 4 bullets until I make a new damage type.
 	FireBullets(4, vecShootOrigin, vecShootDir, VECTOR_CONE_2DEGREES, 1024, BULLET_MONSTER_9MM );
 	
-	/*
-	Doesn't sound good with this gunshot, will test again later.
 	
-	int pitchShift = RANDOM_LONG( 0, 40 );
+	//Doesn't sound good with this gunshot, will test again later.
+	//TESTING NOW LOL 
+	
+	int pitchShift = RANDOM_LONG( 0, 20 );
 
 	// Only shift about half the time
 	if ( pitchShift > 10 )
 		pitchShift = 0;
 	else
-		pitchShift -= 5;*/															//+ pitchShift
+		pitchShift -= 5;															//+ pitchShift
 	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "otis/ot_attack1.wav", 1, ATTN_NORM, 0, 100  );
 
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, 384, 0.3 );
@@ -912,7 +951,10 @@ Schedule_t* COtis :: GetScheduleOfType ( int Type )
 			return &slOtisMournPlayer[ 0 ];
 		}
 
-
+	case SCHED_OTIS_GRAB_WEAPON:
+		{
+			return &slOtisGrabWeapon[ 0 ];
+		}
 	case SCHED_IDLE_STAND:
 		// call base class default so that scientist will talk
 		// when standing during idle
@@ -923,6 +965,24 @@ Schedule_t* COtis :: GetScheduleOfType ( int Type )
 			// just look straight ahead.
 			return slIdleOtStand;
 		}
+
+
+		if ( HasConditions(bits_COND_SMELL_FOOD) )
+		{
+			CSound		*pSound;
+
+			pSound = PBestScent();
+				
+			if ( pSound && (!FInViewCone ( &pSound->m_vecOrigin ) || !FVisible ( pSound->m_vecOrigin )) )
+			{
+			// "scent" of weapon is behind or occluded, so just give up.
+			return psched;
+			}
+
+			// weapon is visible, go grab it!
+			return GetScheduleOfType( SCHED_OTIS_GRAB_WEAPON );
+		}
+
 		else
 			return psched;	
 	}

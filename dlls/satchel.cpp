@@ -12,6 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
+
+//YELLOW-SHIFT You can pick up satchels now, check ggrenade.cpp for more detail.
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 
 #include "extdll.h"
@@ -22,6 +24,7 @@
 #include "nodes.h"
 #include "player.h"
 #include "gamerules.h"
+
 
 enum satchel_e {
 	SATCHEL_IDLE1 = 0,
@@ -48,7 +51,8 @@ class CSatchelCharge : public CGrenade
 
 	void EXPORT SatchelSlide( CBaseEntity *pOther );
 	void EXPORT SatchelThink( void );
-
+	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() |FCAP_IMPULSE_USE; } //YELLOWSHIFT ObjectCaps and Use are used for picking up Satchels
+	void PlayerUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 public:
 	void Deactivate( void );
 };
@@ -78,7 +82,7 @@ void CSatchelCharge :: Spawn( void )
 	UTIL_SetOrigin( pev, pev->origin );
 
 	SetTouch( &CSatchelCharge::SatchelSlide );
-	SetUse( &CSatchelCharge::DetonateUse );
+	SetUse( &CSatchelCharge::DetonateUse ); // YELLOW-SHIFT this function has been modified for picking up satchels
 	SetThink( &CSatchelCharge::SatchelThink );
 	pev->nextthink = gpGlobals->time + 0.1;
 
@@ -119,8 +123,6 @@ void CSatchelCharge::SatchelSlide( CBaseEntity *pOther )
 	}
 	StudioFrameAdvance( );
 }
-
-
 void CSatchelCharge :: SatchelThink( void )
 {
 	StudioFrameAdvance( );
@@ -326,8 +328,6 @@ void CSatchel::Holster( int skiplocal /* = 0 */ )
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 }
-
-
 
 void CSatchel::PrimaryAttack()
 {

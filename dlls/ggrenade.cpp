@@ -156,8 +156,27 @@ void CGrenade::Killed( entvars_t *pevAttacker, int iGib )
 // Timed grenade, this think is called when time runs out.
 void CGrenade::DetonateUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
+	/*
+	YELLOW-SHIFT Originally these modifications were part of the satchel.cpp.
+	But due to the way the satchel was created this seemed to be the only way to get it to work.
+	I don't think the float value is used for anything, but I can set it on the primary fire of the satchel radio, so only it can detonate, and that works fine so far!
+	Hope to god I didn't break something.
+	*/
+
+	if (value != 1)
+	{
 	SetThink( &CGrenade::Detonate );
 	pev->nextthink = gpGlobals->time;
+	}
+	
+	else
+	{
+		CBaseEntity *pGun = DropItem( "weapon_satchel", pev->origin, pev->angles );
+		UTIL_Remove( this );
+		return;
+	}
+
+
 }
 
 void CGrenade::PreDetonate( void )

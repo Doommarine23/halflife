@@ -19,7 +19,7 @@
 //=========================================================
 
 #define	MAX_WORLD_SOUNDS	64 // maximum number of sounds handled by the world at one time.
-
+							//YELLOWSHIFT Could we increase this?
 #define bits_SOUND_NONE		0
 #define	bits_SOUND_COMBAT	( 1 << 0 )// gunshots, explosions
 #define bits_SOUND_WORLD	( 1 << 1 )// door opening/closing, glass breaking
@@ -28,6 +28,7 @@
 #define bits_SOUND_MEAT		( 1 << 4 )// gib or pork chop
 #define bits_SOUND_DANGER	( 1 << 5 )// pending danger. Grenade that is about to explode, explosive barrel that is damaged, falling crate
 #define bits_SOUND_GARBAGE	( 1 << 6 )// trash cans, banana peels, old fast food bags.
+#define bits_SOUND_WEAPON	( 1 << 7 )//YELLOWSHIFT usable weapons e.g shotgun on the ground
 
 #define bits_ALL_SOUNDS 0xFFFFFFFF
 

@@ -26,7 +26,7 @@
 #define VECTOR_CONE_DM_SHOTGUN	Vector( 0.08716, 0.04362, 0.00  )// 10 degrees by 5 degrees
 #define VECTOR_CONE_DM_DOUBLESHOTGUN Vector( 0.17365, 0.04362, 0.00 ) // 20 degrees by 5 degrees
 
-//YELLOWSHIFT Additional firing animations and rename of FIRE2 to BIGFIRE to prevent conflicts.
+//YELLOWSHIFT Additional firing animations and renamed FIRE2 (double blast) to FIREBIG to prevent conflicts.
 enum shotgun_e {
 	SHOTGUN_IDLE = 0,
 	SHOTGUN_FIRE,
@@ -73,7 +73,7 @@ void CShotgun::Precache( void )
 	PRECACHE_SOUND ("weapons/sbarrel1.wav");//shotgun
 
 	PRECACHE_SOUND ("weapons/reload1.wav");	// shotgun reload
-	PRECACHE_SOUND ("weapons/reload2.wav"); // shotgun reload
+	PRECACHE_SOUND ("weapons/reload2.wav"); // YELLOWSHIFT shotgun reload
 	PRECACHE_SOUND ("weapons/reload3.wav");	// shotgun reload
 
 //	PRECACHE_SOUND ("weapons/sshell1.wav");	// shotgun reload - played on client

@@ -91,7 +91,6 @@ void CPython::Precache( void )
 //	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shellTE_MODEL
 
 	PRECACHE_SOUND ("weapons/357_reload1.wav");
-	PRECACHE_SOUND ("weapons/357_reload2.wav");
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
 	PRECACHE_SOUND ("weapons/357_shot1.wav");
 	PRECACHE_SOUND ("weapons/357_shot2.wav");

@@ -54,12 +54,12 @@ class CTripmineGrenade : public CGrenade
 	int TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, float flDamage, int bitsDamageType );
 	
 	void EXPORT WarningThink( void );
-	void EXPORT PlayerUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	void EXPORT PlayerUse ( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value ); //YELLOWSHIFT Used for picking up Tripmines
 	void EXPORT PowerupThink( void );
 	void EXPORT BeamBreakThink( void );
 	void EXPORT DelayDeathThink( void );
 	void Killed( entvars_t *pevAttacker, int iGib );
-	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() |FCAP_IMPULSE_USE; } //YELLOWSHIFT ObjectCaps and Use are used for picking up Tripmines
+	virtual int	ObjectCaps( void ) { return CBaseEntity :: ObjectCaps() |FCAP_IMPULSE_USE; } //YELLOWSHIFT ObjectCaps for picking up Tripmines
 
 	void MakeBeam( void );
 	void KillBeam( void );

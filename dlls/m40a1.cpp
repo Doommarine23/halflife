@@ -26,7 +26,15 @@
 
 /*
 
-OP4 M40A1 */
+OP4 M40A1
+
+TODO
+
+Add bolt logic, reuse shotgun pump logic
+Add empty reload logic
+Add scope view
+
+*/
 
 
 
@@ -98,11 +106,9 @@ void CM40A1::Precache( void )
 //	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shellTE_MODEL
 
 	PRECACHE_SOUND ("weapons/357_reload1.wav");
-	PRECACHE_SOUND ("weapons/357_reload2.wav");
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
 	PRECACHE_SOUND ("weapons/357_shot1.wav");
 	PRECACHE_SOUND ("weapons/357_shot2.wav");
-	PRECACHE_SOUND ("weapons/357_shot3.wav");
 
 	m_usFirePython = PRECACHE_EVENT( 1, "events/python.sc" );
 }
@@ -157,7 +163,7 @@ void CM40A1::PrimaryAttack()
 	if (m_iClip <= 0)
 	{ 	
 		/*if (!m_fFireOnEmpty)
-			Reload( ); //Was non-functional and caused animation issues if the trigger was held down.
+			Reload( ); //YELLOWSHIFT Was non-functional and caused animation issues if the trigger was held down.
 		else*/
 		{
 			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);

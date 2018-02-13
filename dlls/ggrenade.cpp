@@ -404,6 +404,7 @@ CGrenade *CGrenade::ShootContact( entvars_t *pevOwner, Vector vecStart, Vector v
 }
 
 //YELLOWSHIFT Used for kicking handgrenades away from the player.
+//TODO change vectors of velocity depending on the player's angles
 void CGrenade:: BounceKick( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	this->pev->velocity = Vector( 500, 500, 50 );

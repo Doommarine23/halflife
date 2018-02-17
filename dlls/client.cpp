@@ -897,7 +897,9 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("impacts/imp_step2.wav");
 	PRECACHE_SOUND("impacts/imp_step3.wav");
 	PRECACHE_SOUND("impacts/imp_step4.wav");
-	// YELLOWSHIFT END		world imapct sounds
+
+	PRECACHE_SOUND("impacts/imp_metal1.wav");
+	// YELLOWSHIFT END		world impact sounds
 
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_ON );
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_OFF );

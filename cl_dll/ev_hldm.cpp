@@ -183,9 +183,11 @@ float EV_HLDM_PlayTextureSound( int idx, pmtrace_t *ptr, float *vecSrc, float *v
 		cnt = 4;
 		break;
 	case CHAR_TEX_METAL: fvol = 0.9; fvolbar = 0.3;
-		rgsz[0] = "player/pl_metal1.wav";
-		rgsz[1] = "player/pl_metal2.wav";
-		cnt = 2;
+		rgsz[0] = "impacts/imp_metal1.wav";
+		rgsz[1] = "impacts/imp_metal1.wav";
+		rgsz[2] = "impacts/imp_metal1.wav";
+		rgsz[3] = "impacts/imp_metal1.wav";
+		cnt = 4;
 		break;
 	case CHAR_TEX_DIRT:	fvol = 0.9; fvolbar = 0.1;
 		rgsz[0] = "player/pl_dirt1.wav";
@@ -271,10 +273,16 @@ char *EV_HLDM_DamageDecal( physent_t *pe )
 
 void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName )
 {
+	
 	int iRand;
 	physent_t *pe;
 
+	int smoke;
+	smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/steam1.spr" );
+
+	//YELLOWSHIFT ADD SMOKE
 	gEngfuncs.pEfxAPI->R_BulletImpactParticles( pTrace->endpos );
+	gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.2, smoke, kRenderGlow, kRenderFxNoDissipation, 1.0f, 5.0f, FTENT_FADEOUT );
 
 	iRand = gEngfuncs.pfnRandomLong(0,0x7FFF);
 	if ( iRand < (0x7fff/2) )// not every bullet makes a sound.
@@ -560,6 +568,7 @@ void EV_FireDoubleBarrel( event_args_t *args )
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE + gEngfuncs.pfnRandomLong(0,4), 2 );
 
 		V_PunchAxis( 0, -5.0 );
+
 	}
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 32, -12, 6 );
@@ -768,7 +777,11 @@ void EV_FireGlock1( event_args_t *args )
 	{
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
-		V_PunchAxis( 0, -2.0 );
+		
+		//YELLOWSHIFT additional firing animations & new recoil punch
+		//V_PunchAxis( 0, -2.0 );
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.5, -2.0 ) ); // Y Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.25, 0.5 ) ); // X Axis
 	}
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
@@ -790,11 +803,13 @@ void EV_FireGlock1( event_args_t *args )
 
 void EV_FireGlock2( event_args_t *args )
 {
+	// YELLOWSHIFT Lifted empty magazine check for last bullet
 	int idx;
 	vec3_t origin;
 	vec3_t angles;
 	vec3_t velocity;
-	
+	int empty;	// YELLOWSHIFT 
+
 	vec3_t ShellVelocity;
 	vec3_t ShellOrigin;
 	int shell;
@@ -807,6 +822,7 @@ void EV_FireGlock2( event_args_t *args )
 	VectorCopy( args->angles, angles );
 	VectorCopy( args->velocity, velocity );
 
+	empty = args->bparam1; 	// YELLOWSHIFT 
 	AngleVectors( angles, forward, right, up );
 
 	shell = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/shell.mdl");// brass shell
@@ -817,10 +833,13 @@ void EV_FireGlock2( event_args_t *args )
 		EV_MuzzleFlash();
 		//gEngfuncs.pEventAPI->EV_WeaponAnimation( GLOCK_SHOOT, 2 );
 		
-		//YELLOWSHIFT additional firing animations
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
+		//YELLOWSHIFT additional firing animations & new recoil punch
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
 		
-		V_PunchAxis( 0, -2.0 );
+		//A touch more recoil vs semi-automatic.
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.6, -2.5 ) ); // Y Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.3, 0.55 ) ); // X Axis
+		//V_PunchAxis( 0, -2.0 );
 	}
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
@@ -876,9 +895,11 @@ void EV_FireShotGunDouble( event_args_t *args )
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
 		
-		//YELLOWSHIFT additional firing animations
+		//YELLOWSHIFT additional firing animations & new recoil punch
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIREBIG + gEngfuncs.pfnRandomLong(0,1), 2 );
-		V_PunchAxis( 0, -10.0 );
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -4.5, -10.0 ) ); // Y Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -2, 3 ) ); // X Axis
+		//V_PunchAxis( 0, -10.0 );
 	}
 
 	for ( j = 0; j < 2; j++ )
@@ -934,10 +955,11 @@ void EV_FireShotGunSingle( event_args_t *args )
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
 
-				//YELLOWSHIFT additional firing animations
+		//YELLOWSHIFT additional firing animations & new recoil punch
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE + gEngfuncs.pfnRandomLong(0,4), 2 );
-
-		V_PunchAxis( 0, -5.0 );
+		//V_PunchAxis( 0, -5.0 );
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -2.5, -5.0 ) ); // Y Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -1.0, 1.5 ) ); // X Axis
 	}
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 32, -12, 6 );
@@ -999,7 +1021,7 @@ void EV_FireMP5( event_args_t *args )
 
 		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work, use RandomFloat if you get the same idea.
 		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -2, 2 ) );
-		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.5, 0.5 ) ); // X Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.7, 0.7 ) ); // X Axis
 	}
 
 

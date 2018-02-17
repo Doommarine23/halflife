@@ -29,23 +29,24 @@
 OP4 M40A1
 
 TODO
-
-Add bolt logic, reuse shotgun pump logic
 Add empty reload logic
 Add scope view
+Lots of polish!
 
 */
 
 
 
 enum m40a1_e {
+	M40A1_DRAW,
 	M40A1_IDLE1 = 0,
 	M40A1_FIDGET,
 	M40A1_FIRE1,
+	M40A1_FIRELAST,
 	M40A1_RELOAD,
-	M40A1_HOLSTER,
-	M40A1_DRAW,
+	M40A1_RELOADLAST,
 	M40A1_IDLE2,
+	M40A1_HOLSTER,
 	M40A1_IDLE3,
 };
 
@@ -97,18 +98,25 @@ void CM40A1::Spawn( )
 void CM40A1::Precache( void )
 {
 	PRECACHE_MODEL("models/v_m40a1.mdl");
-	PRECACHE_MODEL("models/w_357.mdl");
-	PRECACHE_MODEL("models/p_357.mdl");
+	PRECACHE_MODEL("models/w_m40a1.mdl");
+	PRECACHE_MODEL("models/p_m40a1.mdl");
 
 	PRECACHE_MODEL("models/w_357ammobox.mdl");
+	
 	PRECACHE_SOUND("items/9mmclip1.wav");              
-
-//	m_iShell = PRECACHE_MODEL ("models/shell.mdl");// brass shellTE_MODEL
-
 	PRECACHE_SOUND ("weapons/357_reload1.wav");
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
 	PRECACHE_SOUND ("weapons/357_shot1.wav");
 	PRECACHE_SOUND ("weapons/357_shot2.wav");
+	
+	PRECACHE_SOUND ("weapons/sniper_bolt1.wav");
+	PRECACHE_SOUND ("weapons/sniper_bolt2.wav");
+	PRECACHE_SOUND ("weapons/sniper_fire.wav");
+	PRECACHE_SOUND ("weapons/sniper_fire_last_round.wav");
+	PRECACHE_SOUND ("weapons/sniper_reload_first_seq.wav");
+	PRECACHE_SOUND ("weapons/sniper_reload_second_seq.wav");
+	PRECACHE_SOUND ("weapons/sniper_reload3.wav");
+	PRECACHE_SOUND ("weapons/sniper_zoom.wav");
 
 	m_usFirePython = PRECACHE_EVENT( 1, "events/python.sc" );
 }
@@ -162,9 +170,6 @@ void CM40A1::PrimaryAttack()
 
 	if (m_iClip <= 0)
 	{ 	
-		/*if (!m_fFireOnEmpty)
-			Reload( ); //YELLOWSHIFT Was non-functional and caused animation issues if the trigger was held down.
-		else*/
 		{
 			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
 			m_flNextPrimaryAttack = 0.15;
@@ -205,7 +210,7 @@ void CM40A1::PrimaryAttack()
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	m_flNextPrimaryAttack = 0.75;
+	m_flNextPrimaryAttack = 1.78;
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
@@ -227,9 +232,13 @@ void CM40A1::Reload( void )
 #else
 	bUseScope = g_pGameRules->IsMultiplayer();
 #endif
-	//EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
-	//EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
-	DefaultReload( 6, M40A1_RELOAD, 2.0, bUseScope );
+
+	if (m_iClip <= 0)
+	{
+		DefaultReload( 6, M40A1_RELOADLAST, 3.82, bUseScope );
+	}
+	else
+	DefaultReload( 6, M40A1_RELOAD, 2.35, bUseScope );
 }
 
 

@@ -22,7 +22,7 @@
 Thanks to Gman from HIT for pieces used from tutorial on how to do several sub-model groups!
 
 YELLOWSHIFT CHANGE/ADDITIONS
-Entire Otis NPC - Could I have just reused all of barney's code via inheritance? Yeah but I was feeling lazy :)
+Entire Otis NPC - Could he have been an inherited actor from Barney? Sure, but almost all his functions have pieces replaced, so it equals out.
 
 All changes marked with //YELLOWSHIFT 
 
@@ -80,7 +80,7 @@ Maybe let Otis look around for candy similar to how bullsquids work.
 //#define Helmet_Choice // What helmet?
 
 
-#define	OTIS_CLIP_SIZE			7		 // YELLOWSHIFT bullets in magazine
+#define	OTIS_CLIP_SIZE			9		 // YELLOWSHIFT bullets in magazine
 class COtis : public CTalkMonster
 {
 public:

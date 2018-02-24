@@ -277,12 +277,12 @@ void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName )
 	int iRand;
 	physent_t *pe;
 
-	int smoke;
-	smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/steam1.spr" );
+	//int smoke;
+	//smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/steam1.spr" );
 
 	//YELLOWSHIFT ADD SMOKE
 	gEngfuncs.pEfxAPI->R_BulletImpactParticles( pTrace->endpos );
-	gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.2, smoke, kRenderGlow, kRenderFxNoDissipation, 1.0f, 5.0f, FTENT_FADEOUT );
+	//gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.2, smoke, kRenderGlow, kRenderFxNoDissipation, 1.0f, 5.0f, FTENT_FADEOUT );
 
 	iRand = gEngfuncs.pfnRandomLong(0,0x7FFF);
 	if ( iRand < (0x7fff/2) )// not every bullet makes a sound.

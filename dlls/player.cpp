@@ -926,7 +926,8 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 
 
 	// UNDONE: Put this in, but add FFADE_PERMANENT and make fade time 8.8 instead of 4.12
-	// UTIL_ScreenFade( edict(), Vector(128,0,0), 6, 15, 255, FFADE_OUT | FFADE_MODULATE );
+	//YELLOWSHIFT DONE: Reimplemented. RGB changed to 5,5,5 originally 128,0,0. fade time 3 seconds, ignores duration with FFADE_STAYOUT (I assume FFADE_PERMANENT was going to be this?)
+	 UTIL_ScreenFade( this, Vector(1,1,1), 5, 255, 255, FFADE_OUT | FFADE_MODULATE | FFADE_STAYOUT );
 
 	if ( ( pev->health < -40 && iGib != GIB_NEVER ) || iGib == GIB_ALWAYS )
 	{
@@ -2611,7 +2612,7 @@ void CBasePlayer::PostThink()
 		if	(pev->waterlevel <= 2 && (pev->waterlevel != 0))	//YELLOWSHIFT If we land in a puddle.
 		{	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_landpuddle1.wav", 1, ATTN_NORM); }
 
-		if	(pev->waterlevel == 3)		//YELLOWSHIFT if we land in waist or full body NO SOUND YET
+		if	(pev->waterlevel == 3 && (pev->waterlevel != 0))	//YELLOWSHIFT if we land in waist or full body NO SOUND YET
 		{	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/saw_reload.wav", 1, ATTN_NORM); }
 		
 		if (pev->watertype == CONTENT_WATER)

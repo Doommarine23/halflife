@@ -30,6 +30,7 @@ NOT IN YET Headcrabs hop off if not killed via headshot. Requires MDL edits */
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"schedule.h"
+#include "shake.h"
 
 
 //=========================================================
@@ -180,13 +181,13 @@ void CZombie::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir
 	{
 	case HITGROUP_HEAD:
 	m_bloodColor = BLOOD_COLOR_GREEN;
-	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
+	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
 	//UTIL_BloodParticles( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
 	break;
 	
 	default:
 	m_bloodColor = BLOOD_COLOR_RED;
-	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
+	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
 	//UTIL_BloodParticles( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
 	//UTIL_TraceLine( pev->origin + Vector ( 0, 0 , 64) , pev->origin + vecSplatDir * 256, ignore_monsters, ENT(pev), ptr);
 	//UTIL_BloodDecalTrace( ptr, BLOOD_COLOR_RED );
@@ -249,6 +250,7 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 					pHurt->pev->punchangle.z = -18;
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity - gpGlobals->v_right * 100;
+					UTIL_ScreenFade( pHurt, Vector((150 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE );
 				}
 				// Play a random attack hit sound
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
@@ -273,6 +275,7 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 					pHurt->pev->punchangle.z = 18;
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * 100;
+					UTIL_ScreenFade( pHurt, Vector((150 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE );
 				}
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
 			}
@@ -294,6 +297,7 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 				{
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_forward * -100;
+					UTIL_ScreenFade( pHurt, Vector((150 + gSkillData.zombieDmgBothSlash),0,0), 1, 1, 100, FFADE_MODULATE );
 				}
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
 			}

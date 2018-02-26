@@ -804,7 +804,7 @@ void ClientPrecache( void )
 	// setup precaches always needed
 	PRECACHE_SOUND("player/sprayer.wav");			// spray paint sound for PreAlpha
 	
-	PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound 	 //YELLOWSHIFT Now used for harsh landings
+	PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound 	YELLOWSHIFT Now used for harsh landings
 	
 	//YELLOWSHIFT BEGIN additional jump and landing sounds
 	PRECACHE_SOUND("player/pl_jump1.wav"); 
@@ -812,11 +812,12 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("player/pl_landpuddle1.wav");
 	//YELLOWSHIFT END additional jump and landing sounds
 	
+	PRECACHE_MODEL("sprites/ballsmoke.spr");
 	PRECACHE_SOUND("player/pl_fallpain1.wav");	
 	PRECACHE_SOUND("player/pl_fallpain2.wav");		
 	PRECACHE_SOUND("player/pl_fallpain3.wav");		
 	
-	PRECACHE_SOUND("player/pl_step1.wav");		// walk on concrete
+	PRECACHE_SOUND("player/pl_step1.wav");		// walk on concrete YELLOWSHIFT additional step5
 	PRECACHE_SOUND("player/pl_step2.wav");
 	PRECACHE_SOUND("player/pl_step3.wav");
 	PRECACHE_SOUND("player/pl_step4.wav");

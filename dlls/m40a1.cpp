@@ -148,10 +148,10 @@ void CM40A1::SecondaryAttack( void )
 		m_fInZoom = FALSE;
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
-	else if ( m_pPlayer->pev->fov != 40 )
+	else if ( m_pPlayer->pev->fov != 20 )
 	{
 		m_fInZoom = TRUE;
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 40;
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 20;
 	}
 
 	m_flNextSecondaryAttack = 0.5;

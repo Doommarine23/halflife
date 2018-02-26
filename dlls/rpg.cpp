@@ -482,10 +482,11 @@ void CRpg::PrimaryAttack()
 		m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
 	}
-	else
+	//YELLOWSHIFT the non-stop dry-fire was awful to hear.
+	/*else
 	{
 		PlayEmptySound( );
-	}
+	}*/
 	UpdateSpot( );
 }
 

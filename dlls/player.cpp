@@ -245,10 +245,13 @@ LINK_ENTITY_TO_CLASS( player, CBasePlayer );
 void CBasePlayer :: Pain( void )
 {
 	float	flRndSound;//sound randomizer
-
+	//YELLOWSHIFT added pain2 + pain4
 	flRndSound = RANDOM_FLOAT ( 0 , 1 ); 
-	
-	if ( flRndSound <= 0.33 )
+	if ( flRndSound <= 0.11 )
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain2.wav", 1, ATTN_NORM);
+	else if ( flRndSound <= 0.22 )
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain4.wav", 1, ATTN_NORM);
+	else if ( flRndSound <= 0.33 )
 		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
 	else if ( flRndSound <= 0.66 )	
 		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
@@ -269,7 +272,7 @@ Vector VecVelocityForDamage(float flDamage)
 		vec = vec * 2;
 	else
 		vec = vec * 10;
-	
+
 	return vec;
 }
 
@@ -4062,6 +4065,7 @@ void CBasePlayer :: UpdateClientData( void )
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(other);
 			if ( pEntity )
+				Pain(); //YELLOWSHIFT call pain
 				damageOrigin = pEntity->Center();
 		}
 

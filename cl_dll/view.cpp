@@ -572,6 +572,12 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		if ( pparams->waterlevel == 2 )	
 		{
 			point[2] -= waterDist;
+		{
+		screenfade_t sf;
+		gEngfuncs.pfnGetScreenFade( &sf );
+		sf.fader = 0; sf.fadeg = 0; sf.fadeb = 0; sf.fadealpha = 0; sf.fadeEnd = 0.1f; sf.fadeFlags = FFADE_IN;
+		gEngfuncs.pfnSetScreenFade( &sf );
+		}
 			for ( i = 0; i < waterDist; i++ )
 			{
 				contents = gEngfuncs.PM_PointContents( point, NULL );
@@ -585,6 +591,12 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		{
 			// eyes are under water.  Make sure we're far enough under
 			point[2] += waterDist;
+		{
+		screenfade_t sf;
+		gEngfuncs.pfnGetScreenFade( &sf );
+		sf.fader = 15; sf.fadeg = 35; sf.fadeb = 65; sf.fadealpha = 145; sf.fadeFlags = FFADE_STAYOUT | FFADE_OUT;
+		gEngfuncs.pfnSetScreenFade( &sf );
+		}
 
 			for ( i = 0; i < waterDist; i++ )
 			{
@@ -662,10 +674,24 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	view->angles[ROLL]  -= bob * 1;
 	view->angles[PITCH] -= bob * 0.3;
 
+	//MAKE USER OPTION
+	//YELLOWSHIFT OG Viewbob for strafing thanks to L453rh4wk on Github https://github.com/ValveSoftware/halflife/issues/1544
+	//VectorCopy( view->angles, view->curstate.angles );
+	
+	//YELLOWSHIFT jiggle the gun around a bit when turning left or right
+	view->origin[0] += 0.3;
+
+	//YELLOWSHIFT jiggle the gun left/right
+	//view->origin[0] += bob + 0.1;
+	//view->origin[2]	  += bob * 0.3;
+	
 	// pushing the view origin down off of the same X/Z plane as the ent's origin will give the
 	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem
 	// with view model distortion, this may be a cause. (SJB). 
 	view->origin[2] -= 1;
+
+
+
 
 	// fudge position around to keep amount of weapon visible
 	// roughly equal with different FOV

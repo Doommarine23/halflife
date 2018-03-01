@@ -334,7 +334,7 @@ void CShotgun::WeaponIdle( void )
 
 	if ( m_flPumpTime && m_flPumpTime < gpGlobals->time )
 	{
-		//YELLOWSHIFT Now called on the QC and uses edited sounds due to new animation timing. PumpTime for Reload is currently untouched.
+		//YELLOWSHIFT Now called on the QC and uses edited sounds due to new animation timing.
 		// play pumping sound
 		//EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0,0x1f));
 		m_flPumpTime = 0;
@@ -357,8 +357,10 @@ void CShotgun::WeaponIdle( void )
 				// reload debounce has timed out
 				SendWeaponAnim( SHOTGUN_PUMP );
 				
+				//YELLOWSHIFT Now called on the QC and uses edited sounds due to new animation timing.
+
 				// play cocking sound
-				EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0,0x1f));
+				//EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/scock1.wav", 1, ATTN_NORM, 0, 95 + RANDOM_LONG(0,0x1f));
 				m_fInSpecialReload = 0;
 				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
 			}

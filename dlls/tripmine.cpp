@@ -173,7 +173,7 @@ void CTripmineGrenade :: PlayerUse( CBaseEntity *pActivator, CBaseEntity *pCalle
 		STOP_SOUND( ENT(pev), CHAN_VOICE, "weapons/mine_deploy.wav" );
 		STOP_SOUND( ENT(pev), CHAN_BODY, "weapons/mine_charge.wav" );
 		KillBeam();
-		CBaseEntity *pMine = Create( "weapon_tripmine", pev->origin + m_vecDir * 24, pev->angles );
+		Create( "weapon_tripmine", pev->origin + m_vecDir * 24, pev->angles );
 		//CBaseEntity *pGun = DropItem( "weapon_tripmine", pev->origin, pev->angles );
 		UTIL_Remove( this );
 		return;

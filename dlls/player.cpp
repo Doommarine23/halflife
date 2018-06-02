@@ -4065,7 +4065,7 @@ void CBasePlayer :: UpdateClientData( void )
 		{
 			CBaseEntity *pEntity = CBaseEntity::Instance(other);
 			if ( pEntity )
-				Pain(); //YELLOWSHIFT call pain
+				//YELLOWSHIFT this ain't workin right FIXFIXFIXFIXFIXFIX Pain(); //YELLOWSHIFT call pain
 				damageOrigin = pEntity->Center();
 		}
 

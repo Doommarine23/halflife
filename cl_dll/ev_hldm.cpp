@@ -277,11 +277,15 @@ void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName )
 	int iRand;
 	physent_t *pe;
 
-	//int smoke;
-	//smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/steam1.spr" );
+	int smoke;
+	smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/ballsmoke.spr" );
 
 	//YELLOWSHIFT ADD SMOKE
 	gEngfuncs.pEfxAPI->R_BulletImpactParticles( pTrace->endpos );
+	//( *R_DefaultSprite )			( float *pos, int spriteIndex, float framerate );
+	//gEngfuncs.pEfxAPI->R_DefaultSprite( pTrace->endpos,smoke, 1.0f);
+	gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.080, smoke, kRenderTransAdd, kRenderFxNoDissipation, 1.0, 1.0f, FTENT_SPRANIMATE );
+	//		
 	//gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.2, smoke, kRenderGlow, kRenderFxNoDissipation, 1.0f, 5.0f, FTENT_FADEOUT );
 
 	iRand = gEngfuncs.pfnRandomLong(0,0x7FFF);
@@ -564,7 +568,7 @@ void EV_FireDoubleBarrel( event_args_t *args )
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
 
-				//YELLOWSHIFT additional firing animations
+		//YELLOWSHIFT additional firing animations
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE + gEngfuncs.pfnRandomLong(0,4), 2 );
 
 		V_PunchAxis( 0, -5.0 );
@@ -578,6 +582,7 @@ void EV_FireDoubleBarrel( event_args_t *args )
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sbarrel1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong( 0, 0x1f ) );
 
 	EV_GetGunPosition( args, vecSrc, origin );
+
 	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
 	EV_HLDM_MuzzleFlash( vecSrc, 1.4 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
 	
@@ -624,7 +629,7 @@ void EV_FireDoubleBarrelBig( event_args_t *args )
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
 
-				//YELLOWSHIFT additional firing animations
+		//YELLOWSHIFT additional firing animations
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( SHOTGUN_FIRE + gEngfuncs.pfnRandomLong(0,4), 2 );
 
 		V_PunchAxis( 0, -5.0 );
@@ -637,6 +642,7 @@ void EV_FireDoubleBarrelBig( event_args_t *args )
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sbarrel1.wav", gEngfuncs.pfnRandomFloat(0.95, 1.0), ATTN_NORM, 0, 93 + gEngfuncs.pfnRandomLong( 0, 0x1f ) );
 
 	EV_GetGunPosition( args, vecSrc, origin );
+	
 	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
 	EV_HLDM_MuzzleFlash( vecSrc, 1.4 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
 	

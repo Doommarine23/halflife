@@ -76,7 +76,7 @@ void EV_FireSAW( struct event_args_s *args  );
 void EV_FireDeagle( struct event_args_s *args  );
 void EV_FireDoubleBarrel( struct event_args_s *args	);
 void EV_FireDoubleBarrelBig( struct event_args_s *args );
-
+void EV_FireM40A1( struct event_args_s *args );
 
 
 void EV_TrainPitchAdjust( struct event_args_s *args );
@@ -480,6 +480,66 @@ void EV_HLDM_FireBullets( int idx, float *forward, float *right, float *up, int 
 }
 
 //YELLOWSHIFT
+
+//======================
+//	   M40A1 START 
+//	     
+//======================
+void EV_FireM40A1( event_args_t *args )
+{
+	int idx;
+	vec3_t origin;
+	vec3_t angles;
+	vec3_t velocity;
+	int empty;
+
+
+	vec3_t vecSrc, vecAiming;
+	vec3_t up, right, forward;
+	float flSpread = 0.01;
+
+	idx = args->entindex;
+	VectorCopy( args->origin, origin );
+	VectorCopy( args->angles, angles );
+	VectorCopy( args->velocity, velocity );
+	
+	empty = args->bparam1;
+	AngleVectors( angles, forward, right, up );
+	
+	//Empty Firing logic isn't working. Investigate YELLOWSHIFT
+	if ( EV_IsLocal( idx ) )
+	{
+		// Add muzzle flash to current weapon model
+		EV_MuzzleFlash();
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? M40A1_FIREEMPTY : M40A1_FIRE1, 2 );
+		if (empty)
+			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sniper_fire_last_round.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
+		else
+			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sniper_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
+
+		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work. Float does. Just a tip ;)
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -7.5, -10 ) ); // Y Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -1.5, 3 ) ); // X Axis
+	}
+
+	//Add Empty Shot Sound
+	//gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sniper_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
+
+	EV_GetGunPosition( args, vecSrc, origin );
+	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
+	EV_HLDM_MuzzleFlash( vecSrc, 1.6 + gEngfuncs.pfnRandomFloat( -0.2, 0.2 ) );
+	
+	VectorCopy( forward, vecAiming );
+
+	EV_HLDM_FireBullets( idx, forward, right, up, 1, vecSrc, vecAiming, 8192, BULLET_PLAYER_357, 0, 0, args->fparam1, args->fparam2 );
+}
+//======================
+//	    M40A1 END 
+//	     
+//======================
+
+
+
 
 //======================
 //	   DEAGLE START 

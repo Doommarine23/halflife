@@ -1183,7 +1183,7 @@ public:
 	}
 
 private:
-	unsigned short m_usFirePython;
+	unsigned short m_usFireM40A1;
 };
 
 

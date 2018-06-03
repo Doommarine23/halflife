@@ -30,6 +30,8 @@ OP4 M40A1
 
 TODO
 Add empty reload logic
+Sniper Ammo
+ev_hldm code
 Add scope view
 Lots of polish!
 
@@ -42,7 +44,7 @@ enum m40a1_e {
 	M40A1_IDLE1 = 0,
 	M40A1_FIDGET,
 	M40A1_FIRE1,
-	M40A1_FIRELAST,
+	M40A1_FIREEMPTY,
 	M40A1_RELOAD,
 	M40A1_RELOADLAST,
 	M40A1_IDLE2,
@@ -87,7 +89,7 @@ void CM40A1::Spawn( )
 	pev->classname = MAKE_STRING("weapon_m40a1"); // hack to allow for old names
 	Precache( );
 	m_iId = WEAPON_M40A1;
-	SET_MODEL(ENT(pev), "models/w_357.mdl");
+	SET_MODEL(ENT(pev), "models/w_m40a1.mdl");
 
 	m_iDefaultAmmo = M40A1_DEFAULT_GIVE;
 
@@ -106,9 +108,7 @@ void CM40A1::Precache( void )
 	PRECACHE_SOUND("items/9mmclip1.wav");              
 	PRECACHE_SOUND ("weapons/357_reload1.wav");
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
-	PRECACHE_SOUND ("weapons/357_shot1.wav");
-	PRECACHE_SOUND ("weapons/357_shot2.wav");
-	
+
 	PRECACHE_SOUND ("weapons/sniper_bolt1.wav");
 	PRECACHE_SOUND ("weapons/sniper_bolt2.wav");
 	PRECACHE_SOUND ("weapons/sniper_fire.wav");
@@ -118,12 +118,12 @@ void CM40A1::Precache( void )
 	PRECACHE_SOUND ("weapons/sniper_reload3.wav");
 	PRECACHE_SOUND ("weapons/sniper_zoom.wav");
 
-	m_usFirePython = PRECACHE_EVENT( 1, "events/python.sc" );
+	m_usFireM40A1 = PRECACHE_EVENT( 1, "events/m40a1.sc" );
 }
 
 BOOL CM40A1::Deploy( )
 {
-	return DefaultDeploy( "models/v_m40a1.mdl", "models/p_357.mdl", M40A1_DRAW, "m40a1" );
+	return DefaultDeploy( "models/v_m40a1.mdl", "models/p_m40a1.mdl", M40A1_DRAW, "m40a1" );
 }
 
 
@@ -145,11 +145,14 @@ void CM40A1::SecondaryAttack( void )
 {
 	if ( m_pPlayer->pev->fov != 0 )
 	{
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/sniper_zoom.wav", 0.8, ATTN_NORM);
 		m_fInZoom = FALSE;
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
 	else if ( m_pPlayer->pev->fov != 20 )
 	{
+		
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/sniper_zoom.wav", 0.8, ATTN_NORM);
 		m_fInZoom = TRUE;
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 20;
 	}
@@ -194,7 +197,8 @@ void CM40A1::PrimaryAttack()
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
-	Vector vecDir;
+	Vector vecDir; 
+	//Change the bullet type later
 	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 
     int flags;
@@ -204,7 +208,7 @@ void CM40A1::PrimaryAttack()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFirePython, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireM40A1, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition

@@ -24,12 +24,14 @@
 #include "player.h"
 #include "soundent.h"
 #include "gamerules.h"
+//#include	"effects.h"
 
 enum mp5_e
 {
 	MP5_LONGIDLE = 0,
 	MP5_IDLE1,
 	MP5_LAUNCH,
+	MP5_RELOAD_EMPTY,
 	MP5_RELOAD,
 	MP5_DEPLOY,
 	MP5_FIRE1,
@@ -78,6 +80,9 @@ void CMP5::Precache( void )
 
 	PRECACHE_SOUND("items/clipinsert1.wav");
 	PRECACHE_SOUND("items/cliprelease1.wav");
+	//YELLOWSHIFT
+	PRECACHE_SOUND("weapons/9mmar_slideback.wav");
+	PRECACHE_SOUND("weapons/9mmar_slideforward.wav");
 
 	PRECACHE_SOUND ("weapons/hks1.wav");// H to the K
 	PRECACHE_SOUND ("weapons/hks2.wav");// H to the K
@@ -255,8 +260,19 @@ void CMP5::Reload( void )
 {
 	if ( m_pPlayer->ammo_9mm <= 0 )
 		return;
-
+	// YELLOWSHIFT Just Testing
+	//UTIL_ScreenShake( m_pPlayer->pev->origin, 25.0, 1.5, 0.7, 2 );
+		if (m_iClip == 0)
+	DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY, 2.23 );
+	else
 	DefaultReload( MP5_MAX_CLIP, MP5_RELOAD, 1.5 );
+
+
+	
+	/*if (iResult)
+	{
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	}*/
 }
 
 

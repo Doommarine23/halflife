@@ -521,7 +521,7 @@ public:
 	int GetItemInfo(ItemInfo *p);
 
 	void PrimaryAttack( void );
-	void SecondaryAttack( void );
+	void SecondaryAttack( void ); 
 	void GlockFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
 	BOOL Deploy( void );
 	void Reload( void );

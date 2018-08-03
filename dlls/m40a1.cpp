@@ -239,10 +239,10 @@ void CM40A1::Reload( void )
 
 	if (m_iClip <= 0)
 	{
-		DefaultReload( 6, M40A1_RELOADLAST, 3.82, bUseScope );
+		DefaultReload( 5, M40A1_RELOADLAST, 3.82, bUseScope );
 	}
 	else
-	DefaultReload( 6, M40A1_RELOAD, 2.35, bUseScope );
+	DefaultReload( 5, M40A1_RELOAD, 2.35, bUseScope );
 }
 
 

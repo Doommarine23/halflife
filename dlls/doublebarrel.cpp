@@ -71,7 +71,7 @@ void CDoubleBarrel::Spawn( )
 
 void CDoubleBarrel::Precache( void )
 {
-	PRECACHE_MODEL("models/v_shotgun.mdl");
+	PRECACHE_MODEL("models/v_supershotgun.mdl");
 	PRECACHE_MODEL("models/w_shotgun.mdl");
 	PRECACHE_MODEL("models/p_shotgun.mdl");
 
@@ -134,7 +134,7 @@ int CDoubleBarrel::GetItemInfo(ItemInfo *p)
 
 BOOL CDoubleBarrel::Deploy( )
 {
-	return DefaultDeploy( "models/v_shotgun.mdl", "models/p_shotgun.mdl", DOUBLEBARREL_DRAW, "shotgun" );
+	return DefaultDeploy( "models/v_supershotgun.mdl", "models/p_shotgun.mdl", DOUBLEBARREL_DRAW, "shotgun" );
 }
 
 void CDoubleBarrel::PrimaryAttack()
@@ -186,7 +186,7 @@ void CDoubleBarrel::PrimaryAttack()
 	else
 	{
 		// regular old, untouched spread. 
-		// YELLOWSHIFT Bullets increased from 6 to 8 to help balance out the shotgun VS the double barrel.
+		
 		vecDir = m_pPlayer->FireBulletsPlayer( 8, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	}
 
@@ -258,7 +258,6 @@ void CDoubleBarrel::SecondaryAttack( void )
 	else
 	{
 		// untouched default single player
-		// YELLOWSHIFT Bullets increased from 12 to 16 to help balance out the shotgun VS the double barrel.
 		vecDir = m_pPlayer->FireBulletsPlayer( 16, vecSrc, vecAiming, VECTOR_CONE_10DEGREES, 2048, BULLET_PLAYER_BUCKSHOT, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	}
 		

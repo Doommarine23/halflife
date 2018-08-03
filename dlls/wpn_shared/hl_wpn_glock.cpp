@@ -65,6 +65,7 @@ void CGlock::Precache( void )
 
 	PRECACHE_SOUND("items/9mmclip1.wav");
 	PRECACHE_SOUND("items/9mmclip2.wav");
+	PRECACHE_SOUND("weapons/Glock_Slide1.wav"); //Yellowshift Used for Reloads
 
 	PRECACHE_SOUND ("weapons/pl_gun1.wav");//silenced handgun
 	PRECACHE_SOUND ("weapons/pl_gun2.wav");//silenced handgun
@@ -183,7 +184,7 @@ void CGlock::Reload( void )
 	int iResult;
 
 	if (m_iClip == 0)
-		iResult = DefaultReload( 17, GLOCK_RELOAD, 2.0 );
+		iResult = DefaultReload( 17, GLOCK_RELOAD, 2.6 );
 	else
 		iResult = DefaultReload( 17, GLOCK_RELOAD_NOT_EMPTY, 2.0 );
 
@@ -193,7 +194,7 @@ void CGlock::Reload( void )
 	}
 }
 
-
+//YELLOWSHIFT Re-Wrote IDLE using MP5's IDLE for better animation timing
 
 void CGlock::WeaponIdle( void )
 {
@@ -201,31 +202,30 @@ void CGlock::WeaponIdle( void )
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
-	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
-		return;
-
 	// only idle if the slid isn't back
 	if (m_iClip != 0)
 	{
-		int iAnim;
-		float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0.0, 1.0 );
+	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+		return;
 
-		if (flRand <= 0.3 + 0 * 0.75)
-		{
-			iAnim = GLOCK_IDLE3;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 49.0 / 16;
-		}
-		else if (flRand <= 0.6 + 0 * 0.875)
-		{
-			iAnim = GLOCK_IDLE1;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 60.0 / 16.0;
-		}
-		else
-		{
-			iAnim = GLOCK_IDLE2;
-			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 40.0 / 16.0;
-		}
-		SendWeaponAnim( iAnim, 1 );
+	int iAnim;
+	switch ( RANDOM_LONG( 0, 2 ) )
+	{
+	case 0:	
+		iAnim = GLOCK_IDLE1;	
+		break;
+	case 1:
+		iAnim = GLOCK_IDLE2;
+		break;
+	default:
+	case 2:
+		iAnim = GLOCK_IDLE3;
+		break;
+	}
+
+	SendWeaponAnim( iAnim );
+
+	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
 	}
 }
 

@@ -534,13 +534,23 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	// dissapear when viewed with the eye exactly on it.
 	// FIXME, we send origin at 1/128 now, change this?
 	// the server protocol only specifies to 1/16 pixel, so add 1/32 in each axis
-	
+	//YELLOWSHIFT Possibly update this? Test first
 	pparams->vieworg[0] += 1.0/32;
 	pparams->vieworg[1] += 1.0/32;
 	pparams->vieworg[2] += 1.0/32;
 
 	// Check for problems around water, move the viewer artificially if necessary 
 	// -- this prevents drawing errors in GL due to waves
+
+	//YELLOWSHIFT Disable screen tint when eyes are above water. Use <= check to ensure crouching your head into water doesn't bug out
+	if ( pparams->waterlevel <= 2 )	
+		{
+				screenfade_t sf;
+				gEngfuncs.pfnGetScreenFade( &sf );
+				sf.fader = 0; sf.fadeg = 0; sf.fadeb = 0; sf.fadealpha = 0; sf.fadeEnd = 0.1f; sf.fadeFlags = FFADE_IN;
+				gEngfuncs.pfnSetScreenFade( &sf );
+		}
+
 
 	waterOffset = 0;
 	if ( pparams->waterlevel >= 2 )
@@ -572,12 +582,6 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		if ( pparams->waterlevel == 2 )	
 		{
 			point[2] -= waterDist;
-		{
-		screenfade_t sf;
-		gEngfuncs.pfnGetScreenFade( &sf );
-		sf.fader = 0; sf.fadeg = 0; sf.fadeb = 0; sf.fadealpha = 0; sf.fadeEnd = 0.1f; sf.fadeFlags = FFADE_IN;
-		gEngfuncs.pfnSetScreenFade( &sf );
-		}
 			for ( i = 0; i < waterDist; i++ )
 			{
 				contents = gEngfuncs.PM_PointContents( point, NULL );
@@ -591,11 +595,12 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		{
 			// eyes are under water.  Make sure we're far enough under
 			point[2] += waterDist;
+			//YELLOWSHIFT We're under water, so tint the screen a nice blue.
 		{
-		screenfade_t sf;
-		gEngfuncs.pfnGetScreenFade( &sf );
-		sf.fader = 15; sf.fadeg = 35; sf.fadeb = 65; sf.fadealpha = 145; sf.fadeFlags = FFADE_STAYOUT | FFADE_OUT;
-		gEngfuncs.pfnSetScreenFade( &sf );
+			screenfade_t sf;
+			gEngfuncs.pfnGetScreenFade( &sf );
+			sf.fader = 15; sf.fadeg = 35; sf.fadeb = 65; sf.fadealpha = 145; sf.fadeFlags = FFADE_STAYOUT | FFADE_OUT;
+			gEngfuncs.pfnSetScreenFade( &sf );
 		}
 
 			for ( i = 0; i < waterDist; i++ )

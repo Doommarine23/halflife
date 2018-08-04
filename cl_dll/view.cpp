@@ -542,14 +542,16 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	// Check for problems around water, move the viewer artificially if necessary 
 	// -- this prevents drawing errors in GL due to waves
 
+	//YELLOWSHIFT Right now this is causing conflicts with other tint effects. Look into alternative way of doing it.
+
 	//YELLOWSHIFT Disable screen tint when eyes are above water. Use <= check to ensure crouching your head into water doesn't bug out
-	if ( pparams->waterlevel <= 2 )	
+	/*if ( pparams->waterlevel <= 2 )	
 		{
 				screenfade_t sf;
 				gEngfuncs.pfnGetScreenFade( &sf );
 				sf.fader = 0; sf.fadeg = 0; sf.fadeb = 0; sf.fadealpha = 0; sf.fadeEnd = 0.1f; sf.fadeFlags = FFADE_IN;
 				gEngfuncs.pfnSetScreenFade( &sf );
-		}
+		}*/
 
 
 	waterOffset = 0;
@@ -595,13 +597,16 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 		{
 			// eyes are under water.  Make sure we're far enough under
 			point[2] += waterDist;
+
+			//YELLOWSHIFT Right now this is causing conflicts with other tint effects. Look into alternative way of doing it.
 			//YELLOWSHIFT We're under water, so tint the screen a nice blue.
-		{
+
+		/*{
 			screenfade_t sf;
 			gEngfuncs.pfnGetScreenFade( &sf );
 			sf.fader = 15; sf.fadeg = 35; sf.fadeb = 65; sf.fadealpha = 145; sf.fadeFlags = FFADE_STAYOUT | FFADE_OUT;
 			gEngfuncs.pfnSetScreenFade( &sf );
-		}
+		}*/
 
 			for ( i = 0; i < waterDist; i++ )
 			{

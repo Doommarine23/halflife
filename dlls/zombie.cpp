@@ -250,7 +250,8 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 					pHurt->pev->punchangle.z = -18;
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity - gpGlobals->v_right * 100;
-					UTIL_ScreenFade( pHurt, Vector((150 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE );
+					UTIL_ScreenFade( pHurt, Vector((170 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE);
+					UTIL_ScreenShake( pHurt->pev->origin, 25.0, 1.5, 0.7, 2 );
 				}
 				// Play a random attack hit sound
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
@@ -275,7 +276,8 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 					pHurt->pev->punchangle.z = 18;
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * 100;
-					UTIL_ScreenFade( pHurt, Vector((150 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE );
+					UTIL_ScreenFade( pHurt, Vector((170 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE );
+					UTIL_ScreenShake( pHurt->pev->origin, 25.0, 1.5, 0.7, 2 );
 				}
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
 			}
@@ -297,7 +299,8 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 				{
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_forward * -100;
-					UTIL_ScreenFade( pHurt, Vector((150 + gSkillData.zombieDmgBothSlash),0,0), 1, 1, 100, FFADE_MODULATE );
+					UTIL_ScreenFade( pHurt, Vector((200 + gSkillData.zombieDmgBothSlash),0,0), 1, 1, 100, FFADE_MODULATE );
+					UTIL_ScreenShake( pHurt->pev->origin, 30.0, 1.5, 1.0, 2 );
 				}
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
 			}

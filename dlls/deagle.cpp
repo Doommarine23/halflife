@@ -17,6 +17,7 @@
 #include "cbase.h"
 #include "weapons.h"
 #include "monsters.h"
+#include "nodes.h"
 #include "player.h"
 #include "gamerules.h"
 
@@ -38,6 +39,7 @@ enum deagle_e {
 	DEAGLE_IDLE4,
 	DEAGLE_IDLE5,
 	DEAGLE_SHOOT,
+	DEAGLE_SHOOT2,
 	DEAGLE_SHOOTEMPTY,
 	DEAGLE_RELOADEMPTY,
 	DEAGLE_RELOAD,
@@ -47,6 +49,62 @@ enum deagle_e {
 
 LINK_ENTITY_TO_CLASS( weapon_deagle, CDeagle );
 LINK_ENTITY_TO_CLASS( weapon_desert_eagle, CDeagle );
+
+LINK_ENTITY_TO_CLASS( laser_spot2, CLaserSpotDeagle ); // Might have to become its own class to prevent the classic OP4 laser bug
+
+
+//=========================================================
+//=========================================================
+CLaserSpotDeagle *CLaserSpotDeagle::CreateSpot( void )
+{
+	CLaserSpotDeagle *pSpot = GetClassPtr( (CLaserSpotDeagle *)NULL );
+	pSpot->Spawn();
+	pSpot->pev->classname = MAKE_STRING("laser_spot2");
+
+	return pSpot;
+}
+
+//=========================================================
+//=========================================================
+void CLaserSpotDeagle::Spawn( void )
+{
+	Precache( );
+	pev->movetype = MOVETYPE_NONE;
+	pev->solid = SOLID_NOT;
+
+	pev->rendermode = kRenderGlow;
+	pev->renderfx = kRenderFxNoDissipation;
+	pev->renderamt = 255;
+
+	SET_MODEL(ENT(pev), "sprites/laserdot.spr");
+	UTIL_SetOrigin( pev, pev->origin );
+};
+
+//=========================================================
+// Suspend- make the laser sight invisible. 
+//=========================================================
+void CLaserSpotDeagle::Suspend( float flSuspendTime )
+{
+	pev->effects |= EF_NODRAW;
+	
+	SetThink( &CLaserSpotDeagle::Revive );
+	pev->nextthink = gpGlobals->time + flSuspendTime;
+}
+
+//=========================================================
+// Revive - bring a suspended laser sight back.
+//=========================================================
+void CLaserSpotDeagle::Revive( void )
+{
+	pev->effects &= ~EF_NODRAW;
+
+	SetThink( NULL );
+}
+
+void CLaserSpotDeagle::Precache( void )
+{
+	PRECACHE_MODEL("sprites/laserdot.spr");
+};
 
 int CDeagle::GetItemInfo(ItemInfo *p)
 {
@@ -83,6 +141,7 @@ void CDeagle::Spawn( )
 	Precache( );
 	m_iId = WEAPON_DEAGLE;
 	SET_MODEL(ENT(pev), "models/w_desert_eagle.mdl");
+	m_fSpotActive = 1;
 
 	m_iDefaultAmmo = DEAGLE_DEFAULT_GIVE;
 
@@ -95,6 +154,7 @@ void CDeagle::Precache( void )
 	PRECACHE_MODEL("models/v_desert_eagle.mdl");
 	PRECACHE_MODEL("models/w_desert_eagle.mdl");
 	PRECACHE_MODEL("models/p_desert_eagle.mdl");
+	UTIL_PrecacheOther( "laser_spot2" );
 
 	PRECACHE_MODEL("models/w_357ammobox.mdl");
 	PRECACHE_SOUND("items/9mmclip1.wav");              
@@ -121,19 +181,58 @@ void CDeagle::Holster( int skiplocal /* = 0 */ )
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
-	if ( m_fLaser )
-	{
-		SecondaryAttack();
-	}
-
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 	SendWeaponAnim( DEAGLE_HOLSTER );
+
+#ifndef CLIENT_DLL
+	if (m_pSpot)
+	{
+		m_pSpot->Killed( NULL, GIB_NEVER );
+		m_pSpot = NULL;
+	}
+#endif
+
 }
 
+void CDeagle::SecondaryAttack()
+{
+	m_fSpotActive = ! m_fSpotActive;
+
+#ifndef CLIENT_DLL
+	if (m_fSpotActive && !m_pSpot)
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/desert_eagle_sight.wav", 1, ATTN_NORM);
+#endif
+
+#ifndef CLIENT_DLL
+	if (!m_fSpotActive && m_pSpot)
+	{
+		m_pSpot->Killed( NULL, GIB_NORMAL );
+		m_pSpot = NULL;
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/desert_eagle_sight2.wav", 1, ATTN_NORM);
+	}
+#endif
+	m_flNextSecondaryAttack = 0.2;
+	//m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.2;
+}
+
+/*
 void CDeagle::SecondaryAttack( void )
 {
-	if (m_fLaser == 0 )
+	m_fSpotActive = ! m_fSpotActive;
+
+#ifndef CLIENT_DLL
+	if (!m_fSpotActive && m_pSpot)
+	{
+		m_pSpot->Killed( NULL, GIB_NORMAL );
+		m_pSpot = NULL;
+	}
+#endif
+
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.2;
+
+
+/*	if (m_fLaser == 0 )
 	{
 		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/desert_eagle_sight.wav", 1, ATTN_NORM);
 		m_fLaser = 1;
@@ -144,7 +243,7 @@ void CDeagle::SecondaryAttack( void )
 		m_fLaser = 0;
 	}
 
-		m_flNextSecondaryAttack = 0.5;
+		m_flNextSecondaryAttack = 0.5;*/
 
 	/*
 	if ( m_pPlayer->pev->fov != 0 )
@@ -158,14 +257,15 @@ void CDeagle::SecondaryAttack( void )
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 40;
 	}
 
-	m_flNextSecondaryAttack = 0.5;*/
-}
+	m_flNextSecondaryAttack = 0.5;
+}*/
 
 void CDeagle::PrimaryAttack()
 {
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
+		UpdateSpot( );
 		PlayEmptySound( );
 		m_flNextPrimaryAttack = 0.15;
 		return;
@@ -173,6 +273,7 @@ void CDeagle::PrimaryAttack()
 
 	if (m_iClip <= 0)
 	{
+		UpdateSpot( );
 		PlayEmptySound();
 		m_flNextPrimaryAttack = 0.15;
 		return;
@@ -195,7 +296,7 @@ void CDeagle::PrimaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
 	Vector vecDir;
-	if (m_fLaser == 1 )
+	if (m_fSpotActive)
 		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_2DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	else
 		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_6DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
@@ -217,9 +318,10 @@ void CDeagle::PrimaryAttack()
 				m_flNextPrimaryAttack = 0.70;
 		else
 				m_flNextPrimaryAttack = 0.22;
-
+		UpdateSpot( );
 
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+
 }
 
 
@@ -228,13 +330,14 @@ void CDeagle::Reload( void )
 	if ( m_pPlayer->ammo_357 <= 0 )
 		return;
 
-	/*if ( m_pPlayer->pev->fov != 0 )
-	{
-		m_fLaser = FALSE;
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
-	}
 
-	int bUseScope = FALSE;*/
+#ifndef CLIENT_DLL
+	if ( m_pSpot && m_fSpotActive )
+	{
+		m_pSpot->Suspend( 1.68 );
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 1.68;
+	}
+#endif
 
 	if (m_iClip == 0)
 	DefaultReload( DEAGLE_MAX_CLIP, DEAGLE_RELOADEMPTY, 1.68, 2 );
@@ -245,6 +348,7 @@ void CDeagle::Reload( void )
 
 void CDeagle::WeaponIdle( void )
 {
+	UpdateSpot( );
 	ResetEmptySound( );
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
@@ -276,6 +380,29 @@ void CDeagle::WeaponIdle( void )
 	}
 }
 
+void CDeagle::UpdateSpot( void )
+{
+
+#ifndef CLIENT_DLL
+	if (m_fSpotActive)
+	{
+		if (!m_pSpot)
+		{
+			m_pSpot = CLaserSpotDeagle::CreateSpot();
+		}
+
+		UTIL_MakeVectors( m_pPlayer->pev->v_angle );
+		Vector vecSrc = m_pPlayer->GetGunPosition( );;
+		Vector vecAiming = gpGlobals->v_forward;
+
+		TraceResult tr;
+		UTIL_TraceLine ( vecSrc, vecSrc + vecAiming * 8192, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr );
+		
+		UTIL_SetOrigin( m_pSpot->pev, tr.vecEndPos );
+	}
+#endif
+
+}
 
 class CDeagleAmmo : public CBasePlayerAmmo
 {

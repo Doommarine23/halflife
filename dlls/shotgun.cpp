@@ -39,6 +39,7 @@ enum shotgun_e {
 	SHOTGUN_RELOAD,
 	SHOTGUN_PUMP,
 	SHOTGUN_START_RELOAD,
+	SHOTGUN_END_RELOAD,
 	SHOTGUN_DRAW,
 	SHOTGUN_HOLSTER,
 	SHOTGUN_IDLE4,
@@ -139,6 +140,7 @@ void CShotgun::PrimaryAttack()
 
 	if (m_iClip <= 0)
 	{
+		m_emptyReload = true;
 		Reload( );
 		if (m_iClip == 0)
 			PlayEmptySound( );
@@ -279,6 +281,9 @@ void CShotgun::SecondaryAttack( void )
 
 void CShotgun::Reload( void )
 {
+	if (m_iClip <= 0)
+		m_emptyReload = true;
+
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0 || m_iClip == SHOTGUN_MAX_CLIP)
 		return;
 
@@ -342,8 +347,9 @@ void CShotgun::WeaponIdle( void )
 
 	if (m_flTimeWeaponIdle <  UTIL_WeaponTimeBase() )
 	{
-		if (m_iClip == 0 && m_fInSpecialReload == 0 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+		if (m_iClip <= 0 && m_fInSpecialReload == 0 && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 		{
+			m_emptyReload = true;
 			Reload( );
 		}
 		else if (m_fInSpecialReload != 0)
@@ -353,9 +359,16 @@ void CShotgun::WeaponIdle( void )
 				Reload( );
 			}
 			else
-			{
-				// reload debounce has timed out
-				SendWeaponAnim( SHOTGUN_PUMP );
+			{// reload debounce has timed out
+				if (m_emptyReload)
+				{
+					SendWeaponAnim( SHOTGUN_PUMP );
+					m_emptyReload = false;
+				}
+				else
+				{
+					SendWeaponAnim(SHOTGUN_END_RELOAD);
+				}
 				
 				//YELLOWSHIFT Now called on the QC and uses edited sounds due to new animation timing.
 

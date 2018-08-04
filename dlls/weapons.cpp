@@ -1594,6 +1594,12 @@ void CBasePlayerWeapon::PrintState( void )
 }
 
 
+TYPEDESCRIPTION	CDeagle::m_SaveData[] = 
+{
+	DEFINE_FIELD( CDeagle, m_fSpotActive, FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CDeagle, CBasePlayerWeapon );
+
 TYPEDESCRIPTION	CRpg::m_SaveData[] = 
 {
 	DEFINE_FIELD( CRpg, m_fSpotActive, FIELD_INTEGER ),

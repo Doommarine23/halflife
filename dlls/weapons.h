@@ -694,6 +694,7 @@ public:
 	int m_fInReload;
 	float m_flNextReload;
 	int m_iShell;
+	bool m_emptyReload; // YELLOW-Shift used to determine if the shotgun was reloaded empty
 
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -1060,9 +1061,31 @@ private:
 
 //YELLOWSHIFT BEGIN
 
+
+class CLaserSpotDeagle : public CBaseEntity
+{
+	void Spawn( void );
+	void Precache( void );
+
+	int	ObjectCaps( void ) { return FCAP_DONT_SAVE; }
+
+public:
+	void Suspend( float flSuspendTime );
+	void EXPORT Revive( void );
+	
+	static CLaserSpotDeagle *CreateSpot( void );
+};
+
 class CDeagle : public CBasePlayerWeapon
 {
 public:
+	
+#ifndef CLIENT_DLL
+	int		Save( CSave &save );
+	int		Restore( CRestore &restore );
+	static	TYPEDESCRIPTION m_SaveData[];
+#endif
+
 	void Spawn( void );
 	void Precache( void );
 	int iItemSlot( void ) { return 2; }
@@ -1074,9 +1097,12 @@ public:
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
-	int m_fLaser; // don't save this
 	int m_iShell;
-
+	
+	void UpdateSpot( void );
+	CLaserSpotDeagle *m_pSpot;
+	int m_fSpotActive;
+	int m_fLaser; // don't save this
 
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -1185,8 +1211,6 @@ public:
 private:
 	unsigned short m_usFireM40A1;
 };
-
-
 // END YELLOWSHIFT
 
 

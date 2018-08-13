@@ -630,13 +630,17 @@ void CBullsquid :: HandleAnimEvent( MonsterEvent_t *pEvent )
 				if ( pHurt )
 				{
 					// croonchy bite sound
+					//YELLOWSHIFT added bc_bite1.wav
 					iPitch = RANDOM_FLOAT( 90, 110 );
-					switch ( RANDOM_LONG( 0, 1 ) )
+					switch ( RANDOM_LONG( 0, 2 ) )
 					{
 					case 0:
-						EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite2.wav", 1, ATTN_NORM, 0, iPitch );	
+						EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite1.wav", 1, ATTN_NORM, 0, iPitch );	
 						break;
 					case 1:
+						EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite2.wav", 1, ATTN_NORM, 0, iPitch );	
+						break;
+					case 2:
 						EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "bullchicken/bc_bite3.wav", 1, ATTN_NORM, 0, iPitch );	
 						break;
 					}

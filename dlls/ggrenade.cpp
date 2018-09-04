@@ -54,6 +54,8 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 
 	pev->model = iStringNull;//invisible
 	pev->solid = SOLID_NOT;// intangible
+	
+	Vector vecSpot = pev->origin + pev->velocity * 0.2;// Yellowshift
 
 	pev->takedamage = DAMAGE_NO;
 
@@ -64,7 +66,27 @@ void CGrenade::Explode( TraceResult *pTrace, int bitsDamageType )
 	}
 
 	int iContents = UTIL_PointContents ( pev->origin );
-	
+		
+	//YELLOWSHIFT Added Shrapnel to all explosives!
+		vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
+		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, vecSpot );
+			WRITE_BYTE( TE_BREAKMODEL);
+			WRITE_COORD( vecSpot.x ); //X			// position
+			WRITE_COORD( vecSpot.y ); //Y
+			WRITE_COORD( vecSpot.z + 64);//Z
+			WRITE_COORD( 400 );	//X		// size
+			WRITE_COORD( 400 );//Y
+			WRITE_COORD( 128 );//Z
+			WRITE_COORD( 0 ); //X 			// velocity
+			WRITE_COORD( 0 ); //Y
+			WRITE_COORD( 200 ); //Z
+			WRITE_BYTE( 30 );	// randomization
+			WRITE_SHORT( g_sModelIndexShrapnel );	//model id#
+			WRITE_BYTE( 60 );	// # of shards
+			WRITE_BYTE( 50 );	//duration 10.0 seconds
+			WRITE_BYTE( BREAK_METAL );			// flags
+		MESSAGE_END();
+
 	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
 		WRITE_BYTE( TE_EXPLOSION );		// This makes a dynamic light and the explosion sprites/sound
 		WRITE_COORD( pev->origin.x );	// Send to PAS because of the sound
@@ -368,7 +390,7 @@ void CGrenade:: Spawn( void )
 	pev->classname = MAKE_STRING( "grenade" );
 	
 	pev->solid = SOLID_BBOX;
-
+	//Yellowshift
 	SET_MODEL(ENT(pev), "models/grenade.mdl");
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
 

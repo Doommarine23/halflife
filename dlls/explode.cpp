@@ -230,6 +230,26 @@ void CEnvExplosion::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE
 			Create( "spark_shower", pev->origin, tr.vecPlaneNormal, NULL );
 		}
 	}
+
+		//YELLOWSHIFT Added Shrapnel to all explosives
+		vecSpot = pev->origin + (pev->mins + pev->maxs) * 0.5;
+		MESSAGE_BEGIN( MSG_PVS, SVC_TEMPENTITY, vecSpot );
+			WRITE_BYTE( TE_BREAKMODEL);
+			WRITE_COORD( vecSpot.x ); //X			// position
+			WRITE_COORD( vecSpot.y ); //Y
+			WRITE_COORD( vecSpot.z + 64);//Z
+			WRITE_COORD( 400 );	//X		// size
+			WRITE_COORD( 400 );//Y
+			WRITE_COORD( 128 );//Z
+			WRITE_COORD( 0 ); //X 			// velocity
+			WRITE_COORD( 0 ); //Y
+			WRITE_COORD( 200 ); //Z
+			WRITE_BYTE( 30 );	// randomization
+			WRITE_SHORT( g_sModelIndexShrapnel );	//model id#
+			WRITE_BYTE( 60 );	// # of shards
+			WRITE_BYTE( 50 );	//duration 10.0 seconds
+			WRITE_BYTE( BREAK_METAL );			// flags
+		MESSAGE_END();
 }
 
 void CEnvExplosion::Smoke( void )

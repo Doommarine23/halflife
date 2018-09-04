@@ -2693,16 +2693,16 @@ void CBaseMonster :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		}
 		break;
 
-	case MONSTER_EVENT_BODYDROP_LIGHT:
+	case MONSTER_EVENT_BODYDROP_LIGHT: //YELLOWSHIFT added unused bodydrop1-2 as the light body sounds
 		if ( pev->flags & FL_ONGROUND )
 		{
 			if ( RANDOM_LONG( 0, 1 ) == 0 )
 			{
-				EMIT_SOUND( ENT(pev), CHAN_BODY, "common/bodydrop3.wav", 1, ATTN_NORM );
+				EMIT_SOUND( ENT(pev), CHAN_BODY, "common/bodydrop1.wav", 1, ATTN_NORM );
 			}
 			else
 			{
-				EMIT_SOUND( ENT(pev), CHAN_BODY, "common/bodydrop4.wav", 1, ATTN_NORM );
+				EMIT_SOUND( ENT(pev), CHAN_BODY, "common/bodydrop2.wav", 1, ATTN_NORM );
 			}
 		}
 		break;

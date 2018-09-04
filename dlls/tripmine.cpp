@@ -466,7 +466,6 @@ void CTripmine::PrimaryAttack( void )
 #endif
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usTripFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0 );
-
 	if (tr.flFraction < 1.0)
 	{
 		CBaseEntity *pEntity = CBaseEntity::Instance( tr.pHit );
@@ -497,9 +496,10 @@ void CTripmine::PrimaryAttack( void )
 	{
 
 	}
-	
+	m_fJustPlaced = 1;
 	m_flNextPrimaryAttack = GetNextAttackDelay(0.3);
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.1;
+		//m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
 void CTripmine::WeaponIdle( void )
@@ -507,15 +507,21 @@ void CTripmine::WeaponIdle( void )
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
-	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] > 0 )
+	if(m_fJustPlaced)
 	{
-		SendWeaponAnim( TRIPMINE_DRAW );
+		if ( m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] )
+		{
+			SendWeaponAnim( TRIPMINE_DRAW );
+		}
+		else
+		{
+			RetireWeapon();
+			return;
+		}
 	}
-	else
-	{
-		RetireWeapon(); 
+		m_fJustPlaced = 0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 		return;
-	}
 
 	int iAnim;
 	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );

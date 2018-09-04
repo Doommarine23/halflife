@@ -533,8 +533,16 @@ void CWorld :: Precache( void )
 	PRECACHE_SOUND("common/null.wav");				// clears sound channels
 
 	PRECACHE_SOUND( "items/suitchargeok1.wav" );//!!! temporary sound for respawning weapons.
-	PRECACHE_SOUND( "items/gunpickup2.wav" );// player picks up a gun.
 
+	//YELLOWSHIFT Valve's Unused gunpickup 1,3, and 4 have been added to the game.
+	PRECACHE_SOUND( "items/gunpickup1.wav" );
+	PRECACHE_SOUND( "items/gunpickup2.wav" );// player picks up a gun.
+	PRECACHE_SOUND( "items/gunpickup3.wav" );
+	PRECACHE_SOUND( "items/gunpickup4.wav" );
+
+	//YELLOWSHIFt Valve's unused bodydrop1-2 waves used for Light bodies in monsters.cpp
+	PRECACHE_SOUND( "common/bodydrop1.wav");
+	PRECACHE_SOUND( "common/bodydrop2.wav");
 	PRECACHE_SOUND( "common/bodydrop3.wav" );// dead bodies hitting the ground (animation events)
 	PRECACHE_SOUND( "common/bodydrop4.wav" );
 	
@@ -544,7 +552,7 @@ void CWorld :: Precache( void )
 		PRECACHE_MODEL( "models/germangibs.mdl" );
 	}
 	else
-	{
+	{ //YELLOWSHIFT Precache new gibs here? Probably
 		PRECACHE_MODEL( "models/hgibs.mdl" );
 		PRECACHE_MODEL( "models/agibs.mdl" );
 	}

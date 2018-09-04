@@ -224,11 +224,12 @@ typedef	enum
 	BULLET_PLAYER_357, // python
 	BULLET_PLAYER_BUCKSHOT, // shotgun
 	BULLET_PLAYER_CROWBAR, // crowbar swipe
-	BULLET_PLAYER_SAW, // m249 SAW YELLOWSHIFT
+	BULLET_PLAYER_556, //YELLOWSHIFT M16A2 + M249
 
 	BULLET_MONSTER_9MM,
 	BULLET_MONSTER_MP5,
 	BULLET_MONSTER_12MM,
+	BULLET_MONSTER_556, //YELLOWSHIFT M16A2 + M249
 } Bullet;
 
 
@@ -429,6 +430,8 @@ extern DLL_GLOBAL	short	g_sModelIndexWExplosion;// holds the index for the under
 extern DLL_GLOBAL	short	g_sModelIndexBubbles;// holds the index for the bubbles model
 extern DLL_GLOBAL	short	g_sModelIndexBloodDrop;// holds the sprite index for blood drops
 extern DLL_GLOBAL	short	g_sModelIndexBloodSpray;// holds the sprite index for blood spray (bigger)
+
+extern DLL_GLOBAL	short	g_sModelIndexShrapnel; // Yellowshift restored Shrapnel for explosions
 
 extern void ClearMultiDamage(void);
 extern void ApplyMultiDamage(entvars_t* pevInflictor, entvars_t* pevAttacker );
@@ -1017,6 +1020,7 @@ public:
 	void Holster( int skiplocal = 0 );
 	void WeaponIdle( void );
 	void PlayerUse( void ); //YELLOWSHIFT new function for picking up tripmines
+	int m_fJustPlaced; //YELLOWSHIFT for checking if we used a tripmine
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )

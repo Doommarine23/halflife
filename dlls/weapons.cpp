@@ -47,6 +47,8 @@ DLL_GLOBAL	short	g_sModelIndexBubbles;// holds the index for the bubbles model
 DLL_GLOBAL	short	g_sModelIndexBloodDrop;// holds the sprite index for the initial blood
 DLL_GLOBAL	short	g_sModelIndexBloodSpray;// holds the sprite index for splattered blood
 
+DLL_GLOBAL	short	g_sModelIndexShrapnel; // Yellowshift restored Shrapnel for explosions
+
 ItemInfo CBasePlayerItem::ItemInfoArray[MAX_WEAPONS];
 AmmoInfo CBasePlayerItem::AmmoInfoArray[MAX_AMMO_SLOTS];
 
@@ -431,6 +433,8 @@ void W_Precache(void)
 	g_sModelIndexBloodSpray = PRECACHE_MODEL ("sprites/bloodspray.spr"); // initial blood
 	g_sModelIndexBloodDrop = PRECACHE_MODEL ("sprites/blood.spr"); // splattered blood 
 
+	g_sModelIndexShrapnel = PRECACHE_MODEL ("models/shrapnel.mdl"); // Yellowshift restored Shrapnel for explosions
+
 	g_sModelIndexLaser = PRECACHE_MODEL( (char *)g_pModelNameLaser );
 	g_sModelIndexLaserDot = PRECACHE_MODEL("sprites/laserdot.spr");
 
@@ -650,7 +654,26 @@ void CBasePlayerItem::DefaultTouch( CBaseEntity *pOther )
 	if (pOther->AddPlayerItem( this ))
 	{
 		AttachToPlayer( pPlayer );
-		EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
+
+
+		//YELLOWSHIFT Added unused Gunpickup 1 + 3 + 4 sounds.
+		switch (RANDOM_LONG(0,3))
+	{
+	case 0:
+			EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup1.wav", 1, ATTN_NORM);
+			break;
+	case 1:
+			EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM);
+			break;
+	case 2:
+			EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup3.wav", 1, ATTN_NORM);
+			break;
+	case 3:
+			EMIT_SOUND(ENT(pPlayer->pev), CHAN_ITEM, "items/gunpickup4.wav", 1, ATTN_NORM);
+			break;
+	}
+
+
 	}
 
 	SUB_UseTargets( pOther, USE_TOGGLE, 0 ); // UNDONE: when should this happen?
@@ -943,6 +966,7 @@ BOOL CBasePlayerWeapon :: AddPrimaryAmmo( int iCount, char *szName, int iMaxClip
 		m_iPrimaryAmmoType = iIdAmmo;
 		if (m_pPlayer->HasPlayerItem( this ) )
 		{
+			//YELLOWSHIFT Change?
 			// play the "got ammo" sound only if we gave some ammo to a player that already had this gun.
 			// if the player is just getting this gun for the first time, DefaultTouch will play the "picked up gun" sound for us.
 			EMIT_SOUND(ENT(pev), CHAN_ITEM, "items/9mmclip1.wav", 1, ATTN_NORM);
@@ -1402,7 +1426,24 @@ void CWeaponBox::Touch( CBaseEntity *pOther )
 		}
 	}
 
-	EMIT_SOUND( pOther->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM );
+			//YELLOWSHIFT Added unused Gunpickup 1 + 3 + 4 sounds.
+		switch (RANDOM_LONG(0,3))
+	{
+	case 0:
+			EMIT_SOUND( pOther->edict(), CHAN_ITEM, "items/gunpickup1.wav", 1, ATTN_NORM );
+			break;
+	case 1:
+			EMIT_SOUND( pOther->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM );
+			break;
+	case 2:
+			EMIT_SOUND( pOther->edict(), CHAN_ITEM, "items/gunpickup3.wav", 1, ATTN_NORM );
+			break;
+	case 3:
+			EMIT_SOUND( pOther->edict(), CHAN_ITEM, "items/gunpickup4.wav", 1, ATTN_NORM );
+			break;
+	}
+
+
 	SetTouch(NULL);
 	UTIL_Remove(this);
 }

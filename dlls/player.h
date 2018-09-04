@@ -58,7 +58,7 @@
 #define CSUITNOREPEAT		32
 
 #define	SOUND_FLASHLIGHT_ON		"items/flashlight1.wav"
-#define	SOUND_FLASHLIGHT_OFF	"items/flashlight1.wav"
+#define	SOUND_FLASHLIGHT_OFF	"items/flashlight2.wav"
 
 #define TEAM_NAME_LENGTH	16
 
@@ -333,5 +333,20 @@ public:
 
 extern int	gmsgHudText;
 extern BOOL gInitHUD;
+
+//YELLOWSHIFT Thank you to ZybOrg and Sh1nj1 for their VGUI menu tutorial.
+// ZybOrg - For VGui menues
+void ShowVGUI( CBasePlayer *pPlayer, int iMenu ); // Add this here too
+// ZybOrg - End
+
+#define MENU_DEFAULT				1
+#define MENU_TEAM 				2
+#define MENU_CLASS 				3
+#define MENU_MAPBRIEFING			4
+#define MENU_INTRO 				5
+#define MENU_CLASSHELP				6
+#define MENU_CLASSHELP2 			7
+#define MENU_REPEATHELP 			8
+
 
 #endif // PLAYER_H

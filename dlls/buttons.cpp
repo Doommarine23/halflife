@@ -25,6 +25,8 @@
 #include "cbase.h"
 #include "saverestore.h"
 #include "doors.h"
+#include	"player.h"
+extern int	gmsgVGUIMenu;
 
 #if !defined ( _WIN32 )
 #include <string.h> // memset())))
@@ -668,6 +670,11 @@ void CBaseButton::ButtonActivate( )
 {
 	EMIT_SOUND(ENT(pev), CHAN_VOICE, (char*)STRING(pev->noise), 1, ATTN_NORM);
 	
+		
+		MESSAGE_BEGIN( MSG_ONE, gmsgVGUIMenu, NULL, m_hActivator->pev );
+		WRITE_BYTE( 5 );	// This is the menu number that needs to be sent
+		MESSAGE_END();
+
 	if (!UTIL_IsMasterTriggered(m_sMaster, m_hActivator))
 	{
 		// button is locked, play locked sound

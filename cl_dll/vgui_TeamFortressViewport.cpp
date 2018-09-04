@@ -1730,7 +1730,7 @@ CMenuPanel* TeamFortressViewport::CreateTextWindow( int iTextToShow )
 	static const int MAX_TITLE_LENGTH = 64;
 	char cTitle[MAX_TITLE_LENGTH];
 
-	if ( iTextToShow == SHOW_MOTD )
+	if ( iTextToShow == SHOW_MAPBRIEFING)
 	{
 		if (!m_szServerName || !m_szServerName[0])
 			strcpy( cTitle, "Half-Life" );
@@ -1739,12 +1739,14 @@ CMenuPanel* TeamFortressViewport::CreateTextWindow( int iTextToShow )
 		cTitle[sizeof(cTitle)-1] = 0;
 		cText = m_szMOTD;
 	}
-	else if ( iTextToShow == SHOW_MAPBRIEFING )
+	else if ( iTextToShow == SHOW_MOTD )
 	{
+
+		new CImageLabel( "timer", 0, 0, 14, 14 );
 		// Get the current mapname, and open it's map briefing text
 		if (m_sMapName && m_sMapName[0])
 		{
-			strcpy( sz, "maps/");
+			strcpy( sz, "maps/messages/");
 			strcat( sz, m_sMapName );
 			strcat( sz, ".txt" );
 		}
@@ -1781,7 +1783,7 @@ CMenuPanel* TeamFortressViewport::CreateTextWindow( int iTextToShow )
 			return NULL;
 
 		cText = pfile;
-
+		//Make a proper title for prompts
 		strncpy( cTitle, m_sMapName, MAX_TITLE_LENGTH );
 		cTitle[MAX_TITLE_LENGTH-1] = 0;
 	}

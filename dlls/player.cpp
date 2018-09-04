@@ -187,7 +187,7 @@ int gmsgTeamNames = 0;
 
 int gmsgStatusText = 0;
 int gmsgStatusValue = 0; 
-
+int gmsgVGUIMenu = 0; //YELLOWSHIFT Used for advanced interaction. Thank you to NAMEHERE
 
 
 void LinkUserMessages( void )
@@ -232,7 +232,7 @@ void LinkUserMessages( void )
 	gmsgFade = REG_USER_MSG("ScreenFade", sizeof(ScreenFade));
 	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
 	gmsgTeamNames = REG_USER_MSG( "TeamNames", -1 );
-
+	gmsgVGUIMenu = REG_USER_MSG("VGUIMenu", 1);
 	gmsgStatusText = REG_USER_MSG("StatusText", -1);
 	gmsgStatusValue = REG_USER_MSG("StatusValue", 3); 
 
@@ -244,19 +244,39 @@ LINK_ENTITY_TO_CLASS( player, CBasePlayer );
 
 void CBasePlayer :: Pain( void )
 {
-	float	flRndSound;//sound randomizer
-	//YELLOWSHIFT added pain2 + pain4
-	flRndSound = RANDOM_FLOAT ( 0 , 1 ); 
-	if ( flRndSound <= 0.11 )
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain2.wav", 1, ATTN_NORM);
-	else if ( flRndSound <= 0.22 )
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain4.wav", 1, ATTN_NORM);
-	else if ( flRndSound <= 0.33 )
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
-	else if ( flRndSound <= 0.66 )	
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+	//YELLOWSHIFT re-wrote this to be a simple switch statement instead of a floating point randomizer
+	//additional pain sounds, and delay before triggering to prevent spam.
+
+	if (pev->health <= 0) // Stop all pain sounds on death
+	{ return;}
+
+	//float	flRndSound;//sound randomizer
+	//flRndSound = RANDOM_FLOAT ( 0 , 1 ); 
+
+	//YELLOWSHIFT added under water sounds
+	if (pev->waterlevel == 3 && gpGlobals->time + 2.3)
+	{
+		switch (RANDOM_LONG(0,4))
+			{
+			case 0:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_drown1.wav", 0.8, ATTN_NORM); break;
+			case 1:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_drown2.wav", 0.8, ATTN_NORM); break;
+			case 2:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_drown3.wav", 0.8, ATTN_NORM); break;
+			case 3:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_drown4.wav", 0.8, ATTN_NORM); break;
+			case 4:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_drown5.wav", 0.8, ATTN_NORM); break;
+			}
+	}
 	else
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+		if( gpGlobals->time + 0.5)
+	{
+		switch (RANDOM_LONG(0,4))
+			{
+			case 0:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain2.wav", 1, ATTN_NORM); break;
+			case 1:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain4.wav", 1, ATTN_NORM); break;
+			case 2:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM); break;
+			case 3:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM); break;
+			case 4:	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM); break;
+			}
+	}
 }
 
 /* 
@@ -347,14 +367,14 @@ int TrainSpeed(int iSpeed, int iMax)
 void CBasePlayer :: DeathSound( void )
 {
 	// water death sounds
-	/*
+	//YELLOWSHIFT re-enabled with a modified beta drowning sound.
 	if (pev->waterlevel == 3)
 	{
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/h2odeath.wav", 1, ATTN_NONE);
+		//Ensures that it always plays instead of drowning damage sounds.
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "player/pl_drowndeath.wav", 1, ATTN_NONE);
 		return;
 	}
-	*/
-
+	
 	// temporarily using pain sounds for death sounds
 	switch (RANDOM_LONG(1,5)) 
 	{
@@ -427,6 +447,7 @@ void CBasePlayer :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector 
 			break;
 		}
 
+		Pain(); //YELLOWSHIFT calls the unused Pain Audio function.
 		SpawnBlood(ptr->vecEndPos, BloodColor(), flDamage);// a little surface blood.
 		TraceBleed( flDamage, vecDir, ptr, bitsDamageType );
 		AddMultiDamage( pevAttacker, this, flDamage, bitsDamageType );
@@ -927,7 +948,6 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 		WRITE_BYTE(0);
 	MESSAGE_END();
 
-
 	// UNDONE: Put this in, but add FFADE_PERMANENT and make fade time 8.8 instead of 4.12
 	//YELLOWSHIFT DONE: Reimplemented. RGB changed to 5,5,5 originally 128,0,0. fade time 3 seconds, ignores duration with FFADE_STAYOUT (I assume FFADE_PERMANENT was going to be this?)
 	 UTIL_ScreenFade( this, Vector(1,1,1), 5, 255, 255, FFADE_OUT | FFADE_MODULATE | FFADE_STAYOUT );
@@ -1169,9 +1189,9 @@ void CBasePlayer::WaterMove()
 		
 		// play 'up for air' sound
 		if (pev->air_finished < gpGlobals->time)
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_wade1.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_gasp1.wav", 1, ATTN_NORM);
 		else if (pev->air_finished < gpGlobals->time + 9)
-			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_wade2.wav", 1, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_gasp2.wav", 1, ATTN_NORM);
 
 		pev->air_finished = gpGlobals->time + AIRTIME;
 		pev->dmg = 2;
@@ -1211,7 +1231,7 @@ void CBasePlayer::WaterMove()
 				
 				// track drowning damage, give it back when
 				// player finally takes a breath
-
+				Pain(); // YELLOWSHIFT call our drowning sounds in the pain function
 				m_idrowndmg += pev->dmg;
 			} 
 		}
@@ -1232,15 +1252,16 @@ void CBasePlayer::WaterMove()
 	
 	// make bubbles
 
+	//YELLOWSHIFT I think this is our drowning sounds, right?
 	air = (int)(pev->air_finished - gpGlobals->time);
 	if (!RANDOM_LONG(0,0x1f) && RANDOM_LONG(0,AIRTIME-1) >= air)
 	{
 		switch (RANDOM_LONG(0,3))
 			{
-			case 0:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim1.wav", 0.8, ATTN_NORM); break;
-			case 1:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim2.wav", 0.8, ATTN_NORM); break;
-			case 2:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim3.wav", 0.8, ATTN_NORM); break;
-			case 3:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_swim4.wav", 0.8, ATTN_NORM); break;
+			case 0:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade1.wav", 0.8, ATTN_NORM); break;
+			case 1:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade2.wav", 0.8, ATTN_NORM); break;
+			case 2:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade3.wav", 0.8, ATTN_NORM); break;
+			case 3:	EMIT_SOUND(ENT(pev), CHAN_BODY, "player/pl_wade4.wav", 0.8, ATTN_NORM); break;
 		}
 	}
 
@@ -2615,8 +2636,8 @@ void CBasePlayer::PostThink()
 		if	(pev->waterlevel <= 2 && (pev->waterlevel != 0))	//YELLOWSHIFT If we land in a puddle.
 		{	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_landpuddle1.wav", 1, ATTN_NORM); }
 
-		if	(pev->waterlevel == 3 && (pev->waterlevel != 0))	//YELLOWSHIFT if we land in waist or full body NO SOUND YET
-		{	EMIT_SOUND(ENT(pev), CHAN_VOICE, "weapons/saw_reload.wav", 1, ATTN_NORM); }
+		if	(pev->waterlevel >= 3 && (pev->waterlevel != 0))	//YELLOWSHIFT if we land in waist or full body NO SOUND YET ADD RANDOM
+		{	EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_landpuddle2.wav", 1, ATTN_NORM); }
 		
 		if (pev->watertype == CONTENT_WATER)
 		{
@@ -4902,6 +4923,14 @@ void CInfoIntermission::Think ( void )
 		pev->v_angle = UTIL_VecToAngles( (pTarget->v.origin - pev->origin).Normalize() );
 		pev->v_angle.x = -pev->v_angle.x;
 	}
+}
+
+//YELLOWSHIFT Thanks to Sh1nj1's great VGUI tutorial
+void ShowVGUI( CBasePlayer *pPlayer, int iMenu )
+{
+	MESSAGE_BEGIN( MSG_ONE, gmsgVGUIMenu, NULL, pPlayer->pev );
+	WRITE_BYTE( iMenu );	// This is the menu number that needs to be sent
+	MESSAGE_END();
 }
 
 LINK_ENTITY_TO_CLASS( info_intermission, CInfoIntermission );

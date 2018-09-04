@@ -30,8 +30,9 @@ NOT IN YET Headcrabs hop off if not killed via headshot. Requires MDL edits */
 #include	"cbase.h"
 #include	"monsters.h"
 #include	"schedule.h"
-#include "shake.h"
-
+#include	"shake.h"
+#include	"player.h"
+extern int	gmsgVGUIMenu;
 
 //=========================================================
 // Monster's Anim Events Go Here
@@ -168,29 +169,26 @@ Thanks to Jonathan 'Teh_Freak' Smith for a similar example in his tutorial on tr
 void CZombie::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType)
 {
 
-	//YELLOWSHIFT Look into making blood spray actually leave decals. Below code is commented out and doesn't work
-
-/*	Vector	vecSplatDir;
-	vecSplatDir = Vector ( 0 , 0 , -1 );
-	vecSplatDir = vecSplatDir + (RANDOM_FLOAT(-1,1) * 0.6 * gpGlobals->v_right) + (RANDOM_FLOAT(-1,1) * 0.6 * gpGlobals->v_forward);// randomize a bit
-	*/
+	//YELLOWSHIFT Look into making blood spray actually leave decals.
 
 	Vector vecBlood = (ptr->vecEndPos - pev->origin).Normalize( );
 
 	switch( ptr->iHitgroup)
 	{
 	case HITGROUP_HEAD:
+	/*	//YELLOWSHIFT Testing VGUI messages on entities.
+	MESSAGE_BEGIN( MSG_ONE, gmsgVGUIMenu, NULL, pevAttacker );
+	WRITE_BYTE( 5 );	// This is the menu number that needs to be sent
+	MESSAGE_END();
+	*/
+
 	m_bloodColor = BLOOD_COLOR_GREEN;
 	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
-	//UTIL_BloodParticles( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
 	break;
-	
+
 	default:
 	m_bloodColor = BLOOD_COLOR_RED;
 	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
-	//UTIL_BloodParticles( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
-	//UTIL_TraceLine( pev->origin + Vector ( 0, 0 , 64) , pev->origin + vecSplatDir * 256, ignore_monsters, ENT(pev), ptr);
-	//UTIL_BloodDecalTrace( ptr, BLOOD_COLOR_RED );
 	break;
 	}
 	CBaseMonster::TraceAttack( pevAttacker, flDamage, vecDir, ptr, bitsDamageType );
@@ -251,7 +249,7 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity - gpGlobals->v_right * 100;
 					UTIL_ScreenFade( pHurt, Vector((170 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE);
-					UTIL_ScreenShake( pHurt->pev->origin, 25.0, 1.5, 0.7, 2 );
+					UTIL_ScreenShake( pHurt->pev->origin, 25.0, 1.5, 0.7, 2,true );
 				}
 				// Play a random attack hit sound
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
@@ -277,7 +275,7 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 					pHurt->pev->punchangle.x = 5;
 					pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_right * 100;
 					UTIL_ScreenFade( pHurt, Vector((170 + gSkillData.zombieDmgOneSlash),0,0), 1, 1, 100, FFADE_MODULATE );
-					UTIL_ScreenShake( pHurt->pev->origin, 25.0, 1.5, 0.7, 2 );
+					UTIL_ScreenShake( pHurt->pev->origin, 25.0, 1.5, 0.7, 2,true );
 				}
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
 			}
@@ -297,10 +295,10 @@ void CZombie :: HandleAnimEvent( MonsterEvent_t *pEvent )
 			{
 				if ( pHurt->pev->flags & (FL_MONSTER|FL_CLIENT) )
 				{
-					pHurt->pev->punchangle.x = 5;
+					pHurt->pev->punchangle.x = 15;
 					pHurt->pev->velocity = pHurt->pev->velocity + gpGlobals->v_forward * -100;
 					UTIL_ScreenFade( pHurt, Vector((200 + gSkillData.zombieDmgBothSlash),0,0), 1, 1, 100, FFADE_MODULATE );
-					UTIL_ScreenShake( pHurt->pev->origin, 30.0, 1.5, 1.0, 2 );
+					UTIL_ScreenShake( pHurt->pev->origin, 30.0, 1.5, 1.0, 2,true );
 				}
 				EMIT_SOUND_DYN ( ENT(pev), CHAN_WEAPON, pAttackHitSounds[ RANDOM_LONG(0,ARRAYSIZE(pAttackHitSounds)-1) ], 1.0, ATTN_NORM, 0, 100 + RANDOM_LONG(-5,5) );
 			}

@@ -278,15 +278,12 @@ void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName )
 	physent_t *pe;
 
 	int smoke;
-	smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/ballsmoke.spr" );
-
+	smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/steam1.spr" );
+	//smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/ballsmoke.spr" );
 	//YELLOWSHIFT ADD SMOKE
 	gEngfuncs.pEfxAPI->R_BulletImpactParticles( pTrace->endpos );
-	//( *R_DefaultSprite )			( float *pos, int spriteIndex, float framerate );
-	//gEngfuncs.pEfxAPI->R_DefaultSprite( pTrace->endpos,smoke, 1.0f);
-	gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.080, smoke, kRenderTransAdd, kRenderFxNoDissipation, 1.0, 1.0f, FTENT_SPRANIMATE );
-	//		
-	//gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.2, smoke, kRenderGlow, kRenderFxNoDissipation, 1.0f, 5.0f, FTENT_FADEOUT );
+	gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.2, smoke, kRenderTransAlpha, kRenderFxNoDissipation, 1.0, 1.0f, FTENT_SPRANIMATE );
+
 
 	iRand = gEngfuncs.pfnRandomLong(0,0x7FFF);
 	if ( iRand < (0x7fff/2) )// not every bullet makes a sound.
@@ -757,9 +754,10 @@ void EV_FireSAW( event_args_t *args )
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( MP5_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( SAW_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
 
-		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -3.6, 3.6 ) );
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -1.9, 1.9 ) );
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.4, 0.5 ) ); // X Axis
 	}
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
@@ -784,13 +782,13 @@ void EV_FireSAW( event_args_t *args )
 	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
 	{
 	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire1.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire1.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -5, 10 ) );
 		break;
 	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire2.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire2.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -5, 10 ) );
 		break;
 	case 2:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire3.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire3.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -5, 10 ) );
 		break;
 
 	}
@@ -853,8 +851,21 @@ void EV_FireGlock1( event_args_t *args )
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
+	
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun4.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+		break;
+	case 2:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun5.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+		break;
 
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	}
+
 
 	EV_GetGunPosition( args, vecSrc, origin );
 
@@ -912,8 +923,22 @@ void EV_FireGlock2( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	if (empty) // ADD UNIQUE AUDIO
+	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun1.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	else
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun4.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+		break;
+	case 2:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun5.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+		break;
 
+	}
 	EV_GetGunPosition( args, vecSrc, origin );
 
 	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
@@ -1086,8 +1111,8 @@ void EV_FireMP5( event_args_t *args )
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( MP5_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
 
 		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work, use RandomFloat if you get the same idea.
-		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -2, 2 ) );
-		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.7, 0.7 ) ); // X Axis
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -1.8, 1.6 ) );
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.5, 0.6 ) ); // X Axis
 	}
 
 
@@ -2007,8 +2032,8 @@ void EV_TripmineFire( event_args_t *args )
 	gEngfuncs.pEventAPI->EV_PlayerTrace( vecSrc, vecSrc + forward * 128, PM_NORMAL, -1, &tr );
 
 	//Hit something solid
-	if ( tr.fraction < 1.0 )
-		 gEngfuncs.pEventAPI->EV_WeaponAnimation ( TRIPMINE_DRAW, 0 );
+	if ( tr.fraction < 1.0 ) //Yellowshift changed to ARM2
+		 gEngfuncs.pEventAPI->EV_WeaponAnimation ( TRIPMINE_ARM2, 0 );
 	
 	gEngfuncs.pEventAPI->EV_PopPMStates();
 }

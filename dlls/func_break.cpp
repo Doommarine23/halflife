@@ -181,12 +181,14 @@ void CBreakable::Spawn( void )
 		pev->flags |= FL_WORLDBRUSH;
 }
 
+//Yellowshift Valve disabled a lot of debris sounds for no reason. Re-Added them!
 
 const char *CBreakable::pSoundsWood[] = 
 {
 	"debris/wood1.wav",
 	"debris/wood2.wav",
 	"debris/wood3.wav",
+	"debris/wood4.wav",
 };
 
 const char *CBreakable::pSoundsFlesh[] = 
@@ -204,6 +206,10 @@ const char *CBreakable::pSoundsMetal[] =
 	"debris/metal1.wav",
 	"debris/metal2.wav",
 	"debris/metal3.wav",
+	"debris/metal4.wav",
+	"debris/metal5.wav",
+	"debris/metal6.wav",
+	"debris/metal7.wav",
 };
 
 const char *CBreakable::pSoundsConcrete[] = 
@@ -219,6 +225,8 @@ const char *CBreakable::pSoundsGlass[] =
 	"debris/glass1.wav",
 	"debris/glass2.wav",
 	"debris/glass3.wav",
+	"debris/glass4.wav",
+	"debris/glass5.wav",
 };
 
 const char **CBreakable::MaterialSoundList( Materials precacheMaterial, int &soundCount )
@@ -288,7 +296,7 @@ void CBreakable::MaterialSoundRandom( edict_t *pEdict, Materials soundMaterial, 
 		EMIT_SOUND( pEdict, CHAN_BODY, pSoundList[ RANDOM_LONG(0,soundCount-1) ], volume, 1.0 );
 }
 
-
+//YELLOWSHIFT Also adding back in a few unused bust sounds
 void CBreakable::Precache( void )
 {
 	const char *pGibName;
@@ -300,6 +308,7 @@ void CBreakable::Precache( void )
 		
 		PRECACHE_SOUND("debris/bustcrate1.wav");
 		PRECACHE_SOUND("debris/bustcrate2.wav");
+		PRECACHE_SOUND("debris/bustcrate3.wav");
 		break;
 	case matFlesh:
 		pGibName = "models/fleshgibs.mdl";
@@ -322,6 +331,7 @@ void CBreakable::Precache( void )
 		
 		PRECACHE_SOUND("debris/bustglass1.wav");
 		PRECACHE_SOUND("debris/bustglass2.wav");
+		PRECACHE_SOUND("debris/bustglass3.wav");
 		break;
 	case matMetal:
 		pGibName = "models/metalplategibs.mdl";
@@ -387,25 +397,34 @@ void CBreakable::DamageSound( void )
 	{
 	case matComputer:
 	case matGlass:
-	case matUnbreakableGlass:
+	case matUnbreakableGlass:		//YELLOWSHIFT New Sounds
 		rgpsz[0] = "debris/glass1.wav";
 		rgpsz[1] = "debris/glass2.wav";
 		rgpsz[2] = "debris/glass3.wav";
-		i = 3;
+		rgpsz[3] = "debris/glass4.wav";
+		rgpsz[4] = "debris/glass5.wav";
+		i = 5;
 		break;
 
+				//YELLOWSHIFT New Sounds
 	case matWood:
 		rgpsz[0] = "debris/wood1.wav";
 		rgpsz[1] = "debris/wood2.wav";
 		rgpsz[2] = "debris/wood3.wav";
-		i = 3;
+		rgpsz[3] = "debris/wood4.wav";
+		i = 4;
 		break;
 
+		//YELLOWSHIFT New Sounds
 	case matMetal:
 		rgpsz[0] = "debris/metal1.wav";
-		rgpsz[1] = "debris/metal3.wav";
-		rgpsz[2] = "debris/metal2.wav";
-		i = 2;
+		rgpsz[1] = "debris/metal2.wav";
+		rgpsz[2] = "debris/metal3.wav";
+		rgpsz[3] = "debris/metal4.wav";
+		rgpsz[4] = "debris/metal5.wav";
+		rgpsz[5] = "debris/metal6.wav";
+		rgpsz[6] = "debris/metal7.wav";
+		i = 7;
 		break;
 
 	case matFlesh:
@@ -609,26 +628,30 @@ void CBreakable::Die( void )
 	if (fvol > 1.0)
 		fvol = 1.0;
 
-
+	//YELLOWSHIFT Added Missing Sounds
 	switch (m_Material)
 	{
 	case matGlass:
-		switch ( RANDOM_LONG(0,1) )
+		switch ( RANDOM_LONG(0,2) )
 		{
 		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass1.wav", fvol, ATTN_NORM, 0, pitch);	
 			break;
 		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass2.wav", fvol, ATTN_NORM, 0, pitch);	
+			break;
+		case 2:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass3.wav", fvol, ATTN_NORM, 0, pitch);	
 			break;
 		}
 		cFlag = BREAK_GLASS;
 		break;
 
 	case matWood:
-		switch ( RANDOM_LONG(0,1) )
+		switch ( RANDOM_LONG(0,2) )
 		{
 		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustcrate1.wav", fvol, ATTN_NORM, 0, pitch);	
 			break;
 		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustcrate2.wav", fvol, ATTN_NORM, 0, pitch);	
+			break;
+		case 2:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustcrate3.wav", fvol, ATTN_NORM, 0, pitch);	
 			break;
 		}
 		cFlag = BREAK_WOOD;

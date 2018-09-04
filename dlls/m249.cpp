@@ -51,16 +51,16 @@ enum saw_e
 	SAW_FIRE3,
 };
 
-#define BULLET_GROUP					1
-#define BULLET_EIGHT					0
-#define BULLET_SEVEN					1
-#define BULLET_SIX						2
-#define BULLET_FIVE						3
-#define BULLET_FOUR						4
-#define BULLET_THREE					5
-#define BULLET_TWO						6
-#define BULLET_ONE						7
-#define BULLET_NONE						8
+#define BULLET_GROUP					3
+#define BULLET_GROUP_EIGHT				0
+#define BULLET_GROUP_SEVEN				1
+#define BULLET_GROUP_SIX				2
+#define BULLET_GROUP_FIVE				3
+#define BULLET_GROUP_FOUR				4
+#define BULLET_GROUP_THREE				5
+#define BULLET_GROUP_TWO				6
+#define BULLET_GROUP_ONE				7
+#define BULLET_GROUP_NONE				8
 	
 
 LINK_ENTITY_TO_CLASS( weapon_saw, CSAW );
@@ -95,9 +95,9 @@ void CSAW::Precache( void )
 	PRECACHE_SOUND("weapons/saw_reload.wav");
 	PRECACHE_SOUND("weapons/saw_reload2.wav");
 
-	PRECACHE_SOUND ("weapons/saw_fire1.wav");// H to the K
-	PRECACHE_SOUND ("weapons/saw_fire2.wav");// H to the K
-	PRECACHE_SOUND ("weapons/saw_fire3.wav");// H to the K
+	PRECACHE_SOUND ("weapons/saw_fire1.wav");// F to the N
+	PRECACHE_SOUND ("weapons/saw_fire2.wav");// F to the N
+	PRECACHE_SOUND ("weapons/saw_fire3.wav");// F to the N
 
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
 
@@ -161,7 +161,6 @@ void CSAW::PrimaryAttack()
 
 	m_iClip--;
 
-
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
 
@@ -172,6 +171,10 @@ void CSAW::PrimaryAttack()
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	Vector vecDir;
+
+	#ifndef CLIENT_DLL
+		UTIL_ScreenShake( m_pPlayer->pev->origin, 1.2, 1.5, 0.2, 2,true ); // YELLOWSHIFT Rumbles less than the MP5 because its such a heavy beast of a gun
+#endif
 
 #ifdef CLIENT_DLL
 	if ( !bIsMultiplayer() )
@@ -206,17 +209,8 @@ void CSAW::PrimaryAttack()
 	if ( m_flNextPrimaryAttack < UTIL_WeaponTimeBase() )
 		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.1;
 
-		SetBodygroup( BULLET_GROUP, BULLET_NONE );
+	SetBodygroup( BULLET_GROUP, BULLET_NONE );
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-}
-
-
-
-void CSAW::SecondaryAttack( void )
-{		//SetBodygroup( BULLET_GROUP, BULLET_TWO );
-		//PlayEmptySound( );
-		pev->body = 8;
-		return;
 }
 
 void CSAW::Reload( void )
@@ -227,6 +221,11 @@ void CSAW::Reload( void )
 	DefaultReload( SAW_MAX_CLIP, SAW_RELOAD, 3.82 );
 }
 
+void CSAW::SecondaryAttack( void)
+{
+		m_flNextPrimaryAttack = 0.15;
+		return;
+}
 
 void CSAW::WeaponIdle( void )
 {
@@ -249,8 +248,7 @@ void CSAW::WeaponIdle( void )
 		iAnim = SAW_IDLE1;
 		break;
 	}
-
-	switch ( m_iClip )
+	/*switch ( m_iClip )
 	{
 	case 8:	
 	SetBodygroup( BULLET_GROUP, BULLET_EIGHT ); break; //FULL MAGAZINE
@@ -271,7 +269,7 @@ void CSAW::WeaponIdle( void )
 	case 0:
 	SetBodygroup( BULLET_GROUP, BULLET_NONE ); break;
 
-	}
+	}*/
 
 
 	SendWeaponAnim( iAnim );

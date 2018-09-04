@@ -806,7 +806,7 @@ int COtis :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float 
 		}
 	}
 
-//DAMAGE SKIN SYSTEM
+// YELLOWSHIFT DAMAGE SKIN SYSTEM
 if (pev->health <= 30)
 {pev->skin = 1;}
 

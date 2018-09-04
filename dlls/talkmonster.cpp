@@ -728,7 +728,7 @@ void CTalkMonster::ShutUpFriends( void )
 //YELLOWSHIFT Commented out for testing. By being disabled the player is allowed to have unlimited followers but there may be bugs.
 void CTalkMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 {
-	/*CBaseEntity *pFriend = NULL;
+	CBaseEntity *pFriend = NULL;
 	int i, count;
 
 	count = 0;
@@ -748,7 +748,7 @@ void CTalkMonster::LimitFollowers( CBaseEntity *pPlayer, int maxFollowers )
 				}
 			}
 		}
-	}*/
+	}
 }
 
 

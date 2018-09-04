@@ -365,7 +365,7 @@ void CEgon::Fire( const Vector &vecOrigSrc, const Vector &vecDir )
 			pev->dmgtime = gpGlobals->time + GetDischargeInterval();
 			if ( m_shakeTime < gpGlobals->time )
 			{
-				UTIL_ScreenShake( tr.vecEndPos, 5.0, 150.0, 0.75, 250.0 );
+				UTIL_ScreenShake( tr.vecEndPos, 5.0, 150.0, 0.75, 250.0, true);
 				m_shakeTime = gpGlobals->time + 1.5;
 			}
 		}

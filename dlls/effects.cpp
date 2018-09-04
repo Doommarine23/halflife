@@ -1859,7 +1859,7 @@ LINK_ENTITY_TO_CLASS( env_shake, CShake );
 // pev->dmg is radius
 // radius of 0 means all players
 // NOTE: UTIL_ScreenShake() will only shake players who are on the ground
-
+// YELLOWSHIFT This has been modified with the onfloat variable and may be modified here as well to enable it always.
 #define SF_SHAKE_EVERYONE	0x0001		// Don't check radius
 // UNDONE: These don't work yet
 #define SF_SHAKE_DISRUPT	0x0002		// Disrupt controls
@@ -1906,7 +1906,7 @@ void CShake::KeyValue( KeyValueData *pkvd )
 
 void CShake::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	UTIL_ScreenShake( pev->origin, Amplitude(), Frequency(), Duration(), Radius() );
+	UTIL_ScreenShake( pev->origin, Amplitude(), Frequency(), Duration(), Radius(), false );
 }
 
 

@@ -13,8 +13,6 @@
 *
 ****/
 
-
-
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
@@ -24,7 +22,8 @@
 #include "player.h"
 #include "soundent.h"
 #include "gamerules.h"
-//#include	"effects.h"
+
+
 
 enum mp5_e
 {
@@ -187,6 +186,10 @@ void CMP5::PrimaryAttack()
 #else
 	flags = 0;
 #endif
+	
+	#ifndef CLIENT_DLL
+		UTIL_ScreenShake( m_pPlayer->pev->origin, 1.5, 2.5, 0.3, 2, true);
+#endif
 
 	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usMP5, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
@@ -261,18 +264,11 @@ void CMP5::Reload( void )
 	if ( m_pPlayer->ammo_9mm <= 0 )
 		return;
 	// YELLOWSHIFT Just Testing
-	//UTIL_ScreenShake( m_pPlayer->pev->origin, 25.0, 1.5, 0.7, 2 );
-		if (m_iClip == 0)
-	DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY, 2.23 );
+	//UTIL_ScreenShake( m_pPlayer->pev->origin, 25.0, 1.5, 0.7, 2,true );
+	if (m_iClip == 0)
+		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY, 2.23 );
 	else
-	DefaultReload( MP5_MAX_CLIP, MP5_RELOAD, 1.5 );
-
-
-	
-	/*if (iResult)
-	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-	}*/
+		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD, 1.5 );
 }
 
 
@@ -361,7 +357,7 @@ LINK_ENTITY_TO_CLASS( ammo_9mmbox, CMP5Chainammo );
 /*YELLOWSHIFT 
 
 Now uses bodygroups to determine how many grenades to give you. 
-The base code was changed to the Python's and edited because the original MP5 ammo code was causing an issue with the bodygroup check.
+The base code was changed to the Python's ammo class and edited because the original MP5 ammo class code was causing an issue with the bodygroup check.
 
 Bodygroup 0 = Default 2 Greandes
 Bodygroup 1 = 1 Vertical

@@ -70,6 +70,8 @@ void CGlock::Precache( void )
 	PRECACHE_SOUND ("weapons/pl_gun1.wav");//silenced handgun
 	PRECACHE_SOUND ("weapons/pl_gun2.wav");//silenced handgun
 	PRECACHE_SOUND ("weapons/pl_gun3.wav");//handgun
+	PRECACHE_SOUND ("weapons/pl_gun4.wav");//handgun
+	PRECACHE_SOUND ("weapons/pl_gun5.wav");//handgun
 
 	m_usFireGlock1 = PRECACHE_EVENT( 1, "events/glock1.sc" );
 	m_usFireGlock2 = PRECACHE_EVENT( 1, "events/glock2.sc" );
@@ -160,6 +162,10 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 	{
 		vecAiming = gpGlobals->v_forward;
 	}
+
+	#ifndef CLIENT_DLL
+		UTIL_ScreenShake( m_pPlayer->pev->origin, 1.2, 2.5, 0.3, 2,true );
+#endif
 
 	Vector vecDir;
 	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, Vector( flSpread, flSpread, flSpread ), 8192, BULLET_PLAYER_9MM, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );

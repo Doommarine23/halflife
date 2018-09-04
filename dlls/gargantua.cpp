@@ -480,7 +480,7 @@ void CGargantua::StompAttack( void )
 
 	UTIL_TraceLine( vecStart, vecEnd, ignore_monsters, edict(), &trace );
 	CStomp::StompCreate( vecStart, trace.vecEndPos, 0 );
-	UTIL_ScreenShake( pev->origin, 12.0, 100.0, 2.0, 1000 );
+	UTIL_ScreenShake( pev->origin, 12.0, 100.0, 2.0, 1000,false );
 	EMIT_SOUND_DYN ( edict(), CHAN_WEAPON, pStompSounds[ RANDOM_LONG(0,ARRAYSIZE(pStompSounds)-1) ], 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10,10) );
 
 	UTIL_TraceLine( pev->origin, pev->origin - Vector(0,0,20), ignore_monsters, edict(), &trace );
@@ -1005,7 +1005,7 @@ void CGargantua::HandleAnimEvent(MonsterEvent_t *pEvent)
 
 	case GARG_AE_RIGHT_FOOT:
 	case GARG_AE_LEFT_FOOT:
-		UTIL_ScreenShake( pev->origin, 4.0, 3.0, 1.0, 750 );
+		UTIL_ScreenShake( pev->origin, 4.0, 3.0, 1.0, 750,false );
 		EMIT_SOUND_DYN ( edict(), CHAN_BODY, pFootSounds[ RANDOM_LONG(0,ARRAYSIZE(pFootSounds)-1) ], 1.0, ATTN_GARG, 0, PITCH_NORM + RANDOM_LONG(-10,10) );
 		break;
 
@@ -1119,7 +1119,7 @@ void CGargantua::RunTask( Task_t *pTask )
 	{
 	case TASK_DIE:
 		if ( gpGlobals->time > m_flWaitFinished )
-		{
+		{ //YELLOWSHIFT Look into making this modular so we can have the explosive death, but also the full death animation and any additional ones.
 			pev->renderfx = kRenderFxExplode;
 			pev->rendercolor.x = 255;
 			pev->rendercolor.y = 0;

@@ -137,7 +137,7 @@ struct efx_api_s
 	void		( *R_MultiGunshot )				( float * org, float * dir, float * noise, int count, int decalCount, int *decalIndices );
 	void		( *R_MuzzleFlash )				( float *pos1, int type );
 	void		( *R_ParticleBox )				( float *mins, float *maxs, unsigned char r, unsigned char g, unsigned char b, float life );
-	void		( *R_ParticleBurst )			( float * pos, int size, int color, float life );
+	void		( *R_ParticleBurst )			( float * pos, int size, int color, float life ); // YELLOWSHIFT these seem unstable?
 	void		( *R_ParticleExplosion )		( float * org );
 	void		( *R_ParticleExplosion2 )		( float * org, int colorStart, int colorLength );
 	void		( *R_ParticleLine )				( float * start, float *end, unsigned char r, unsigned char g, unsigned char b, float life );

@@ -671,7 +671,10 @@ static short FixedSigned16( float value, float scale )
 // UNDONE: Allow caller to shake clients not ONGROUND?
 // UNDONE: Fix falloff model (disabled)?
 // UNDONE: Affect user controls?
-void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius )
+
+//YELLOWSHIFT Readded shaking clients off ground using new variable bool onfloat.
+//All usages of ScreenShake have been modified. Some now always shake you, like getting slapped by a bullsquid or your gun's recoil.
+void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, float duration, float radius, bool onfloat )
 {
 	int			i;
 	float		localAmplitude;
@@ -684,8 +687,12 @@ void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, f
 	{
 		CBaseEntity *pPlayer = UTIL_PlayerByIndex( i );
 
+		if(!onfloat)
+		{
 		if ( !pPlayer || !(pPlayer->pev->flags & FL_ONGROUND) )	// Don't shake if not onground
 			continue;
+		}
+		else
 
 		localAmplitude = 0;
 
@@ -719,7 +726,7 @@ void UTIL_ScreenShake( const Vector &center, float amplitude, float frequency, f
 
 void UTIL_ScreenShakeAll( const Vector &center, float amplitude, float frequency, float duration )
 {
-	UTIL_ScreenShake( center, amplitude, frequency, duration, 0 );
+	UTIL_ScreenShake( center, amplitude, frequency, duration, 0, false );
 }
 
 
@@ -1140,6 +1147,7 @@ int UTIL_PointContents(	const Vector &vec )
 {
 	return POINT_CONTENTS(vec);
 }
+
 
 void UTIL_BloodStream( const Vector &origin, const Vector &direction, int color, int amount )
 {

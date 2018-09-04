@@ -262,6 +262,7 @@ void CDeagle::SecondaryAttack( void )
 
 void CDeagle::PrimaryAttack()
 {
+	UpdateSpot( );
 	// don't fire underwater
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
@@ -296,7 +297,7 @@ void CDeagle::PrimaryAttack()
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
 	Vector vecDir;
-	if (m_fSpotActive)
+	if (m_fSpotActive) //YELLOWSHIFT CHANGE TO LESS DAMAGING BULLETS
 		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_2DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	else
 		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_6DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
@@ -314,11 +315,12 @@ void CDeagle::PrimaryAttack()
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-		if (m_fLaser == 1 )
+	if (m_fSpotActive)
 				m_flNextPrimaryAttack = 0.70;
 		else
 				m_flNextPrimaryAttack = 0.22;
-		UpdateSpot( );
+					
+	UpdateSpot( );
 
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 

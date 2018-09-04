@@ -558,6 +558,10 @@ void ClientCommand( edict_t *pEntity )
 	{
 		GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
 	}
+	else if (FStrEq(pcmd, "chooseteam" ))
+	{
+		ShowVGUI( GetClassPtr((CBasePlayer *)pev), MENU_TEAM ); // MENU_TEAM is same on client dll
+	}
 	else if ( FStrEq( pcmd, "spectate" ) )	// clients wants to become a spectator
 	{
 			// always allow proxies to become a spectator
@@ -806,22 +810,57 @@ void ClientPrecache( void )
 	
 	PRECACHE_SOUND("player/pl_jumpland2.wav");		// UNDONE: play 2x step sound 	YELLOWSHIFT Now used for harsh landings
 	
-	//YELLOWSHIFT BEGIN additional jump and landing sounds
-	PRECACHE_SOUND("player/pl_jump1.wav"); 
-	PRECACHE_SOUND("player/pl_jump2.wav"); 
-	PRECACHE_SOUND("player/pl_landpuddle1.wav");
-	//YELLOWSHIFT END additional jump and landing sounds
-	
+	//YELLOWSHIFT BEGIN 
+
+	// Used for Gunshot Decals
 	PRECACHE_MODEL("sprites/ballsmoke.spr");
+
+	//drowning / underwater damage sounds
+	PRECACHE_SOUND("player/pl_drown1.wav"); 
+	PRECACHE_SOUND("player/pl_drown2.wav"); 
+	PRECACHE_SOUND("player/pl_drown3.wav"); 
+	PRECACHE_SOUND("player/pl_drown4.wav"); 
+	PRECACHE_SOUND("player/pl_drown5.wav"); 
+	PRECACHE_SOUND("player/pl_drowndeath.wav"); 
+	PRECACHE_SOUND("player/pl_gasp1.wav");
+	PRECACHE_SOUND("player/pl_gasp2.wav");
+
+	//additional jump and landing sounds
+	PRECACHE_SOUND("player/pl_jump1.wav"); 
+	PRECACHE_SOUND("player/pl_jump2.wav");  
+	PRECACHE_SOUND("player/pl_landpuddle1.wav");
+	PRECACHE_SOUND("player/pl_landpuddle2.wav");
+	PRECACHE_SOUND("player/pl_landpuddle3.wav");
+
+	// walk on concrete YELLOWSHIFT additional step5
+	PRECACHE_SOUND("player/pl_step5.wav");
+
+	// walk on wood
+	PRECACHE_SOUND("player/pl_wood1.wav");		
+	PRECACHE_SOUND("player/pl_wood2.wav");
+	PRECACHE_SOUND("player/pl_wood3.wav");
+	PRECACHE_SOUND("player/pl_wood4.wav");
+
+	//world impact sounds
+
+	PRECACHE_SOUND("impacts/imp_step1.wav"); // Concrete
+	PRECACHE_SOUND("impacts/imp_step2.wav");
+	PRECACHE_SOUND("impacts/imp_step3.wav");
+	PRECACHE_SOUND("impacts/imp_step4.wav");
+
+	PRECACHE_SOUND("impacts/imp_metal1.wav"); // Metal
+
+	//YELLOWSHIFT END
+	
+
 	PRECACHE_SOUND("player/pl_fallpain1.wav");	
 	PRECACHE_SOUND("player/pl_fallpain2.wav");		
 	PRECACHE_SOUND("player/pl_fallpain3.wav");		
 	
-	PRECACHE_SOUND("player/pl_step1.wav");		// walk on concrete YELLOWSHIFT additional step5
+	PRECACHE_SOUND("player/pl_step1.wav");		
 	PRECACHE_SOUND("player/pl_step2.wav");
 	PRECACHE_SOUND("player/pl_step3.wav");
 	PRECACHE_SOUND("player/pl_step4.wav");
-	PRECACHE_SOUND("player/pl_step5.wav");
 
 	PRECACHE_SOUND("common/npc_step1.wav");		// NPC walk on concrete
 	PRECACHE_SOUND("common/npc_step2.wav");
@@ -864,12 +903,6 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("player/pl_swim3.wav");
 	PRECACHE_SOUND("player/pl_swim4.wav");
 
-	PRECACHE_SOUND("player/pl_wood1.wav");		// YELLOWSHIFT walk on wood
-	PRECACHE_SOUND("player/pl_wood2.wav");
-	PRECACHE_SOUND("player/pl_wood3.wav");
-	PRECACHE_SOUND("player/pl_wood4.wav");
-
-
 	PRECACHE_SOUND("player/pl_ladder1.wav");	// climb ladder rung
 	PRECACHE_SOUND("player/pl_ladder2.wav");
 	PRECACHE_SOUND("player/pl_ladder3.wav");
@@ -883,6 +916,7 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("debris/wood1.wav");			// hit wood texture
 	PRECACHE_SOUND("debris/wood2.wav");
 	PRECACHE_SOUND("debris/wood3.wav");
+	PRECACHE_SOUND("debris/wood4.wav");
 
 	PRECACHE_SOUND("plats/train_use1.wav");		// use a train
 
@@ -892,15 +926,13 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("debris/glass2.wav");
 	PRECACHE_SOUND("debris/glass3.wav");
 
-	// YELLOWSHIFT BEGIN	world impact sounds
-
-	PRECACHE_SOUND("impacts/imp_step1.wav");
-	PRECACHE_SOUND("impacts/imp_step2.wav");
-	PRECACHE_SOUND("impacts/imp_step3.wav");
-	PRECACHE_SOUND("impacts/imp_step4.wav");
-
-	PRECACHE_SOUND("impacts/imp_metal1.wav");
-	// YELLOWSHIFT END		world impact sounds
+		//Yellowshift Missing Debris Sounds
+	PRECACHE_SOUND("debris/glass4.wav");
+	PRECACHE_SOUND("debris/glass5.wav");
+	PRECACHE_SOUND("debris/metal4.wav");
+	PRECACHE_SOUND("debris/metal5.wav");
+	PRECACHE_SOUND("debris/metal6.wav");
+	PRECACHE_SOUND("debris/metal7.wav");
 
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_ON );
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_OFF );

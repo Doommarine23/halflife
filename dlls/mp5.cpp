@@ -86,6 +86,10 @@ void CMP5::Precache( void )
 	PRECACHE_SOUND ("weapons/hks1.wav");// H to the K
 	PRECACHE_SOUND ("weapons/hks2.wav");// H to the K
 	PRECACHE_SOUND ("weapons/hks3.wav");// H to the K
+	
+	PRECACHE_SOUND ("weapons/hks1_empty.wav");// H to the K
+	PRECACHE_SOUND ("weapons/hks2_empty.wav");// H to the K
+	PRECACHE_SOUND ("weapons/hks3_empty.wav");// H to the K
 
 	PRECACHE_SOUND( "weapons/glauncher.wav" );
 	PRECACHE_SOUND( "weapons/glauncher2.wav" );
@@ -191,7 +195,7 @@ void CMP5::PrimaryAttack()
 		UTIL_ScreenShake( m_pPlayer->pev->origin, 1.5, 2.5, 0.3, 2, true);
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usMP5, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usMP5, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, m_iClip, 0 );
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition

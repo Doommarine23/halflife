@@ -21,7 +21,7 @@
 #include "usercmd.h"
 #include "pm_defs.h"
 #include "pm_materials.h"
-
+#include "weaponinfo.h"
 #include "eventscripts.h"
 #include "ev_hldm.h"
 
@@ -840,7 +840,7 @@ void EV_FireGlock1( event_args_t *args )
 	if ( EV_IsLocal( idx ) )
 	{
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( (empty == 0) ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
 		
 		//YELLOWSHIFT additional firing animations & new recoil punch
 		//V_PunchAxis( 0, -2.0 );
@@ -852,7 +852,13 @@ void EV_FireGlock1( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 	
-	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
+	if (empty <= 6) // YELLOWSHIFT Guns now produce unique sounds when near empty and on final shot.
+	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun_empty1.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	else
+//	if (m_iClip <= 6)
+	//gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks2.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	//else
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Additional firing sounds for the Glock.
 	{
 	case 0:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
@@ -900,6 +906,7 @@ void EV_FireGlock2( event_args_t *args )
 	VectorCopy( args->velocity, velocity );
 
 	empty = args->bparam1; 	// YELLOWSHIFT 
+//	extern  class CBasePlayerWeapon->m_iClip;
 	AngleVectors( angles, forward, right, up );
 
 	shell = gEngfuncs.pEventAPI->EV_FindModelIndex ("models/shell.mdl");// brass shell
@@ -910,12 +917,12 @@ void EV_FireGlock2( event_args_t *args )
 		EV_MuzzleFlash();
 		//gEngfuncs.pEventAPI->EV_WeaponAnimation( GLOCK_SHOOT, 2 );
 		
-		//YELLOWSHIFT additional firing animations & new recoil punch
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
+		//YELLOWSHIFT additional firing animations, new recoil punch & changed empty to be a magazine check
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( (empty == 0) ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
 		
 		//A touch more recoil vs semi-automatic.
 		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.6, -2.5 ) ); // Y Axis
-		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.3, 0.55 ) ); // X Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.3, 0.58 ) ); // X Axis
 		//V_PunchAxis( 0, -2.0 );
 	}
 
@@ -923,10 +930,13 @@ void EV_FireGlock2( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 
-	if (empty) // ADD UNIQUE AUDIO
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun1.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	if (empty <= 6) // YELLOWSHIFT Guns now produce unique sounds when near empty and on final shot.
+	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun_empty1.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
 	else
-	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
+//	if (m_iClip <= 6)
+	//gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks2.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	//else
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Additional firing sounds for the Glock.
 	{
 	case 0:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
@@ -1087,6 +1097,7 @@ void EV_FireMP5( event_args_t *args )
 	vec3_t origin;
 	vec3_t angles;
 	vec3_t velocity;
+	int empty;	// YELLOWSHIFT 
 
 	vec3_t ShellVelocity;
 	vec3_t ShellOrigin;
@@ -1094,6 +1105,8 @@ void EV_FireMP5( event_args_t *args )
 	vec3_t vecSrc, vecAiming;
 	vec3_t up, right, forward;
 	float flSpread = 0.01;
+
+	empty = args->bparam1; 	// YELLOWSHIFT 
 
 	idx = args->entindex;
 	VectorCopy( args->origin, origin );
@@ -1120,6 +1133,23 @@ void EV_FireMP5( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 
+	if(empty <= 15)
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
+	{
+	case 0:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks1_empty.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		break;
+	case 1:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks2_empty.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		break;
+	case 2:
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks3_empty.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
+		break;
+
+	}
+	
+	else
+	
 	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
 	{
 	case 0:

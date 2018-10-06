@@ -3056,7 +3056,7 @@ void PM_PlayerMove ( qboolean server )
 
 #if !defined( _TFC )
 	// Slow down, I'm pulling it! (a box maybe) but only when I'm standing on ground
-	if ( ( pmove->onground != -1 ) && ( pmove->cmd.buttons & IN_USE) )
+	if ( ( pmove->onground != -1 ) && ( pmove->cmd.buttons & IN_USE) ) //YELLOWSHIFT Change this Probably
 	{
 		VectorScale( pmove->velocity, 0.3, pmove->velocity );
 	}

@@ -187,7 +187,7 @@ int gmsgTeamNames = 0;
 
 int gmsgStatusText = 0;
 int gmsgStatusValue = 0; 
-int gmsgVGUIMenu = 0; //YELLOWSHIFT Used for advanced interaction. Thank you to NAMEHERE
+int gmsgVGUIMenu = 0; //YELLOWSHIFT Used for advanced interaction. Thank you to Sh1nj1 and ZybOrg
 
 
 void LinkUserMessages( void )
@@ -4925,7 +4925,7 @@ void CInfoIntermission::Think ( void )
 	}
 }
 
-//YELLOWSHIFT Thanks to Sh1nj1's great VGUI tutorial
+//YELLOWSHIFT Thank you to Sh1nj1 for your great VGUI tutorial, and ZybOrg's resources which were used inside it.
 void ShowVGUI( CBasePlayer *pPlayer, int iMenu )
 {
 	MESSAGE_BEGIN( MSG_ONE, gmsgVGUIMenu, NULL, pPlayer->pev );

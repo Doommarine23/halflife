@@ -552,7 +552,7 @@ void CWorld :: Precache( void )
 		PRECACHE_MODEL( "models/germangibs.mdl" );
 	}
 	else
-	{ //YELLOWSHIFT Precache new gibs here? Probably
+	{ //YELLOWSHIFT Precache new gib shere? Probably
 		PRECACHE_MODEL( "models/hgibs.mdl" );
 		PRECACHE_MODEL( "models/agibs.mdl" );
 	}

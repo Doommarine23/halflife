@@ -282,7 +282,7 @@ void EV_HLDM_GunshotDecalTrace( pmtrace_t *pTrace, char *decalName )
 	//smoke = gEngfuncs.pEventAPI->EV_FindModelIndex( "sprites/ballsmoke.spr" );
 	//YELLOWSHIFT ADD SMOKE
 	gEngfuncs.pEfxAPI->R_BulletImpactParticles( pTrace->endpos );
-	gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, vec3_origin, 0.2, smoke, kRenderTransAlpha, kRenderFxNoDissipation, 1.0, 1.0f, FTENT_SPRANIMATE );
+	gEngfuncs.pEfxAPI->R_TempSprite( pTrace->endpos, pTrace->plane.normal, 0.2, smoke, kRenderTransAlpha, kRenderFxNoDissipation, 1.0, 1.0f, FTENT_SPRANIMATE );
 
 
 	iRand = gEngfuncs.pfnRandomLong(0,0x7FFF);

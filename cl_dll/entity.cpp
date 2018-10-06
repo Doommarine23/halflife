@@ -344,7 +344,7 @@ void CL_DLLEXPORT HUD_StudioEvent( const struct mstudioevent_s *event, const str
 		iMuzzleFlash = 0;
 
 #endif 
-
+	//ADD SHELLS AND MAGAZINES
 	switch( event->event )
 	{
 	case 5001:

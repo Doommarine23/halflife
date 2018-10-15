@@ -365,6 +365,7 @@ void PM_PlayStepSound( int step, float fvol )
 		// left foot
 		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_dirt2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
 		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_dirt4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
+		case 4: pmove->PM_PlaySound( CHAN_BODY, "player/pl_dirt5.wav", fvol, ATTN_NORM, 0, PITCH_NORM );		break;
 		}
 		break;
 	case STEP_VENT:

@@ -835,6 +835,7 @@ void ClientPrecache( void )
 	// walk on concrete YELLOWSHIFT additional step5
 	PRECACHE_SOUND("player/pl_step5.wav");
 
+
 	// walk on wood
 	PRECACHE_SOUND("player/pl_wood1.wav");		
 	PRECACHE_SOUND("player/pl_wood2.wav");
@@ -876,6 +877,7 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("player/pl_dirt2.wav");
 	PRECACHE_SOUND("player/pl_dirt3.wav");
 	PRECACHE_SOUND("player/pl_dirt4.wav");
+	PRECACHE_SOUND("player/pl_dirt5.wav"); //Yellowshift Additional Audio
 
 	PRECACHE_SOUND("player/pl_duct1.wav");		// walk in duct
 	PRECACHE_SOUND("player/pl_duct2.wav");

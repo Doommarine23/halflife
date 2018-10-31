@@ -591,7 +591,7 @@ void CHoundeye :: SonicAttack ( void )
 	MESSAGE_END();
 
 	//YELLOWSHIFT fancy lighting when houndeyes attack
-	UTIL_DynamicMuzzleFlash( pev->origin, 38,  0,  55,  200,  2, 00.1);
+	UTIL_DynamicMuzzleFlash( pev->origin, 38,  0,  55,  200,  5, 1);
 
 	MESSAGE_BEGIN( MSG_PAS, SVC_TEMPENTITY, pev->origin );
 		WRITE_BYTE( TE_BEAMCYLINDER );
@@ -642,7 +642,10 @@ void CHoundeye :: SonicAttack ( void )
 				flDist = (pEntity->Center() - pev->origin).Length();
 
 				flAdjustedDamage -= ( flDist / HOUNDEYE_MAX_ATTACK_RADIUS ) * flAdjustedDamage;
-
+				//YELLOWSHIFT Houndeyes are strong enough to rupture organs, destroy objects, and gibulate people. I think pushing you around is fair!
+				pEntity->pev->velocity.z += pEntity->pev->velocity.z + 200;
+			//	pEntity->pev->velocity.x += pEntity->pev->velocity.x + 80;
+				//pEntity->pev->velocity.y += pEntity->pev->velocity.y + 150;
 				if ( !FVisible( pEntity ) )
 				{
 					if ( pEntity->IsPlayer() )

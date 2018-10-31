@@ -183,12 +183,12 @@ void CZombie::TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir
 	*/
 
 	m_bloodColor = BLOOD_COLOR_GREEN;
-	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
+	//UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
 	break;
 
 	default:
 	m_bloodColor = BLOOD_COLOR_RED;
-	UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
+	//UTIL_BloodStream( ptr->vecEndPos, vecBlood, BloodColor(), flDamage + 20 + (100 - 100 * (pev->health / gSkillData.zombieHealth)));
 	break;
 	}
 	CBaseMonster::TraceAttack( pevAttacker, flDamage, vecDir, ptr, bitsDamageType );

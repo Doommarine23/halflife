@@ -1356,6 +1356,8 @@ void CBaseMonster :: TraceAttack( entvars_t *pevAttacker, float flDamage, Vector
 
 		SpawnBlood(ptr->vecEndPos, BloodColor(), flDamage);// a little surface blood.
 		TraceBleed( flDamage, vecDir, ptr, bitsDamageType );
+		//Yellow Shift added classic bloodstream particles for extra jazz.
+		UTIL_BloodStream( ptr->vecEndPos, UTIL_RandomBloodVector() + vecDir, BloodColor(), flDamage + 120);
 		AddMultiDamage( pevAttacker, this, flDamage, bitsDamageType );
 	}
 }

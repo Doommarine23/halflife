@@ -256,6 +256,7 @@ void CBasePlayer::Duck( ) { }
 int  CBasePlayer::Classify ( void ) { return 0; }
 void CBasePlayer::PreThink(void) { }
 void CBasePlayer::CheckTimeBasedDamage()  { }
+void CBasePlayer :: HeartBeat ( void ) { }
 void CBasePlayer :: UpdateGeigerCounter( void ) { }
 void CBasePlayer::CheckSuitUpdate() { }
 void CBasePlayer::SetSuitUpdate(char *name, int fgroup, int iNoRepeatTime) { }

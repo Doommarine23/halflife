@@ -374,18 +374,19 @@ void CBasePlayer :: DeathSound( void )
 		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "player/pl_drowndeath.wav", 1, ATTN_NONE);
 		return;
 	}
+	else
 	
 	// temporarily using pain sounds for death sounds
-	switch (RANDOM_LONG(1,5)) 
+	switch (RANDOM_LONG(0,2)) 
 	{
 	case 1: 
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain5.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/pl_drowndeath.wav", 1, ATTN_NONE);
 		break;
 	case 2: 
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain6.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/pl_drowndeath.wav", 1, ATTN_NONE);
 		break;
 	case 3: 
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/pl_pain7.wav", 1, ATTN_NORM);
+		EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/pl_drowndeath.wav", 1, ATTN_NONE);
 		break;
 	}
 
@@ -480,10 +481,36 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	flBonus = ARMOR_BONUS;
 	flRatio = ARMOR_RATIO;
 
-	if ( ( bitsDamageType & DMG_BLAST ) && g_pGameRules->IsMultiplayer() )
+	//YELLOWSHIFT New Explosion Effects and a slight re-write to keep blast damage bonus in MP and new heartbeat sound
+	//TODO Randomize Punch and Shake, add your damage to it but cap it to a maximum
+	if ( ( bitsDamageType & DMG_BLAST ) )
 	{
+		if (flDamage >= 25) //if we hit a certain level of damage by an explosion
+		{
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/heartbeat_explosion.wav", 1, ATTN_NORM);
+		pev->punchangle.x = 5;
+		pev->punchangle.y = 4;
+		pev->punchangle.z = 3;
+		UTIL_ScreenShake( pev->origin, 30.0, 1.5, 1.0, 2,true );
+		}
+		if(g_pGameRules->IsMultiplayer())
+		{
 		// blasts damage armor more.
-		flBonus *= 2;
+			flBonus *= 2;
+		}
+	}
+	
+	//YELLOWSHIFT New effects for sonic damage by houndeyes.
+	if ( (bitsDamageType & DMG_SONIC) )
+	{
+	//if (flDamage >= 25) //if we hit a certain level of damage by an explosion
+		{
+		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/heartbeat_explosion.wav", 1, ATTN_NORM);
+		pev->punchangle.x = 10;
+		pev->punchangle.y = 7;
+		pev->punchangle.z = 5;
+		UTIL_ScreenShake( pev->origin, 30.0, 2, 1.0, 2,true );
+		}
 	}
 
 	// Already dead
@@ -707,7 +734,7 @@ void CBasePlayer::PackDeadPlayerItems( void )
 {
 	int iWeaponRules;
 	int iAmmoRules;
-	int i;
+	int i; //YELLOWSHIFT Change the 20 once the mod is finished to the final number of weapons.
 	CBasePlayerWeapon *rgpPackWeapons[ 20 ];// 20 hardcoded for now. How to determine exactly how many weapons we have?
 	int iPackAmmo[ MAX_AMMO_SLOTS + 1];
 	int iPW = 0;// index into packweapons array
@@ -1182,7 +1209,6 @@ void CBasePlayer::WaterMove()
 	// waterlevel 1 - feet in water
 	// waterlevel 2 - waist in water
 	// waterlevel 3 - head in water
-
 	if (pev->waterlevel != 3) 
 	{
 		// not underwater
@@ -2254,6 +2280,35 @@ Things powered by the battery
 
 #define GEIGERDELAY 0.25
 
+
+#define HEARTBEATDELAY 2.00
+//#define HEARTBEATBASE 2.00 // Lazy way of restoring the original 2.00 second delay
+
+void CBasePlayer :: HeartBeat ( void )
+{
+
+	if (gpGlobals->time < m_flheartDelay)
+		return;
+		m_flheartDelay = gpGlobals->time +HEARTBEATDELAY;
+
+ // Stop being lazy and use a SWITCH statement instead.
+ // Randomized Heartbeat that varies on segments of player health.
+// Additional EMIT_SOUNDs aren't needed but used to change volume.
+	{
+		if (pev->health <= 50)
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.35, ATTN_NORM);
+			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.9,1.4) );
+
+		if (pev->health <= 25)
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.45, ATTN_NORM);
+			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.7,1.2) );
+
+		if (pev->health <= 15)
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.65, ATTN_NORM);
+			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.50,0.85) );
+	}
+	
+}
 void CBasePlayer :: UpdateGeigerCounter( void )
 {
 	BYTE range;
@@ -2305,6 +2360,7 @@ void CBasePlayer::CheckSuitUpdate()
 		return;
 
 	// if in range of radiation source, ping geiger counter
+	HeartBeat();
 	UpdateGeigerCounter();
 
 	if ( g_pGameRules->IsMultiplayer() )
@@ -4550,6 +4606,7 @@ int CBasePlayer :: GetCustomDecalFrames( void )
 //=========================================================
 void CBasePlayer::DropPlayerItem ( char *pszItemName )
 {
+	//YELLOWSHIFT Certain things make you drop weapons now.
 	if ( !g_pGameRules->IsMultiplayer() || (weaponstay.value > 0) )
 	{
 		// no dropping in single player.

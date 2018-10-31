@@ -936,6 +936,8 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("debris/metal6.wav");
 	PRECACHE_SOUND("debris/metal7.wav");
 
+	PRECACHE_SOUND("player/heartbeat_explosion.wav");
+	PRECACHE_SOUND("player/heartbeat1.wav");
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_ON );
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_OFF );
 
@@ -950,6 +952,7 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("player/pl_pain7.wav");
 
 	PRECACHE_MODEL("models/player.mdl");
+	PRECACHE_MODEL("models/null.mdl");
 
 	// hud sounds
 

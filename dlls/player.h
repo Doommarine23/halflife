@@ -148,6 +148,7 @@ public:
 
 	float				m_flgeigerRange;		// range to nearest radiation source
 	float				m_flgeigerDelay;		// delay per update of range msg to client
+	float				m_flheartDelay;
 	int					m_igeigerRangePrev;
 	int					m_iStepLeft;			// alternate left/right foot stepping sound
 	char				m_szTextureName[CBTEXTURENAMEMAX];	// current texture name we're standing on
@@ -284,6 +285,7 @@ public:
 
 	void CheckSuitUpdate();
 	void SetSuitUpdate(char *name, int fgroup, int iNoRepeat);
+	void HeartBeat( void );
 	void UpdateGeigerCounter( void );
 	void CheckTimeBasedDamage( void );
 

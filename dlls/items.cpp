@@ -70,6 +70,8 @@ void CWorldItem::Spawn( void )
 	case 45: // ITEM_SUIT:
 		pEntity = CBaseEntity::Create( "item_suit", pev->origin, pev->angles );
 		break;
+
+		//YELLOWSHIFT New Armor here?
 	}
 
 	if (!pEntity)
@@ -210,10 +212,7 @@ LINK_ENTITY_TO_CLASS(item_suit, CItemSuit);
 /*
 YELLOWSHIFT
 
-To maintain the ability to play the original HL Campaign and maps designed for it this item class is entirely the same
-besides the model being changed to represent security helmets. 
-However there has been an increase in "battery power" given in the skills.cfg
-
+Yellow Shift uses CItemArmor and CItemHelmet in its maps. CItemBattery is untouched. This is to maintain compatibilty with HL1 and HL1 custom levels.
 */
 
 class CItemBattery : public CItem
@@ -221,12 +220,12 @@ class CItemBattery : public CItem
 	void Spawn( void )
 	{ 
 		Precache( );
-		SET_MODEL(ENT(pev), "models/barney_helmet.mdl");
+		SET_MODEL(ENT(pev), "models/w_battery.mdl");
 		CItem::Spawn( );
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL ("models/barney_helmet.mdl");
+		PRECACHE_MODEL ("models/w_battery.mdl");
 		PRECACHE_SOUND( "items/gunpickup2.wav" );
 	}
 	BOOL MyTouch( CBasePlayer *pPlayer )
@@ -271,19 +270,20 @@ class CItemBattery : public CItem
 
 LINK_ENTITY_TO_CLASS(item_battery, CItemBattery);
 
-//YELLOWSHIFT new battery item meant to represent new vests. Grants more armor than helmets.
-class CItemBatteryBig : public CItem
+
+//YELLOWSHIFT new battery item meant to represent fresh helmets. Grants less armor than vests.
+class CItemArmorHelmet : public CItem
 {
 	void Spawn( void )
 	{ 
 		Precache( );
-		SET_MODEL(ENT(pev), "models/barney_vest.mdl");
+		SET_MODEL(ENT(pev), "models/barney_helmet.mdl");
 		CItem::Spawn( );
 	}
 	void Precache( void )
 	{
-		PRECACHE_MODEL ("models/barney_vest.mdl");
-		PRECACHE_SOUND( "items/gunpickup2.wav" );
+		PRECACHE_MODEL ("models/barney_helmet.mdl");
+		PRECACHE_SOUND( "items/item_armorhelmet.wav" );
 	}
 	BOOL MyTouch( CBasePlayer *pPlayer )
 	{
@@ -301,7 +301,7 @@ class CItemBatteryBig : public CItem
 			pPlayer->pev->armorvalue += gSkillData.batteryCapacity; // YELLOWSHIFT CHANGE THIS
 			pPlayer->pev->armorvalue = min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
 
-			EMIT_SOUND( pPlayer->edict(), CHAN_ITEM, "items/gunpickup2.wav", 1, ATTN_NORM );
+			EMIT_SOUND( pPlayer->edict(), CHAN_ITEM, "items/item_armorhelmet.wav", 1, ATTN_NORM );
 
 			MESSAGE_BEGIN( MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev );
 				WRITE_STRING( STRING(pev->classname) );
@@ -325,7 +325,63 @@ class CItemBatteryBig : public CItem
 	}
 };
 
-LINK_ENTITY_TO_CLASS(item_battery_big, CItemBatteryBig);
+LINK_ENTITY_TO_CLASS(item_armor_helmet, CItemArmorHelmet);
+
+//YELLOWSHIFT new battery item meant to represent fresh vests. Grants more armor than helmets.
+class CItemArmorVest : public CItem
+{
+	void Spawn( void )
+	{ 
+		Precache( );
+		SET_MODEL(ENT(pev), "models/barney_vest.mdl");
+		CItem::Spawn( );
+	}
+	void Precache( void )
+	{
+		PRECACHE_MODEL ("models/barney_vest.mdl");
+		PRECACHE_SOUND( "items/item_armorvest.wav" );
+	}
+	BOOL MyTouch( CBasePlayer *pPlayer )
+	{
+		if ( pPlayer->pev->deadflag != DEAD_NO )
+		{
+			return FALSE;
+		}
+
+		if ((pPlayer->pev->armorvalue < MAX_NORMAL_BATTERY) &&
+			(pPlayer->pev->weapons & (1<<WEAPON_SUIT)))
+		{
+			int pct;
+			char szcharge[64];
+
+			pPlayer->pev->armorvalue += gSkillData.batteryCapacity; // YELLOWSHIFT CHANGE THIS
+			pPlayer->pev->armorvalue = min(pPlayer->pev->armorvalue, MAX_NORMAL_BATTERY);
+
+			EMIT_SOUND( pPlayer->edict(), CHAN_ITEM, "items/item_armorvest.wav", 1, ATTN_NORM );
+
+			MESSAGE_BEGIN( MSG_ONE, gmsgItemPickup, NULL, pPlayer->pev );
+				WRITE_STRING( STRING(pev->classname) );
+			MESSAGE_END();
+
+			
+			// Suit reports new power level
+			// For some reason this wasn't working in release build -- round it.
+			pct = (int)( (float)(pPlayer->pev->armorvalue * 100.0) * (1.0/MAX_NORMAL_BATTERY) + 0.5);
+			pct = (pct / 5);
+			if (pct > 0)
+				pct--;
+		
+			sprintf( szcharge,"!HEV_%1dP", pct );
+			
+			//EMIT_SOUND_SUIT(ENT(pev), szcharge);
+			pPlayer->SetSuitUpdate(szcharge, FALSE, SUIT_NEXT_IN_30SEC);
+			return TRUE;		
+		}
+		return FALSE;
+	}
+};
+
+LINK_ENTITY_TO_CLASS(item_armor_vest, CItemArmorVest);
 
 
 

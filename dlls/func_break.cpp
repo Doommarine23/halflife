@@ -64,6 +64,8 @@ const char *CBreakable::pSpawnObjects[] =
 	"weapon_deagle",	// 23
 	"weapon_doublebarrel",	// 24
 	"weapon_m40a1",		// 25
+	"item_armor_vest", // 26
+	"item_armor_helmet", // 27
 
 	//YELLOWSHIFT END
 };

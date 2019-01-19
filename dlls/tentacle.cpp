@@ -121,6 +121,7 @@ LINK_ENTITY_TO_CLASS( monster_tentacle, CTentacle );
 #define TE_DIRT 1
 #define TE_WATER 2
 
+//YELLOWSHIFT Maybe replace all this someday.
 const char *CTentacle::pHitSilo[] = 
 {
 	"tentacle/te_strike1.wav",
@@ -133,6 +134,7 @@ const char *CTentacle::pHitDirt[] =
 	"player/pl_dirt2.wav",
 	"player/pl_dirt3.wav",
 	"player/pl_dirt4.wav",
+	"player/pl_dirt5.wav",
 };
 
 const char *CTentacle::pHitWater[] = 

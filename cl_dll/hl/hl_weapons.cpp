@@ -237,12 +237,28 @@ CBasePlayerWeapon :: PlayEmptySound
 */
 BOOL CBasePlayerWeapon :: PlayEmptySound( void )
 {
-	if (m_iPlayEmptySound)
+
 	{
-		HUD_PlaySound( "weapons/357_cock1.wav", 0.8 );
+//YELLOWSHIFT Instead of emitting 357_cock1.wav, emit a string that is passed from the weapon. 
+//Incase none exists, play 357_cock1.wav as a backup instead of crashing.
+// Why is this duplicated anyway?
+	if (m_iPlayEmptySound)
+	{  
+		if ((char *)AudioEmpty() == NULL)
+		{
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
 		m_iPlayEmptySound = 0;
 		return 0;
+		}
+		else
+		{
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, (char *)AudioEmpty(), 0.8, ATTN_NORM);
+		m_iPlayEmptySound = 0;
+		return 0;
+		}
 	}
+	return 0;
+}
 	return 0;
 }
 

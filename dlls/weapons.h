@@ -62,6 +62,10 @@ public:
 #define ITEM_SECURITY		3
 #define ITEM_BATTERY		4
 
+//YELLOW SHIFT do new batterys even need this?
+#define ITEM_ARMOR_VEST		5
+#define ITEM_ARMOR_HELMET	6
+
 #define WEAPON_NONE				0
 #define WEAPON_CROWBAR			1
 #define	WEAPON_GLOCK			2
@@ -254,12 +258,14 @@ typedef struct
 	int		iId;
 	int		iFlags;
 	int		iWeight;// this value used to determine this weapon's importance in autoselection.
+	const char *AudioEmpty; //Yellowshift Used for Unique Empty Gun Triggers
 } ItemInfo;
 
 typedef struct
-{
+{	const char *AudioEmpty; //Yellowshift Used for Unique Empty Gun Triggers
 	const char *pszName;
 	int iId;
+
 } AmmoInfo;
 
 // Items that the player has in their inventory that they can use
@@ -324,6 +330,8 @@ public:
 	int			iMaxClip( void )	{ return ItemInfoArray[ m_iId ].iMaxClip; }
 	int			iWeight( void )		{ return ItemInfoArray[ m_iId ].iWeight; }
 	int			iFlags( void )		{ return ItemInfoArray[ m_iId ].iFlags; }
+	const char  *AudioEmpty(void)	{ return ItemInfoArray[ m_iId ].AudioEmpty; }  //Yellowshift Used for Unique Empty Gun Triggers
+
 
 	// int		m_iIdPrimary;										// Unique Id for primary ammo
 	// int		m_iIdSecondary;										// Unique Id for secondary ammo
@@ -451,7 +459,6 @@ typedef struct
 
 extern MULTIDAMAGE gMultiDamage;
 
-
 #define LOUD_GUN_VOLUME			1000
 #define NORMAL_GUN_VOLUME		600
 #define QUIET_GUN_VOLUME		200
@@ -529,7 +536,7 @@ public:
 	BOOL Deploy( void );
 	void Reload( void );
 	void WeaponIdle( void );
-
+	const char *AudioEmpty; //Yellowshift Used for Unique Empty Gun Triggers
 	virtual BOOL UseDecrement( void )
 	{ 
 #if defined( CLIENT_WEAPONS )
@@ -564,6 +571,7 @@ public:
 	void Holster( int skiplocal = 0 );
 	int m_iSwing;
 	TraceResult m_trHit;
+	int SwingAnim(void);
 
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -592,6 +600,7 @@ public:
 	void Reload( void );
 	void WeaponIdle( void );
 	BOOL m_fInZoom;// don't save this. 
+	const char *AudioEmpty; //Yellowshift Used for Unique Empty Gun Triggers
 
 	virtual BOOL UseDecrement( void )
 	{ 
@@ -698,6 +707,7 @@ public:
 	float m_flNextReload;
 	int m_iShell;
 	bool m_emptyReload; // YELLOW-Shift used to determine if the shotgun was reloaded empty
+	const char *AudioEmpty; //Yellowshift Used for Unique Empty Gun Triggers
 
 	virtual BOOL UseDecrement( void )
 	{ 

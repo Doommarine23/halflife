@@ -26,7 +26,7 @@
 #define VECTOR_CONE_DM_SHOTGUN	Vector( 0.08716, 0.04362, 0.00  )// 10 degrees by 5 degrees
 #define VECTOR_CONE_DM_DOUBLESHOTGUN Vector( 0.17365, 0.04362, 0.00 ) // 20 degrees by 5 degrees
 
-//YELLOWSHIFT Additional firing animations and renamed FIRE2 (double blast) to FIREBIG to prevent conflicts.
+//YELLOWSHIFT additional animations and renamed FIRE2 (double blast) to FIREBIG to prevent conflicts.
 enum shotgun_e {
 	SHOTGUN_IDLE = 0,
 	SHOTGUN_FIRE,
@@ -37,6 +37,10 @@ enum shotgun_e {
 	SHOTGUN_FIREBIG,
 	SHOTGUN_FIREBIG2,
 	SHOTGUN_RELOAD,
+	SHOTGUN_RELOAD2,
+	SHOTGUN_RELOAD3,
+	SHOTGUN_RELOAD4,
+	SHOTGUN_RELOAD5,
 	SHOTGUN_PUMP,
 	SHOTGUN_START_RELOAD,
 	SHOTGUN_END_RELOAD,
@@ -74,7 +78,7 @@ void CShotgun::Precache( void )
 	PRECACHE_SOUND ("weapons/sbarrel1.wav");//shotgun
 
 	PRECACHE_SOUND ("weapons/reload1.wav");	// shotgun reload
-	PRECACHE_SOUND ("weapons/reload2.wav"); // YELLOWSHIFT shotgun reload
+	PRECACHE_SOUND ("weapons/reload2.wav"); // YELLOWSHIFT additional shotgun reload that went unused
 	PRECACHE_SOUND ("weapons/reload3.wav");	// shotgun reload
 
 //	PRECACHE_SOUND ("weapons/sshell1.wav");	// shotgun reload - played on client
@@ -86,6 +90,7 @@ void CShotgun::Precache( void )
 	//YELLOWSHIFT
 	PRECACHE_SOUND ("weapons/scock_backward.wav");	//  cock gun back
 	PRECACHE_SOUND ("weapons/scock_forward.wav");	// cock gun forward
+	PRECACHE_SOUND ("weapons/shotgun_empty1.wav");  // empty sound
 
 	m_usSingleFire = PRECACHE_EVENT( 1, "events/shotgun1.sc" );
 	m_usDoubleFire = PRECACHE_EVENT( 1, "events/shotgun2.sc" );
@@ -117,6 +122,7 @@ int CShotgun::GetItemInfo(ItemInfo *p)
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_SHOTGUN;
 	p->iWeight = SHOTGUN_WEIGHT;
+	p->AudioEmpty = "weapons/shotgun_empty1.wav";
 
 	return 1;
 }
@@ -317,13 +323,25 @@ void CShotgun::Reload( void )
 		// was waiting for gun to move to side
 		m_fInSpecialReload = 2;
 	switch(RANDOM_LONG(0,2))
-	{//YELLOWSHIFT The reload2.wav sound was unused, this is now corrected by changing the Random_LONG from IF to Switch
+	{	//YELLOWSHIFT The reload2.wav sound was unused, this is now corrected by changing the Random_LONG from IF to Switch
 	case 0:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload1.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
 	case 1:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload2.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
 	case 2:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload3.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
 	}
-		SendWeaponAnim( SHOTGUN_RELOAD );
 
+
+		
+
+	switch(RANDOM_LONG(0,4))
+	{	//YELLOWSHIFT Something cleaner like SendWeaponAnim( SHOTGUN_RELOAD + RANDOM_LONG(0,4) ); does not seem to function
+	case 0:SendWeaponAnim( SHOTGUN_RELOAD);  break;
+	case 1:SendWeaponAnim( SHOTGUN_RELOAD2); break;
+	case 2:SendWeaponAnim( SHOTGUN_RELOAD3); break;
+	case 3:SendWeaponAnim( SHOTGUN_RELOAD4); break;
+	case 4:SendWeaponAnim( SHOTGUN_RELOAD5); break; // replace with 5 later
+
+	}
+		
 		m_flNextReload = UTIL_WeaponTimeBase() + 0.5;
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
 	}

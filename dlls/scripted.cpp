@@ -839,7 +839,7 @@ BOOL CBaseMonster :: CineCleanup( )
 		pev->effects |= EF_NOINTERP;	// Don't interpolate either, assume the corpse is positioned in its final resting place
 		return FALSE;
 	}
-
+	//YELLOWSHIFT check this out
 	// If we actually played a sequence
 	if ( pOldCine && pOldCine->m_iszPlay )
 	{

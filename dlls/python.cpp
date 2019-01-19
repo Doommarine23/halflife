@@ -50,6 +50,7 @@ int CPython::GetItemInfo(ItemInfo *p)
 	p->iPosition = 1;
 	p->iId = m_iId = WEAPON_PYTHON;
 	p->iWeight = PYTHON_WEIGHT;
+	p->AudioEmpty = "weapons/357_empty.wav";
 
 	return 1;
 }
@@ -94,6 +95,7 @@ void CPython::Precache( void )
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
 	PRECACHE_SOUND ("weapons/357_shot1.wav");
 	PRECACHE_SOUND ("weapons/357_shot2.wav");
+	PRECACHE_SOUND ("weapons/357_empty.wav");
 
 	m_usFirePython = PRECACHE_EVENT( 1, "events/python.sc" );
 }
@@ -168,16 +170,11 @@ void CPython::PrimaryAttack()
 	}
 
 
+	//Yellowshift Original codeblock was replaced with a copy from the MP5. Achieves the same goal (dryfire) but consistent to other weapons and their behavior.
 	if (m_iClip <= 0)
-	{ 	
-		/*if (!m_fFireOnEmpty)
-			Reload( ); //Was non-functional and caused animation issues if the trigger was held down.
-		else*/
-		{
-			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
-			m_flNextPrimaryAttack = 0.15;
-		}
-
+	{
+		PlayEmptySound();
+		m_flNextPrimaryAttack = 0.15;
 		return;
 	}
 

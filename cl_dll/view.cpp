@@ -384,7 +384,7 @@ void V_CalcGunAngle ( struct ref_params_s *pparams )
 V_AddIdle
 
 Idle swaying
-==============
+============== //YELLOWSHIFT Seems this isn't really used. Perhaps make it a user option.
 */
 void V_AddIdle ( struct ref_params_s *pparams )
 {
@@ -403,16 +403,26 @@ Roll is induced by movement and damage
 */
 void V_CalcViewRoll ( struct ref_params_s *pparams )
 {
+// Mazor - used for view rolling when strafing
+extern cvar_t *cl_rollangle;
+extern cvar_t *cl_rollspeed;
+
 	float		side;
 	cl_entity_t *viewentity;
+	float quakeroll;
 	
 	viewentity = gEngfuncs.GetEntityByIndex( pparams->viewentity );
 	if ( !viewentity )
 		return;
 
+	//YELLOWSHIFT
+	//Roll the angles when strafing Quake style!
+	quakeroll = V_CalcRoll (pparams->viewangles, pparams->simvel, cl_rollangle->value, cl_rollspeed->value ) * 4;
+
 	side = V_CalcRoll ( viewentity->angles, pparams->simvel, pparams->movevars->rollangle, pparams->movevars->rollspeed );
 
-	pparams->viewangles[ROLL] += side;
+	//YELLOWSHIFT Disable += side and make it an option
+	pparams->viewangles[ROLL] += side += quakeroll;
 
 	if ( pparams->health <= 0 && ( pparams->viewheight[2] != 0 ) )
 	{
@@ -683,18 +693,15 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	view->angles[YAW]   -= bob * 0.5;
 	view->angles[ROLL]  -= bob * 1;
 	view->angles[PITCH] -= bob * 0.3;
+	//VectorCopy( view->angles, view->curstate.angles );
+
 
 	//MAKE USER OPTION
 	//YELLOWSHIFT OG Viewbob for strafing thanks to L453rh4wk on Github https://github.com/ValveSoftware/halflife/issues/1544
-	//VectorCopy( view->angles, view->curstate.angles );
 	
 	//YELLOWSHIFT jiggle the gun around a bit when turning left or right
-	view->origin[0] += 0.3;
+	view->origin[0] += 0.5;
 
-	//YELLOWSHIFT jiggle the gun left/right
-	//view->origin[0] += bob + 0.1;
-	//view->origin[2]	  += bob * 0.3;
-	
 	// pushing the view origin down off of the same X/Z plane as the ent's origin will give the
 	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem
 	// with view model distortion, this may be a cause. (SJB). 

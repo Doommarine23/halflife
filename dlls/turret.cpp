@@ -348,9 +348,9 @@ void CMiniTurret::Precache()
 {
 	CBaseTurret::Precache( );
 	PRECACHE_MODEL ("models/miniturret.mdl");	
-	PRECACHE_SOUND("weapons/hks1.wav");
-	PRECACHE_SOUND("weapons/hks2.wav");
-	PRECACHE_SOUND("weapons/hks3.wav");
+	PRECACHE_SOUND ("weapons/hks_turret1.wav");
+	PRECACHE_SOUND ("weapons/hks_turret2.wav");
+	PRECACHE_SOUND ("weapons/hks_turret3.wav");
 }
 
 void CBaseTurret::Initialize(void)
@@ -621,6 +621,7 @@ void CTurret::Shoot(Vector &vecSrc, Vector &vecDirToEnemy)
 	FireBullets( 1, vecSrc, vecDirToEnemy, TURRET_SPREAD, TURRET_RANGE, BULLET_MONSTER_12MM, 1 );
 	EMIT_SOUND(ENT(pev), CHAN_WEAPON, "turret/tu_fire1.wav", 1, 0.6);
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
+		UTIL_DynamicMuzzleFlash( vecSrc, 35,  255,  255,  128,  1, 00.1);
 }
 
 
@@ -629,12 +630,13 @@ void CMiniTurret::Shoot(Vector &vecSrc, Vector &vecDirToEnemy)
 	FireBullets( 1, vecSrc, vecDirToEnemy, TURRET_SPREAD, TURRET_RANGE, BULLET_MONSTER_9MM, 1 );
 
 	switch(RANDOM_LONG(0,2))
-	{
-	case 0: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM); break;
-	case 1: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM); break;
-	case 2: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks3.wav", 1, ATTN_NORM); break;
+	{//YELLOWSHIFT New Unique Turret Sounds
+	case 0: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks_turret1.wav", 1, ATTN_NORM); break;
+	case 1: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks_turret2.wav", 1, ATTN_NORM); break;
+	case 2: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks_turret3.wav", 1, ATTN_NORM); break;
 	}
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
+		UTIL_DynamicMuzzleFlash( vecSrc, 35,  255,  255,  128,  1, 00.1);
 }
 
 
@@ -1152,8 +1154,8 @@ class CSentry : public CBaseTurret
 public:
 	void Spawn( );
 	void Precache(void);
-	virtual void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType); 	
-	//YELLOWSHIFT Used to trace sparks.
+	virtual void TraceAttack( entvars_t *pevAttacker, float flDamage, Vector vecDir, TraceResult *ptr, int bitsDamageType); //YELLOWSHIFT Used to trace sparks.
+
 
 	// other functions
 	void Shoot(Vector &vecSrc, Vector &vecDirToEnemy);
@@ -1169,6 +1171,11 @@ void CSentry::Precache()
 {
 	CBaseTurret::Precache( );
 	PRECACHE_MODEL ("models/sentry.mdl");	
+
+	//YELLOWSHIFT new turret audio
+	PRECACHE_SOUND ("weapons/hks_turret1.wav");
+	PRECACHE_SOUND ("weapons/hks_turret2.wav");
+	PRECACHE_SOUND ("weapons/hks_turret3.wav");
 }
 
 void CSentry::Spawn()
@@ -1197,12 +1204,14 @@ void CSentry::Shoot(Vector &vecSrc, Vector &vecDirToEnemy)
 	FireBullets( 1, vecSrc, vecDirToEnemy, TURRET_SPREAD, TURRET_RANGE, BULLET_MONSTER_MP5, 1 );
 	
 	switch(RANDOM_LONG(0,2))
-	{
-	case 0: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM); break;
-	case 1: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM); break;
-	case 2: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks3.wav", 1, ATTN_NORM); break;
+	{ //YELLOWSHIFT New Unique Turret Sounds
+	case 0: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks_turret1.wav", 1, ATTN_NORM); break;
+	case 1: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks_turret2.wav", 1, ATTN_NORM); break;
+	case 2: EMIT_SOUND(ENT(pev), CHAN_WEAPON, "weapons/hks_turret3.wav", 1, ATTN_NORM); break;
 	}
 	pev->effects = pev->effects | EF_MUZZLEFLASH;
+	//YELLOWSHIFT New fancy dynamic lighting, oh my!
+	UTIL_DynamicMuzzleFlash( vecSrc, 35,  255,  255,  128,  1, 00.1);
 }
 	
 //YELLOWSHIFT Sparks and effects when you shoot turrets.

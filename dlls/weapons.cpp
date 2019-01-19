@@ -330,6 +330,11 @@ void W_Precache(void)
 	UTIL_PrecacheOther( "item_antidote" );
 	UTIL_PrecacheOther( "item_security" );
 	UTIL_PrecacheOther( "item_longjump" );
+	
+	//YELLOW SHIFT 
+	UTIL_PrecacheOther( "item_armor_vest" );
+	UTIL_PrecacheOther( "item_armor_helmet" );
+
 
 	// shotgun
 	UTIL_PrecacheOtherWeapon( "weapon_shotgun" );
@@ -737,6 +742,7 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 		m_pPlayer->TabulateAmmo();
 		PrimaryAttack();
 	}
+	//YELLOWSHIFT Automatic Reloads will be a gameplay option.
 	else if ( m_pPlayer->pev->button & IN_RELOAD && iMaxClip() != WEAPON_NOCLIP && !m_fInReload ) 
 	{
 		// reload when reload is pressed, or if no buttons are down and weapon is empty.
@@ -758,7 +764,7 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 			}
 		}
 		else
-		{
+		{	//YELLOWSHIFT Automatic Reloads will be a gameplay option.
 			// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
 			if ( m_iClip == 0 && !(iFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < ( UseDecrement() ? 0.0 : gpGlobals->time ) )
 			{
@@ -1085,15 +1091,25 @@ BOOL CBasePlayerWeapon :: DefaultReload( int iClipSize, int iAnim, float fDelay,
 
 BOOL CBasePlayerWeapon :: PlayEmptySound( void )
 {
+//YELLOWSHIFT Instead of emitting 357_cock1.wav, emit a string that is passed from the weapon. 
+//Incase none exists, play 357_cock1.wav as a backup instead of crashing.
 	if (m_iPlayEmptySound)
-	{
+	{  
+		if ((char *)AudioEmpty() == NULL)
+		{
 		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
 		m_iPlayEmptySound = 0;
 		return 0;
+		}
+		else
+		{
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, (char *)AudioEmpty(), 0.8, ATTN_NORM);
+		m_iPlayEmptySound = 0;
+		return 0;
+		}
 	}
 	return 0;
 }
-
 void CBasePlayerWeapon :: ResetEmptySound( void )
 {
 	m_iPlayEmptySound = 1;

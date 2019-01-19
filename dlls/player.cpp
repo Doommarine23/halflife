@@ -2295,16 +2295,20 @@ void CBasePlayer :: HeartBeat ( void )
  // Randomized Heartbeat that varies on segments of player health.
 // Additional EMIT_SOUNDs aren't needed but used to change volume.
 	{
+		if (pev->health <= 75)
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.15, ATTN_NORM);
+			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(1,2.0) );
+		
 		if (pev->health <= 50)
-			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.35, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.38, ATTN_NORM);
 			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.9,1.4) );
 
 		if (pev->health <= 25)
-			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.45, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.47, ATTN_NORM);
 			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.7,1.2) );
 
 		if (pev->health <= 15)
-			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.65, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.68, ATTN_NORM);
 			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.50,0.85) );
 	}
 	

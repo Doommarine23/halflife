@@ -73,6 +73,7 @@ void CGlock::Precache( void )
 	PRECACHE_SOUND ("weapons/pl_gun3.wav");//handgun
 	PRECACHE_SOUND ("weapons/pl_gun4.wav");//handgun
 	PRECACHE_SOUND ("weapons/pl_gun5.wav");//handgun
+	PRECACHE_SOUND ("weapons/pl_gun_empty.wav");
 
 	m_usFireGlock1 = PRECACHE_EVENT( 1, "events/glock1.sc" );
 	m_usFireGlock2 = PRECACHE_EVENT( 1, "events/glock2.sc" );
@@ -91,6 +92,7 @@ int CGlock::GetItemInfo(ItemInfo *p)
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_GLOCK;
 	p->iWeight = GLOCK_WEIGHT;
+	p->AudioEmpty = "weapons/pl_gun_empty.wav"; //Yellowshift required for unique dryfire sounds. If not defined, will default to 357_cock1.wav
 
 	return 1;
 }

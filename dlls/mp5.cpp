@@ -80,7 +80,7 @@ void CMP5::Precache( void )
 	PRECACHE_SOUND("items/clipinsert1.wav");
 	PRECACHE_SOUND("items/cliprelease1.wav");
 	//YELLOWSHIFT
-	PRECACHE_SOUND("weapons/9mmar_slideback.wav");
+	PRECACHE_SOUND("weapons/hks_empty.wav");
 	PRECACHE_SOUND("weapons/9mmar_slideforward.wav");
 
 	PRECACHE_SOUND ("weapons/hks1.wav");// H to the K
@@ -113,6 +113,7 @@ int CMP5::GetItemInfo(ItemInfo *p)
 	p->iFlags = 0;
 	p->iId = m_iId = WEAPON_MP5;
 	p->iWeight = MP5_WEIGHT;
+	p->AudioEmpty = "weapons/hks_empty.wav";
 
 	return 1;
 }
@@ -201,10 +202,11 @@ void CMP5::PrimaryAttack()
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	m_flNextPrimaryAttack = GetNextAttackDelay(0.1);
+	m_flNextPrimaryAttack = GetNextAttackDelay(0.08);
 
+	//YELLOWSHIFT increased the rate of fire slightly just to keep the MP5 relevant with new weapons
 	if ( m_flNextPrimaryAttack < UTIL_WeaponTimeBase() )
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.1;
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.08; //0.1 Original ROF
 
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }

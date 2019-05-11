@@ -850,6 +850,15 @@ void ClientPrecache( void )
 	PRECACHE_SOUND("impacts/imp_step4.wav");
 
 	PRECACHE_SOUND("impacts/imp_metal1.wav"); // Metal
+	PRECACHE_SOUND("impacts/imp_metal2.wav");
+	PRECACHE_SOUND("impacts/imp_metal3.wav");
+	PRECACHE_SOUND("impacts/imp_metal4.wav");
+
+	
+	PRECACHE_SOUND("impacts/imp_wood1.wav"); // Wood
+	PRECACHE_SOUND("impacts/imp_wood2.wav");
+	PRECACHE_SOUND("impacts/imp_wood3.wav");
+	PRECACHE_SOUND("impacts/imp_wood4.wav");
 
 	//YELLOWSHIFT END
 	

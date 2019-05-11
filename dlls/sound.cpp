@@ -888,6 +888,7 @@ BOOL FEnvSoundInRange(entvars_t *pev, entvars_t *pevTarget, float *pflRange)
 
 // CONSIDER: if player in water state, autoset roomtype to 14,15 or 16. 
 
+//YELLOWSHIFT: Considering it.
 void CEnvSound :: Think( void )
 {
 	// get pointer to client if visible; FIND_CLIENT_IN_PVS will
@@ -1732,11 +1733,12 @@ float TEXTURETYPE_PlaySound(TraceResult *ptr,  Vector vecSrc, Vector vecEnd, int
 		rgsz[3] = "player/pl_slosh4.wav";
 		cnt = 4;
 		break;
-	case CHAR_TEX_WOOD: fvol = 0.9; fvolbar = 0.2;
-		rgsz[0] = "debris/wood1.wav";
-		rgsz[1] = "debris/wood2.wav";
-		rgsz[2] = "debris/wood3.wav";
-		cnt = 3;
+	case CHAR_TEX_WOOD: fvol = 0.9; fvolbar = 0.2; //YELLOWSHIFT
+		rgsz[0] = "impacts/imp_wood1.wav";
+		rgsz[1] = "impacts/imp_wood2.wav";
+		rgsz[2] = "impacts/imp_wood3.wav";
+		rgsz[3] = "impacts/imp_wood3.wav";
+		cnt = 4;
 		break;
 	case CHAR_TEX_GLASS:
 	case CHAR_TEX_COMPUTER:

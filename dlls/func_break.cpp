@@ -334,6 +334,7 @@ void CBreakable::Precache( void )
 		PRECACHE_SOUND("debris/bustglass1.wav");
 		PRECACHE_SOUND("debris/bustglass2.wav");
 		PRECACHE_SOUND("debris/bustglass3.wav");
+		PRECACHE_SOUND("debris/bustglass4.wav");//YELLOWSHIFT bustglass2 from the 0.52 Alpha
 		break;
 	case matMetal:
 		pGibName = "models/metalplategibs.mdl";
@@ -634,13 +635,15 @@ void CBreakable::Die( void )
 	switch (m_Material)
 	{
 	case matGlass:
-		switch ( RANDOM_LONG(0,2) )
+		switch ( RANDOM_LONG(0,3) )
 		{
 		case 0:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass1.wav", fvol, ATTN_NORM, 0, pitch);	
 			break;
 		case 1:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass2.wav", fvol, ATTN_NORM, 0, pitch);	
 			break;
 		case 2:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass3.wav", fvol, ATTN_NORM, 0, pitch);	
+			break;
+		case 3:	EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "debris/bustglass4.wav", fvol, ATTN_NORM, 0, pitch);	
 			break;
 		}
 		cFlag = BREAK_GLASS;

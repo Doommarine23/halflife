@@ -234,7 +234,7 @@ void CPython::Reload( void )
 #endif
 	//EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
 	//EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
-	DefaultReload( 6, PYTHON_RELOAD, 2.0, bUseScope );
+	DefaultReload( 6, PYTHON_RELOAD, 3.05, bUseScope ); // Originally 2.0 Seconds.
 }
 
 

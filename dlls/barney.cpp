@@ -441,8 +441,22 @@ void CBarney :: BarneyFirePistol ( void )
 		pitchShift = 0;
 	else
 		pitchShift -= 5;
-	EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "barney/ba_attack2.wav", 1, ATTN_NORM, 0, 100 + pitchShift );
 
+						edict_t		*pentPlayer = FIND_CLIENT_IN_PVS(edict());
+
+			entvars_t	*pevPlayer;
+			float flDist;
+			pevPlayer = VARS( pentPlayer );
+			flDist = ( pev->origin - pevPlayer->origin ).Length2D();
+			//YELLOWSHIFT If the Player is 768 or so units away, play a distant gunshot.
+		if( flDist >= 768)
+			{
+				EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "barney/ba_attack2.wav", 1, ATTN_NORM, 0, 100 + pitchShift );
+			}
+		else
+			{
+				EMIT_SOUND_DYN( ENT(pev), CHAN_WEAPON, "weapons/pl_gun3.wav", 1, ATTN_NORM, 0, 100 + pitchShift );
+			}
 	CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, 384, 0.3 );
 
 	// UNDONE: Reload?

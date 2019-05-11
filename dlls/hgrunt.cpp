@@ -919,19 +919,31 @@ void CHGrunt :: HandleAnimEvent( MonsterEvent_t *pEvent )
 
 		case HGRUNT_AE_BURST1:
 		{
+					edict_t		*pentPlayer = FIND_CLIENT_IN_PVS(edict());
+
+			entvars_t	*pevPlayer;
+			float flDist;
+						pevPlayer = VARS( pentPlayer );
+
+			flDist = ( pev->origin - pevPlayer->origin ).Length2D();
 			if ( FBitSet( pev->weapons, HGRUNT_9MMAR ))
 			{
 				Shoot();
 
-				// the first round of the three round burst plays the sound and puts a sound in the world sound list.
-				if ( RANDOM_LONG(0,1) )
+				//YELLOWSHIFT If the Player is 768 or so units away, play a distant gunshot.
+				if( flDist >= 768)
 				{
-					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "hgrunt/gr_mgun1.wav", 1, ATTN_NORM );
+					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "hgrunt/gr_mgun1_distant.wav", 1, ATTN_NORM );
 				}
-				else
-				{
-					EMIT_SOUND( ENT(pev), CHAN_WEAPON, "hgrunt/gr_mgun2.wav", 1, ATTN_NORM );
-				}
+				else				// the first round of the three round burst plays the sound and puts a sound in the world sound list.
+					if ( RANDOM_LONG(0,1) )
+					{
+						EMIT_SOUND( ENT(pev), CHAN_WEAPON, "hgrunt/gr_mgun1.wav", 1, ATTN_NORM );
+					}
+					else
+					{
+						EMIT_SOUND( ENT(pev), CHAN_WEAPON, "hgrunt/gr_mgun2.wav", 1, ATTN_NORM );
+					}
 			}
 			else
 			{
@@ -1056,7 +1068,9 @@ void CHGrunt :: Precache()
 
 	PRECACHE_SOUND( "hgrunt/gr_mgun1.wav" );
 	PRECACHE_SOUND( "hgrunt/gr_mgun2.wav" );
-	
+
+		PRECACHE_SOUND( 	"hgrunt/gr_mgun1_distant.wav" );
+
 	PRECACHE_SOUND( "hgrunt/gr_die1.wav" );
 	PRECACHE_SOUND( "hgrunt/gr_die2.wav" );
 	PRECACHE_SOUND( "hgrunt/gr_die3.wav" );

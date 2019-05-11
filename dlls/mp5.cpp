@@ -173,7 +173,7 @@ void CMP5::PrimaryAttack()
 #ifdef CLIENT_DLL
 	if ( !bIsMultiplayer() )
 #else
-	if ( !g_pGameRules->IsMultiplayer() )
+	if ( g_pGameRules->IsMultiplayer() )
 #endif
 	{
 		// optimized multiplayer. Widened to make it easier to hit a moving player

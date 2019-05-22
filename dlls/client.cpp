@@ -947,6 +947,7 @@ void ClientPrecache( void )
 
 	PRECACHE_SOUND("player/heartbeat_explosion.wav");
 	PRECACHE_SOUND("player/heartbeat1.wav");
+	PRECACHE_SOUND("player/player_heartdeath.wav");
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_ON );
 	PRECACHE_SOUND( SOUND_FLASHLIGHT_OFF );
 

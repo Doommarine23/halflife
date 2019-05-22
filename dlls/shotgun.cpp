@@ -327,10 +327,7 @@ void CShotgun::Reload( void )
 	case 0:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload1.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
 	case 1:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload2.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
 	case 2:EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/reload3.wav", 1, ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f)); break;
-	}
-
-
-		
+	}	
 
 	switch(RANDOM_LONG(0,4))
 	{	//YELLOWSHIFT Something cleaner like SendWeaponAnim( SHOTGUN_RELOAD + RANDOM_LONG(0,4) ); does not seem to function
@@ -338,10 +335,9 @@ void CShotgun::Reload( void )
 	case 1:SendWeaponAnim( SHOTGUN_RELOAD2); break;
 	case 2:SendWeaponAnim( SHOTGUN_RELOAD3); break;
 	case 3:SendWeaponAnim( SHOTGUN_RELOAD4); break;
-	case 4:SendWeaponAnim( SHOTGUN_RELOAD5); break; // replace with 5 later
+	case 4:SendWeaponAnim( SHOTGUN_RELOAD5); break;
 
-	}
-		
+	}	
 		m_flNextReload = UTIL_WeaponTimeBase() + 0.5;
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
 	}

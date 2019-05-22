@@ -758,8 +758,8 @@ void EV_FireSAW( event_args_t *args )
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( SAW_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
 
-		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -1.9, 1.9 ) );
-		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.4, 0.5 ) ); // X Axis
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -1.8, 1.8 ) );
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.4, 0.4 ) ); // X Axis
 	}
 
 	EV_GetDefaultShellInfo( args, origin, velocity, ShellVelocity, ShellOrigin, forward, right, up, 20, -12, 4 );
@@ -846,7 +846,7 @@ void EV_FireGlock1( event_args_t *args )
 		
 		//YELLOWSHIFT additional firing animations & new recoil punch
 		//V_PunchAxis( 0, -2.0 );
-		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.5, -2.0 ) ); // Y Axis
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.5, -1.5 ) ); // Y Axis
 		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.25, 0.5 ) ); // X Axis
 	}
 
@@ -923,7 +923,7 @@ void EV_FireGlock2( event_args_t *args )
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( (empty == 0) ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
 		
 		//A touch more recoil vs semi-automatic.
-		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.6, -2.5 ) ); // Y Axis
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.5, -2.2 ) ); // Y Axis
 		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.3, 0.58 ) ); // X Axis
 		//V_PunchAxis( 0, -2.0 );
 	}
@@ -1099,7 +1099,7 @@ void EV_FireMP5( event_args_t *args )
 	vec3_t origin;
 	vec3_t angles;
 	vec3_t velocity;
-	int empty;	// YELLOWSHIFT 
+	int magazine;	// YELLOWSHIFT 
 
 	vec3_t ShellVelocity;
 	vec3_t ShellOrigin;
@@ -1108,7 +1108,7 @@ void EV_FireMP5( event_args_t *args )
 	vec3_t up, right, forward;
 	float flSpread = 0.01;
 
-	empty = args->bparam1; 	// YELLOWSHIFT 
+	magazine = args->bparam1; 	// YELLOWSHIFT empty refers to the magazine size. Thus, empty 15 >= is saying "magazine at 15 or less?"
 
 	idx = args->entindex;
 	VectorCopy( args->origin, origin );
@@ -1126,8 +1126,8 @@ void EV_FireMP5( event_args_t *args )
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( MP5_FIRE1 + gEngfuncs.pfnRandomLong(0,2), 2 );
 
 		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work, use RandomFloat if you get the same idea.
-		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -1.8, 1.6 ) );
-		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.5, 0.6 ) ); // X Axis
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat( -1.6, 1.3 ) );
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.4, 0.5 ) ); // X Axis
 	}
 
 
@@ -1135,8 +1135,8 @@ void EV_FireMP5( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 
-	if(empty <= 15)
-	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
+	if(magazine <= 15)
+	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
 	{
 	case 0:
 		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks1_empty.wav", 1, ATTN_NORM, 0, 94 + gEngfuncs.pfnRandomLong( 0, 0xf ) );
@@ -1245,8 +1245,8 @@ void EV_FirePython( event_args_t *args )
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( PYTHON_FIRE1, multiplayer ? 1 : 0 );
 
 		// YELLOWSHIFT Randomized screenpunch/recoil. RandomLong does not work. Float does. Just a tip ;)
-		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -7.5, -10 ) ); // Y Axis
-		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -1.5, 3 ) ); // X Axis
+		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -7.5, -10.0 ) ); // Y Axis
+		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -1.5, 3.0 ) ); // X Axis
 	}
 
 	switch( gEngfuncs.pfnRandomLong( 0, 1 ) )
@@ -1878,14 +1878,14 @@ void EV_EgonFire( event_args_t *args )
 		if ( iFireMode == FIRE_WIDE )
 			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, EGON_SOUND_STARTUP, 0.98, ATTN_NORM, 0, 125 );
 		else
-			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, EGON_SOUND_STARTUP, 0.9, ATTN_NORM, 0, 100 );
+			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, EGON_SOUND_OFF, 0.9, ATTN_NORM, 0, 100 );
 	}
 	else
 	{
 		if ( iFireMode == FIRE_WIDE )
 			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_STATIC, EGON_SOUND_RUN, 0.98, ATTN_NORM, 0, 125 );
 		else
-			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_STATIC, EGON_SOUND_RUN, 0.9, ATTN_NORM, 0, 100 );
+			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_STATIC, EGON_SOUND_OFF, 0.9, ATTN_NORM, 0, 100 );
 	}
 
 	//Only play the weapon anims if I shot it.
@@ -1924,15 +1924,30 @@ void EV_EgonFire( event_args_t *args )
 
 			int iBeamModelIndex = gEngfuncs.pEventAPI->EV_FindModelIndex( EGON_BEAM_SPRITE );
 
-			float r = 50.0f;
-			float g = 50.0f;
-			float b = 125.0f;
+
+	float r;
+	float g;
+	float b;
+			if ( iFireMode == FIRE_WIDE )
+				{
+				 r = 50.0f;
+				 g = 50.0f;
+				 b = 125.0f;
+				}
+			else
+				if ( iFireMode == FIRE_NARROW )		
+					{
+					 r = 150.0f;
+					 g = 20.0f;
+					 b = 155.0f;
+					}
 
 			if ( IEngineStudio.IsHardware() )
-			{
-				r /= 100.0f;
-				g /= 100.0f;
-			}
+				{
+					r /= 100.0f;
+					g /= 100.0f;
+				}
+					
 				
 		
 			pBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint ( idx | 0x1000, tr.endpos, iBeamModelIndex, 99999, 3.5, 0.2, 0.7, 55, 0, 0, r, g, b );
@@ -1942,7 +1957,7 @@ void EV_EgonFire( event_args_t *args )
  
 			pBeam2 = gEngfuncs.pEfxAPI->R_BeamEntPoint ( idx | 0x1000, tr.endpos, iBeamModelIndex, 99999, 5.0, 0.08, 0.7, 25, 0, 0, r, g, b );
 		}
-	}
+		}
 }
 
 void EV_EgonStop( event_args_t *args )

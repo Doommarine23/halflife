@@ -237,29 +237,27 @@ CBasePlayerWeapon :: PlayEmptySound
 */
 BOOL CBasePlayerWeapon :: PlayEmptySound( void )
 {
-
-	{
-//YELLOWSHIFT Instead of emitting 357_cock1.wav, emit a string that is passed from the weapon. 
-//Incase none exists, play 357_cock1.wav as a backup instead of crashing.
-// Why is this duplicated anyway?
-	if (m_iPlayEmptySound)
-	{  
-		if ((char *)AudioEmpty() == NULL)
-		{
-		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
-		m_iPlayEmptySound = 0;
-		return 0;
-		}
-		else
-		{
-		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, (char *)AudioEmpty(), 0.8, ATTN_NORM);
-		m_iPlayEmptySound = 0;
-		return 0;
-		}
-	}
-	return 0;
-}
-	return 0;
+    {
+        // YELLOWSHIFT
+        // Instead of emitting 357_cock1.wav, emit a string that is passed from the weapon. 
+        // Incase none exists, play 357_cock1.wav as a backup instead of crashing.
+        // Why is this duplicated anyway?
+        if (m_iPlayEmptySound)
+        {  
+            if ((char *)AudioEmpty() == NULL)
+            {
+            EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
+            m_iPlayEmptySound = 0;
+            }
+            else
+            {
+            EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, (char *)AudioEmpty(), 0.8, ATTN_NORM);
+            m_iPlayEmptySound = 0;
+            }
+        }
+    }
+    
+    return 0;
 }
 
 /*
@@ -394,7 +392,7 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 		// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
 		if ( m_iClip == 0 && !(iFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < 0.0 )
 		{
-			Reload();
+		//	Reload(); YELLOWSHIFT testing
 			return;
 		}
 

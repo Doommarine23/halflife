@@ -51,16 +51,6 @@ enum saw_e
 	SAW_FIRE3,
 };
 
-#define BULLET_GROUP					3
-#define BULLET_GROUP_EIGHT				0
-#define BULLET_GROUP_SEVEN				1
-#define BULLET_GROUP_SIX				2
-#define BULLET_GROUP_FIVE				3
-#define BULLET_GROUP_FOUR				4
-#define BULLET_GROUP_THREE				5
-#define BULLET_GROUP_TWO				6
-#define BULLET_GROUP_ONE				7
-#define BULLET_GROUP_NONE				8
 	
 
 LINK_ENTITY_TO_CLASS( weapon_saw, CSAW );
@@ -136,6 +126,7 @@ int CSAW::AddToPlayer( CBasePlayer *pPlayer )
 BOOL CSAW::Deploy( )
 {
 	return DefaultDeploy( "models/v_saw.mdl", "models/p_saw.mdl", SAW_DEPLOY, "saw" );
+
 }
 
 
@@ -179,7 +170,7 @@ void CSAW::PrimaryAttack()
 #ifdef CLIENT_DLL
 	if ( !bIsMultiplayer() )
 #else
-	if ( !g_pGameRules->IsMultiplayer() )
+	if ( g_pGameRules->IsMultiplayer() )
 #endif
 	{
 		// optimized multiplayer. Widened to make it easier to hit a moving player
@@ -188,7 +179,7 @@ void CSAW::PrimaryAttack()
 	else
 	{
 		// single player spread
-		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_3DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+		vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_6DEGREES, 8192, BULLET_PLAYER_MP5, 2, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 	}
 
   int flags;
@@ -209,7 +200,7 @@ void CSAW::PrimaryAttack()
 	if ( m_flNextPrimaryAttack < UTIL_WeaponTimeBase() )
 		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.1;
 
-	SetBodygroup( BULLET_GROUP, BULLET_NONE );
+//	SetBodygroup( BULLET_GROUP, BULLET_NONE );
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
@@ -248,28 +239,28 @@ void CSAW::WeaponIdle( void )
 		iAnim = SAW_IDLE1;
 		break;
 	}
-	/*switch ( m_iClip )
+	switch ( m_iClip )
 	{
 	case 8:	
-	SetBodygroup( BULLET_GROUP, BULLET_EIGHT ); break; //FULL MAGAZINE
+			pev->body = 1; break; //FULL MAGAZINE
 	case 7:
-	SetBodygroup( BULLET_GROUP, BULLET_SEVEN ); break;
+			pev->body = 2; break;
 	case 6:
-	SetBodygroup( BULLET_GROUP, BULLET_SIX ); break;
+			pev->body = 3; break;
 	case 5:
-	SetBodygroup( BULLET_GROUP, BULLET_FIVE ); break;
+			pev->body = 4; break;
 	case 4:
-	SetBodygroup( BULLET_GROUP, BULLET_FOUR ); break;
+			pev->body = 5; break;
 	case 3:
-	SetBodygroup( BULLET_GROUP, BULLET_THREE ); break;
+			pev->body = 6; break;
 	case 2:
-	SetBodygroup( BULLET_GROUP, BULLET_TWO ); break;
+			pev->body = 7; break;
 	case 1:
-	SetBodygroup( BULLET_GROUP, BULLET_ONE ); break;
+			pev->body = 8; break;
 	case 0:
-	SetBodygroup( BULLET_GROUP, BULLET_NONE ); break;
+			pev->body = 9; break;
 
-	}*/
+	}
 
 
 	SendWeaponAnim( iAnim );

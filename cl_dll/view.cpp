@@ -701,7 +701,6 @@ void V_CalcNormalRefdef ( struct ref_params_s *pparams )
 	
 	//YELLOWSHIFT jiggle the gun around a bit when turning left or right
 	view->origin[0] += 0.5;
-
 	// pushing the view origin down off of the same X/Z plane as the ent's origin will give the
 	// gun a very nice 'shifting' effect when the player looks up/down. If there is a problem
 	// with view model distortion, this may be a cause. (SJB). 

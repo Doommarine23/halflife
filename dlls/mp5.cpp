@@ -173,7 +173,7 @@ void CMP5::PrimaryAttack()
 #ifdef CLIENT_DLL
 	if ( !bIsMultiplayer() )
 #else
-	if ( g_pGameRules->IsMultiplayer() )
+	if ( g_pGameRules->IsMultiplayer() ) //YELLOWSHIFT Fixed so the MP5 spread is Vector Cone 3 in SP as intended.
 #endif
 	{
 		// optimized multiplayer. Widened to make it easier to hit a moving player

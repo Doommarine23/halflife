@@ -375,23 +375,23 @@ void CBasePlayer :: DeathSound( void )
 		return;
 	}
 	else
-	
+	if (pev->waterlevel <= 2)
 	// temporarily using pain sounds for death sounds
 	switch (RANDOM_LONG(0,2)) 
 	{
 	case 1: 
-		EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/pl_drowndeath.wav", 1, ATTN_NONE);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "player/player_heartdeath.wav", 1, ATTN_NONE);
 		break;
 	case 2: 
-		EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/pl_drowndeath.wav", 1, ATTN_NONE);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "player/player_heartdeath.wav", 1, ATTN_NONE);
 		break;
 	case 3: 
-		EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/pl_drowndeath.wav", 1, ATTN_NONE);
+		EMIT_SOUND(ENT(pev), CHAN_WEAPON, "player/player_heartdeath.wav", 1, ATTN_NONE);
 		break;
 	}
 
 	// play one of the suit death alarms
-	EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
+	//EMIT_GROUPNAME_SUIT(ENT(pev), "HEV_DEAD");
 }
 
 // override takehealth
@@ -2014,6 +2014,19 @@ void CBasePlayer::PreThink(void)
 		Jump();
 	}
 
+		if (pev->button & IN_ALT1)
+	{
+		// If on a ladder, jump off the ladder
+		// else Jump
+		Jump();
+	}
+
+			if (pev->button & IN_CANCEL)
+	{
+		// If on a ladder, jump off the ladder
+		// else Jump
+		Jump();
+	}
 
 	// If trying to duck, already ducked, or in the process of ducking
 	if ((pev->button & IN_DUCK) || FBitSet(pev->flags,FL_DUCKING) || (m_afPhysicsFlags & PFLAG_DUCKING) )

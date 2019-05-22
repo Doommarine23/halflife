@@ -12,6 +12,13 @@
 *   without written permission from Valve LLC.
 *
 ****/
+
+/*
+
+YELLOWSHIFT
+
+I am in the process of rebuilding the unused alt-fire system. */
+
 #if !defined( OEM_BUILD ) && !defined( HLDEMO_BUILD )
 
 #include "extdll.h"
@@ -239,9 +246,20 @@ void CEgon::Attack( void )
 
 void CEgon::PrimaryAttack( void )
 {
-	m_fireMode = FIRE_WIDE;
+	//m_fireMode = FIRE_NARROW;
 	Attack();
 
+}
+
+void CEgon::SecondaryAttack( void )
+{
+	if(m_fireMode == FIRE_NARROW)
+		m_fireMode = FIRE_WIDE;
+	else
+		if(m_fireMode == FIRE_WIDE)
+		m_fireMode = FIRE_NARROW;
+
+		m_flNextSecondaryAttack = 0.5;
 }
 
 void CEgon::Fire( const Vector &vecOrigSrc, const Vector &vecDir )
@@ -447,7 +465,7 @@ void CEgon::CreateEffect( void )
 	{
 		m_pBeam->SetScrollRate( 50 );
 		m_pBeam->SetNoise( 20 );
-		m_pNoise->SetColor( 50, 50, 255 );
+		m_pNoise->SetColor( 250, 50, 5 );
 		m_pNoise->SetNoise( 8 );
 	}
 	else

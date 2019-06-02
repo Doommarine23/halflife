@@ -3187,7 +3187,12 @@ void CBasePlayer::SelectNextItem( int iItem )
 	CBasePlayerItem *pItem;
 
 	pItem = m_rgpPlayerItems[ iItem ];
-	
+
+	if ( m_pActiveItem && !m_pActiveItem->CanHolster() )
+	{
+		return;
+	}
+
 	if (!pItem)
 		return;
 
@@ -3214,10 +3219,13 @@ void CBasePlayer::SelectNextItem( int iItem )
 	ResetAutoaim( );
 
 	// FIX, this needs to queue them up and delay
+
+
 	if (m_pActiveItem)
 	{
 		m_pActiveItem->Holster( );
 	}
+
 	
 	m_pActiveItem = pItem;
 
@@ -3259,6 +3267,11 @@ void CBasePlayer::SelectItem(const char *pstr)
 	
 	if (pItem == m_pActiveItem)
 		return;
+
+		if ( m_pActiveItem && !m_pActiveItem->CanHolster() )
+	{
+		return;
+	}
 
 	ResetAutoaim( );
 

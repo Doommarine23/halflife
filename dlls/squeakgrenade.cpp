@@ -462,6 +462,9 @@ int CSqueak::GetItemInfo(ItemInfo *p)
 
 BOOL CSqueak::Deploy( )
 {
+
+	m_pPlayer->pev->skin = 2;
+
 	// play hunt sound
 	float flRndSound = RANDOM_FLOAT ( 0 , 1 );
 
@@ -471,7 +474,7 @@ BOOL CSqueak::Deploy( )
 		EMIT_SOUND_DYN(ENT(pev), CHAN_VOICE, "squeek/sqk_hunt3.wav", 1, ATTN_NORM, 0, 100);
 
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
-
+			ALERT( at_console, "Viewmodel skin is %d, m_pPlayer->pev->skin" );
 	return DefaultDeploy( "models/v_squeak.mdl", "models/p_squeak.mdl", SQUEAK_UP, "squeak" );
 }
 
@@ -563,6 +566,9 @@ void CSqueak::WeaponIdle( void )
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
+		m_pPlayer->pev->skin = 0;
+		//ALERT( at_console, "Viewmodel skin is %d, m_pPlayer->pev->skin" );
+
 	if (m_fJustThrown)
 	{
 		m_fJustThrown = 0;
@@ -584,6 +590,9 @@ void CSqueak::WeaponIdle( void )
 	{
 		iAnim = SQUEAK_IDLE1;
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 30.0 / 16 * (2);
+
+		//EYESKIN
+
 	}
 	else if (flRand <= 0.875)
 	{

@@ -910,7 +910,7 @@ void CHGrunt :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		}
 		break;
 
-		case HGRUNT_AE_GREN_DROP:
+		case HGRUNT_AE_GREN_DROP: //YELLOWSHIFT HGrunts have a habit of cowering after dropping a grenade. Try to fix this.
 		{
 			UTIL_MakeVectors( pev->angles );
 			CGrenade::ShootTimed( pev, pev->origin + gpGlobals->v_forward * 17 - gpGlobals->v_right * 27 + gpGlobals->v_up * 6, g_vecZero, 3 );

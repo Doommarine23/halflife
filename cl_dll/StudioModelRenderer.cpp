@@ -1098,7 +1098,7 @@ void CStudioModelRenderer::StudioMergeBones ( model_t *m_pSubModel )
 	}
 }
 
-#if defined( _TFC )
+//#if defined( _TFC )
 #include "pm_shared.h"
 const Vector& GetTeamColor( int team_no );
 #define IS_FIRSTPERSON_SPEC ( g_iUser1 == OBS_IN_EYE || (g_iUser1 && (gHUD.m_Spectator.m_pip->value == INSET_IN_EYE)) )
@@ -1142,7 +1142,7 @@ int GetRemapColor( int iTeam, bool bTopColor )
 
 	return retVal;
 }
-#endif 
+//#endif 
 
 /*
 ====================
@@ -1246,7 +1246,7 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 		IEngineStudio.StudioSetupLighting (&lighting);
 
 		// get remap colors
-#if defined( _TFC )
+//#if defined( _TFC )
 
 		m_nTopColor    = m_pCurrentEntity->curstate.colormap & 0xFF;
 		m_nBottomColor = (m_pCurrentEntity->curstate.colormap & 0xFF00) >> 8;
@@ -1283,6 +1283,8 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 		{
 			cl_entity_t *pTarget = NULL;
 
+
+
 			// we're spectating someone via first-person mode
 			if ( IS_FIRSTPERSON_SPEC )
 			{
@@ -1304,6 +1306,10 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 				pTarget = gEngfuncs.GetLocalPlayer();
 			}
 
+
+				m_pCurrentEntity->curstate.body = pTarget->curstate.body; // YELLOWSHIFT Thank you to Kondis for figuring out View model Skins and Bodies.
+				m_pCurrentEntity->curstate.skin = pTarget->curstate.skin;
+
 			if ( pTarget && pTarget->curstate.renderfx == kRenderFxGlowShell )
 			{
 				m_pCurrentEntity->curstate.renderfx = kRenderFxGlowShell;
@@ -1313,6 +1319,7 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 			}
 			else
 			{
+
 				m_pCurrentEntity->curstate.renderfx = kRenderFxNone;
 				m_pCurrentEntity->curstate.rendercolor.r = 0;
 				m_pCurrentEntity->curstate.rendercolor.g = 0;
@@ -1320,12 +1327,11 @@ int CStudioModelRenderer::StudioDrawModel( int flags )
 			}
 		}
 
-#else
-		m_nTopColor    = m_pCurrentEntity->curstate.colormap & 0xFF;
-		m_nBottomColor = (m_pCurrentEntity->curstate.colormap & 0xFF00) >> 8;
+//#else
+	//	m_nTopColor    = m_pCurrentEntity->curstate.colormap & 0xFF;
+		//m_nBottomColor = (m_pCurrentEntity->curstate.colormap & 0xFF00) >> 8;
 
-#endif 
-
+//#endif 
 		IEngineStudio.StudioSetRemapColors( m_nTopColor, m_nBottomColor );
 
 		StudioRenderModel( );

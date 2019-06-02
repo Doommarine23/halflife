@@ -40,16 +40,16 @@ Lots of polish!
 
 
 enum m40a1_e {
-	M40A1_DRAW,
-	M40A1_IDLE1 = 0,
-	M40A1_FIDGET,
+	M40A1_DRAW = 0,
+	M40A1_DRAWEMPTY,
+	M40A1_IDLE1,
 	M40A1_FIRE1,
 	M40A1_FIREEMPTY,
 	M40A1_RELOAD,
 	M40A1_RELOADLAST,
-	M40A1_IDLE2,
+	M40A1_IDLEEMPTY,
+	M40A1_AIM,
 	M40A1_HOLSTER,
-	M40A1_IDLE3,
 };
 
 LINK_ENTITY_TO_CLASS( weapon_sniperrifle, CM40A1);
@@ -123,7 +123,10 @@ void CM40A1::Precache( void )
 
 BOOL CM40A1::Deploy( )
 {
-	return DefaultDeploy( "models/v_m40a1.mdl", "models/p_m40a1.mdl", M40A1_DRAW, "m40a1" );
+	if (m_iClip > 0)
+		return DefaultDeploy( "models/v_m40a1.mdl", "models/p_m40a1.mdl", M40A1_DRAW, "m40a1" );
+	else
+		return DefaultDeploy( "models/v_m40a1.mdl", "models/p_m40a1.mdl", M40A1_DRAWEMPTY, "m40a1" );
 }
 
 
@@ -138,7 +141,10 @@ void CM40A1::Holster( int skiplocal /* = 0 */ )
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
-	SendWeaponAnim( M40A1_HOLSTER );
+		if (m_iClip > 0)
+			SendWeaponAnim( M40A1_HOLSTER );
+		//else
+			//SendWeaponAnim( M40A1_HOLSTEREMPTY );
 }
 
 void CM40A1::SecondaryAttack( void )
@@ -172,12 +178,9 @@ void CM40A1::PrimaryAttack()
 
 
 	if (m_iClip <= 0)
-	{ 	
-		{
-			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
-			m_flNextPrimaryAttack = 0.15;
-		}
-
+	{
+		PlayEmptySound();
+		m_flNextPrimaryAttack = 0.15;
 		return;
 	}
 
@@ -191,14 +194,13 @@ void CM40A1::PrimaryAttack()
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
 	Vector vecDir; 
-	//Change the bullet type later
+	//YELLOWSHIFT Change the bullet type later
 	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
 
     int flags;
@@ -208,13 +210,13 @@ void CM40A1::PrimaryAttack()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireM40A1, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
-
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireM40A1, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, m_iClip, 0 );
+	//	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), fUseAutoAim ? m_usFireGlock1 : m_usFireGlock2, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, m_iClip, 0 );
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	m_flNextPrimaryAttack = 1.78;
+	m_flNextPrimaryAttack = 2.19; //1.78 original ROF
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
@@ -248,37 +250,26 @@ void CM40A1::Reload( void )
 
 void CM40A1::WeaponIdle( void )
 {
-	ResetEmptySound( );
-
-	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
-
-	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
-		return;
-
 	int iAnim;
-	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
-	if (flRand <= 0.5)
-	{
-		iAnim = M40A1_IDLE1;
-		m_flTimeWeaponIdle = (70.0/30.0);
-	}
-	else if (flRand <= 0.7)
-	{
-		iAnim = M40A1_IDLE2;
-		m_flTimeWeaponIdle = (60.0/30.0);
-	}
-	else if (flRand <= 0.9)
-	{
-		iAnim = M40A1_IDLE3;
-		m_flTimeWeaponIdle = (88.0/30.0);
-	}
-	else
-	{
-		iAnim = M40A1_FIDGET;
-		m_flTimeWeaponIdle = (170.0/30.0);
-	}
-	
 	int bUseScope = FALSE;
-	SendWeaponAnim( iAnim, UseDecrement() ? 1 : 0, bUseScope );
+	ResetEmptySound( );
+	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES ); 
+
+
+	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+		return;
+	
+	if(m_iClip > 0)
+		{iAnim = M40A1_IDLE1;}
+	
+	else
+		{iAnim = M40A1_IDLEEMPTY;}
+
+	SendWeaponAnim( iAnim );
+
+	//m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
+	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
+
+
 }
 #endif

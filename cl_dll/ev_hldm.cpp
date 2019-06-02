@@ -504,14 +504,13 @@ void EV_FireM40A1( event_args_t *args )
 	
 	empty = args->bparam1;
 	AngleVectors( angles, forward, right, up );
-	
-	//Empty Firing logic isn't working. Investigate YELLOWSHIFT
+
 	if ( EV_IsLocal( idx ) )
 	{
 		// Add muzzle flash to current weapon model
 		EV_MuzzleFlash();
-		gEngfuncs.pEventAPI->EV_WeaponAnimation( empty ? M40A1_FIREEMPTY : M40A1_FIRE1, 2 );
-		if (empty)
+		gEngfuncs.pEventAPI->EV_WeaponAnimation( (empty == 0) ? M40A1_FIREEMPTY : M40A1_FIRE1, 2 );
+		if (empty == 0)
 			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sniper_fire_last_round.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
 		else
 			gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sniper_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
@@ -520,9 +519,6 @@ void EV_FireM40A1( event_args_t *args )
 		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -7.5, -10 ) ); // Y Axis
 		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -1.5, 3 ) ); // X Axis
 	}
-
-	//Add Empty Shot Sound
-	//gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/sniper_fire.wav", gEngfuncs.pfnRandomFloat(0.8, 0.9), ATTN_NORM, 0, PITCH_NORM );
 
 	EV_GetGunPosition( args, vecSrc, origin );
 	//YELLOWSHIFT Credit to Cale 'Mazor' Dunlap for the Muzzleflash code!
@@ -784,13 +780,13 @@ void EV_FireSAW( event_args_t *args )
 	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
 	{
 	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire1.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -5, 10 ) );
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire1.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -20, 20 ) );
 		break;
 	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire2.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -5, 10 ) );
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire2.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -20, 20 ) );
 		break;
 	case 2:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire3.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -5, 10 ) );
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/saw_fire3.wav", 1, ATTN_NORM, 0, 100 + gEngfuncs.pfnRandomLong( -20, 20 ) );
 		break;
 
 	}
@@ -843,9 +839,7 @@ void EV_FireGlock1( event_args_t *args )
 	{
 		EV_MuzzleFlash();
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( (empty == 0) ? GLOCK_SHOOT_EMPTY : GLOCK_SHOOT + gEngfuncs.pfnRandomLong(0,2), 2 );
-		
 		//YELLOWSHIFT additional firing animations & new recoil punch
-		//V_PunchAxis( 0, -2.0 );
 		V_PunchAxis( 0, gEngfuncs.pfnRandomFloat ( -0.5, -1.5 ) ); // Y Axis
 		V_PunchAxis( 1, gEngfuncs.pfnRandomFloat ( -0.25, 0.5 ) ); // X Axis
 	}
@@ -854,25 +848,21 @@ void EV_FireGlock1( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 	
-	if (empty <= 6) // YELLOWSHIFT Guns now produce unique sounds when near empty and on final shot.
-	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun_empty1.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+	if (empty <= 6) // YELLOWSHIFT Guns now produce unique sounds when near empty.
+		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun_empty1.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
 	else
-//	if (m_iClip <= 6)
-	//gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/hks2.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
-	//else
-	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Additional firing sounds for the Glock.
-	{
-	case 0:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
-		break;
-	case 1:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun4.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
-		break;
-	case 2:
-		gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun5.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
-		break;
-
-	}
+		switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Additional firing sounds for the Glock.
+			{
+			case 0:
+				gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun3.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+				break;
+			case 1:
+				gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun4.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+				break;
+			case 2:
+				gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/pl_gun5.wav", gEngfuncs.pfnRandomFloat(0.92, 1.0), ATTN_NORM, 0, 98 + gEngfuncs.pfnRandomLong( 0, 3 ) );
+				break;
+			}
 
 
 	EV_GetGunPosition( args, vecSrc, origin );
@@ -1108,7 +1098,7 @@ void EV_FireMP5( event_args_t *args )
 	vec3_t up, right, forward;
 	float flSpread = 0.01;
 
-	magazine = args->bparam1; 	// YELLOWSHIFT empty refers to the magazine size. Thus, empty 15 >= is saying "magazine at 15 or less?"
+	magazine = args->bparam1; 	// YELLOWSHIFT args->bparam1 refers to the magazine size, and thus is used for near empty sounds.
 
 	idx = args->entindex;
 	VectorCopy( args->origin, origin );

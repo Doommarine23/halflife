@@ -30,8 +30,9 @@ enum mp5_e
 	MP5_LONGIDLE = 0,
 	MP5_IDLE1,
 	MP5_LAUNCH,
-	MP5_RELOAD_EMPTY,
 	MP5_RELOAD,
+	MP5_RELOAD_EMPTY,
+	MP5_RELOAD_EMPTY2,
 	MP5_DEPLOY,
 	MP5_FIRE1,
 	MP5_FIRE2,
@@ -272,7 +273,17 @@ void CMP5::Reload( void )
 	// YELLOWSHIFT Just Testing
 	//UTIL_ScreenShake( m_pPlayer->pev->origin, 25.0, 1.5, 0.7, 2,true );
 	if (m_iClip == 0)
+	switch ( RANDOM_LONG( 0, 1 ) )
+	{
+	case 0:	
 		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY, 2.23 );
+		break;
+	
+	default:
+	case 1:
+		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY2, 2.23 );
+		break;
+	}
 	else
 		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD, 1.5 );
 }

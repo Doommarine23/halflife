@@ -174,7 +174,7 @@ void CHandGrenade::WeaponIdle( void )
 		// player "shoot" animation
 		m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-		m_flReleaseThrow = 0;
+		m_flReleaseThrow = 1; //YELLOWSHIFT Seems like this should be above 0. Safe to assume due to the idle animations checking for this to be above 0.
 		m_flStartThrow = 0;
 		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;

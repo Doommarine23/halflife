@@ -37,7 +37,7 @@
 #define bit_saidHeard			(1<<6)
 #define bit_saidSmelled			(1<<7)
 
-// YELLOWSHIFT increased from 3 to 95 for "unlimited" allies. I could disable the limit loop but this is less messy.
+// YELLOWSHIFT increased from 3 to 99 for "unlimited" allies. I could disable the limit loop but this is less messy.
 #define TLK_CFRIENDS		99
 
 typedef enum

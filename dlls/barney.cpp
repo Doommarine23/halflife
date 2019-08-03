@@ -75,6 +75,7 @@ public:
 	void HandleAnimEvent( MonsterEvent_t *pEvent );
 	int	 m_iBrassShell; // YELLOWSHIFT used for ejecting shells
 	int	 m_iEmptyMag; //YELLOWSHIFT UNUSED until later. Will eject out empty magazines on reload
+	BOOL CheckMeleeAttack1 ( float flDot, float flDist );
 	
 	void RunTask( Task_t *pTask );
 	void StartTask( Task_t *pTask );
@@ -117,6 +118,7 @@ enum // YELLOWSHIFT For Reload
 {
 
 SCHED_BARNEY_RELOAD  = LAST_TALKMONSTER_SCHEDULE + 1,
+SCHED_BARNEY_COVER,
 LAST_BARNEY_SCHEDULE,
 
 };
@@ -149,6 +151,7 @@ Schedule_t	slBaFollow[] =
 	{
 		tlBaFollow,
 		ARRAYSIZE ( tlBaFollow ),
+		bits_COND_CAN_MELEE_ATTACK1	|
 		bits_COND_NEW_ENEMY		|
 		bits_COND_LIGHT_DAMAGE	|
 		bits_COND_HEAVY_DAMAGE	|
@@ -194,6 +197,7 @@ Schedule_t	slBaFaceTarget[] =
 	{
 		tlBaFaceTarget,
 		ARRAYSIZE ( tlBaFaceTarget ),
+		bits_COND_CAN_MELEE_ATTACK1	|
 		bits_COND_CLIENT_PUSH	|
 		bits_COND_NEW_ENEMY		|
 		bits_COND_LIGHT_DAMAGE	|
@@ -219,6 +223,7 @@ Schedule_t	slIdleBaStand[] =
 	{ 
 		tlIdleBaStand,
 		ARRAYSIZE ( tlIdleBaStand ), 
+		bits_COND_CAN_MELEE_ATTACK1	|
 		bits_COND_NEW_ENEMY		|
 		bits_COND_LIGHT_DAMAGE	|
 		bits_COND_HEAVY_DAMAGE	|
@@ -258,14 +263,65 @@ Schedule_t slBarneyReload[] =
 	{
 		tlBarneyReload,
 		ARRAYSIZE ( tlBarneyReload ),
+		bits_COND_CAN_MELEE_ATTACK1	|
 		bits_COND_HEAVY_DAMAGE	|
-		bits_COND_HEAR_SOUND,
+		bits_COND_HEAR_SOUND |
+		bits_COND_PROVOKED,
 		bits_SOUND_DANGER,
 		"BarneyReload"
 	}
 };
 
+//=========================================================
+// YELLOWSHIFT - Taken from the HGrunt code. CheckMeleeAttack1
+//=========================================================
+BOOL CBarney :: CheckMeleeAttack1 ( float flDot, float flDist )
+{
+	CBaseMonster *pEnemy;
 
+	if ( m_hEnemy != NULL )
+	{
+		pEnemy = m_hEnemy->MyMonsterPointer();
+
+		if ( !pEnemy )
+		{
+			return FALSE;
+		}
+	}
+
+	if ( flDist <= 64 && flDot >= 0.7	&& 
+		 pEnemy->Classify() != CLASS_ALIEN_BIOWEAPON &&
+		 pEnemy->Classify() != CLASS_PLAYER_BIOWEAPON )
+	{
+		return TRUE;
+	}
+	return FALSE;
+}
+
+//=========================================================
+// YELLOWSHIFT - Taken from the HGrunt code. Original Comment: hide from the loudest sound source (to run from grenade)
+//=========================================================
+Task_t	tlBarneyTakeCoverFromBestSound[] =
+{
+	{ TASK_SET_FAIL_SCHEDULE,			(float)SCHED_COWER			},// duck and cover if cannot move from explosion
+	{ TASK_STOP_MOVING,					(float)0					},
+	{ TASK_FIND_COVER_FROM_BEST_SOUND,	(float)0					},
+	{ TASK_RUN_PATH,					(float)0					},
+	{ TASK_WAIT_FOR_MOVEMENT,			(float)0					},
+	{ TASK_REMEMBER,					(float)bits_MEMORY_INCOVER	},
+	{ TASK_TURN_LEFT,					(float)179					},
+};
+
+Schedule_t	slBarneyTakeCoverFromBestSound[] =
+{
+	{ 
+		tlBarneyTakeCoverFromBestSound,
+		ARRAYSIZE ( tlBarneyTakeCoverFromBestSound ), 
+		0,
+		0,
+		"BarneyTakeCoverFromBestSound"
+	},
+};
 
 DEFINE_CUSTOM_SCHEDULES( CBarney )
 {
@@ -274,6 +330,7 @@ DEFINE_CUSTOM_SCHEDULES( CBarney )
 	slBaFaceTarget,
 	slIdleBaStand,
 	slBarneyReload, // YELLOWSHIFT Reload Schedule
+	slBarneyTakeCoverFromBestSound,
 };
 
 
@@ -490,14 +547,11 @@ void CBarney :: HandleAnimEvent( MonsterEvent_t *pEvent )
 		m_fGunDrawn = FALSE;
 		break;
 	
-	case BARNEY_AE_RELOAD: // YELLOWSHIFT Animation Event for Reload
-
-			//YELLOWSHIFT TODO Magazine drop
-
-			EMIT_SOUND( ENT(pev), CHAN_WEAPON, "barney/ba_reload1.wav", 1, ATTN_NORM );
-			m_cAmmoLoaded = m_cClipSize;
-			ClearConditions(bits_COND_NO_AMMO_LOADED);
-			break;
+	case BARNEY_AE_RELOAD: // YELLOWSHIFT Animation Event for Reload TODO Magazine drop
+		EMIT_SOUND( ENT(pev), CHAN_WEAPON, "barney/ba_reload1.wav", 1, ATTN_NORM );
+		m_cAmmoLoaded = m_cClipSize;
+		ClearConditions(bits_COND_NO_AMMO_LOADED);
+		break;
 
 	default:
 		CTalkMonster::HandleAnimEvent( pEvent );
@@ -764,6 +818,8 @@ Schedule_t* CBarney :: GetScheduleOfType ( int Type )
 		}
 		break;
 
+
+
 	// Hook these to make a looping schedule
 	case SCHED_TARGET_FACE:
 		// call base class default so that barney will talk
@@ -777,6 +833,11 @@ Schedule_t* CBarney :: GetScheduleOfType ( int Type )
 
 	case SCHED_TARGET_CHASE:
 		return slBaFollow;
+
+	case SCHED_TAKE_COVER_FROM_BEST_SOUND:
+		{
+			return &slBarneyTakeCoverFromBestSound[ 0 ];
+		}
 
 	case SCHED_BARNEY_RELOAD:
 		{

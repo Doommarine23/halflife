@@ -1148,6 +1148,7 @@ public:
 	void SecondaryAttack( void );
 	BOOL Deploy( void );
 	void Reload( void );
+	void UpdateMagazine( void );
 	void WeaponIdle( void );
 	float m_flNextAnimTime;
 	int m_iShell;
@@ -1208,6 +1209,7 @@ public:
 	int AddToPlayer( CBasePlayer *pPlayer );
 	void PrimaryAttack( void );
 	void SecondaryAttack( void );
+	void EXPORT Zoom ( void );
 	BOOL Deploy( void );
 	void Holster( int skiplocal = 0 );
 	void Reload( void );
@@ -1225,6 +1227,7 @@ public:
 
 private:
 	unsigned short m_usFireM40A1;
+	unsigned short m_usFireM40A1Scoped;
 };
 // END YELLOWSHIFT
 

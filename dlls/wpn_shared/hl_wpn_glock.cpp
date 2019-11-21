@@ -27,15 +27,19 @@ enum glock_e {
 	GLOCK_IDLE1 = 0,
 	GLOCK_IDLE2,
 	GLOCK_IDLE3,
+	GLOCK_IDLE1_EMPTY,
+	GLOCK_IDLE2_EMPTY,
+	GLOCK_IDLE3_EMPTY,
 	GLOCK_SHOOT,
 	GLOCK_SHOOT2,
 	GLOCK_SHOOT3,
 	GLOCK_SHOOT_EMPTY,
 	GLOCK_RELOAD,
-	GLOCK_RELOAD_NOT_EMPTY,
+	GLOCK_RELOAD_EMPTY,
 	GLOCK_DRAW,
+	GLOCK_DRAW_EMPTY,
 	GLOCK_HOLSTER,
-	GLOCK_ADD_SILENCER
+	GLOCK_HOLSTER_EMPTY
 };
 
 LINK_ENTITY_TO_CLASS( weapon_glock, CGlock );
@@ -66,7 +70,7 @@ void CGlock::Precache( void )
 	PRECACHE_SOUND("items/9mmclip1.wav");
 	PRECACHE_SOUND("items/9mmclip2.wav");
 	PRECACHE_SOUND("weapons/Glock_Slide1.wav"); //Yellowshift Used for Reloads
-
+	PRECACHE_SOUND ("weapons/glock_holster.wav");
 	PRECACHE_SOUND ("weapons/pl_gun1.wav");//silenced handgun
 	PRECACHE_SOUND ("weapons/pl_gun2.wav");//silenced handgun
 	PRECACHE_SOUND ("weapons/pl_gun_empty1.wav"); // Handgun Empty
@@ -99,12 +103,25 @@ int CGlock::GetItemInfo(ItemInfo *p)
 
 BOOL CGlock::Deploy( )
 {
-	// pev->body = 1;
+	if (m_iClip > 0)
 	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
+	else
+	return DefaultDeploy( "models/v_9mmhandgun.mdl", "models/p_9mmhandgun.mdl", GLOCK_DRAW_EMPTY, "onehanded", /*UseDecrement() ? 1 : 0*/ 0 );
 }
 
 void CGlock::SecondaryAttack( void )
 { //YELLOWSHIFT Testing out a higher RoF for the Glock.
+	if (m_iClip <= 0)
+	{
+		if (m_fFireOnEmpty)
+		{
+			PlayEmptySound();
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.2);
+		}
+
+		return;
+	}
+	else
 	GlockFire( 0.09, 0.1, FALSE );
 }
 
@@ -193,9 +210,9 @@ void CGlock::Reload( void )
 	int iResult;
 
 	if (m_iClip == 0)
-		iResult = DefaultReload( 17, GLOCK_RELOAD, 2.35 );
+		iResult = DefaultReload( 17, GLOCK_RELOAD_EMPTY, 2.35 );
 	else
-		iResult = DefaultReload( 17, GLOCK_RELOAD_NOT_EMPTY, 1.5 );
+		iResult = DefaultReload( 17, GLOCK_RELOAD, 1.5 );
 
 	if (iResult)
 	{
@@ -211,38 +228,52 @@ void CGlock::WeaponIdle( void )
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
-	// only idle if the slid isn't back
+//YELLOWSHIFT implemented empty idles
+
+int iAnim;
+
 	if (m_iClip != 0)
 	{
-	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+		if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
-
-	int iAnim;
-	switch ( RANDOM_LONG( 0, 2 ) )
+			switch ( RANDOM_LONG( 0, 2 ) )
+			{
+			case 0:	
+				iAnim = GLOCK_IDLE1;	
+				break;
+			case 1:
+				iAnim = GLOCK_IDLE2;
+				break;
+			default:
+			case 2:
+				iAnim = GLOCK_IDLE3;
+				break;
+			}
+	}
+	else if (m_iClip >= 0)
 	{
-	case 0:	
-		iAnim = GLOCK_IDLE1;	
-		break;
-	case 1:
-		iAnim = GLOCK_IDLE2;
-		break;
-	default:
-	case 2:
-		iAnim = GLOCK_IDLE3;
-		break;
+		if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+		return;
+			switch ( RANDOM_LONG( 0, 2 ) )
+			{
+			case 0:	
+				iAnim = GLOCK_IDLE1_EMPTY;	
+				break;
+			case 1:
+				iAnim = GLOCK_IDLE2_EMPTY;
+				break;
+			default:
+			case 2:
+				iAnim = GLOCK_IDLE3_EMPTY;
+				break;
+			}
+
 	}
 
 	SendWeaponAnim( iAnim );
 
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
-	}
 }
-
-
-
-
-
-
 
 
 class CGlockAmmo : public CBasePlayerAmmo

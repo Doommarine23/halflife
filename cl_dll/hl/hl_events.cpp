@@ -44,6 +44,7 @@ void EV_FireDeagle( struct event_args_s *args  );
 void EV_FireDoubleBarrel( struct event_args_s *args	);
 void EV_FireDoubleBarrelBig( struct event_args_s *args );
 void EV_FireM40A1( struct event_args_s *args );
+void EV_FireM40A1Scoped( struct event_args_s *args );
 
 //YELLOWSHIFT END
 
@@ -91,4 +92,5 @@ void Game_HookEvents( void )
 	gEngfuncs.pfnHookEvent( "events/doublebarrel1.sc",			EV_FireDoubleBarrel);
 	gEngfuncs.pfnHookEvent( "events/doublebarrel2.sc",			EV_FireDoubleBarrelBig);
 	gEngfuncs.pfnHookEvent( "events/m40a1.sc",					EV_FireM40A1 );
+	gEngfuncs.pfnHookEvent( "events/m40a1scoped.sc",			EV_FireM40A1Scoped );
 }

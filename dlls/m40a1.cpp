@@ -29,11 +29,11 @@
 OP4 M40A1
 
 TODO
-Add empty reload logic
-Sniper Ammo
-ev_hldm code
-Add scope view
-Lots of polish!
+Add empty reload logic DONE
+Sniper Ammo NOT STARTED
+ev_hldm code WIP
+Add scope view WIP
+Lots of polish! WIP
 
 */
 
@@ -41,15 +41,23 @@ Lots of polish!
 
 enum m40a1_e {
 	M40A1_DRAW = 0,
-	M40A1_DRAWEMPTY,
+	M40A1_DRAW_EMPTY,
 	M40A1_IDLE1,
+	M40A1_IDLE_EMPTY,
 	M40A1_FIRE1,
-	M40A1_FIREEMPTY,
+	M40A1_FIRE_EMPTY,
 	M40A1_RELOAD,
-	M40A1_RELOADLAST,
-	M40A1_IDLEEMPTY,
-	M40A1_AIM,
+	M40A1_RELOAD_EMPTY,
+	M40A1_ENTER_AIM,
+	M40A1_ENTER_AIM_EMPTY,
+	M40A1_IDLE_AIM,
+	M40A1_IDLE_AIM_EMPTY,
+	M40A1_FIRE_AIM,
+	M40A1_FIRE_AIM_EMPTY,
+	M40A1_EXIT_AIM,
+	M40A1_EXIT_AIM_EMPTY,
 	M40A1_HOLSTER,
+	M40A1_HOLSTER_EMPTY,
 };
 
 LINK_ENTITY_TO_CLASS( weapon_sniperrifle, CM40A1);
@@ -119,6 +127,7 @@ void CM40A1::Precache( void )
 	PRECACHE_SOUND ("weapons/sniper_zoom.wav");
 
 	m_usFireM40A1 = PRECACHE_EVENT( 1, "events/m40a1.sc" );
+	m_usFireM40A1Scoped = PRECACHE_EVENT( 1, "events/m40a1scoped.sc" );
 }
 
 BOOL CM40A1::Deploy( )
@@ -126,7 +135,7 @@ BOOL CM40A1::Deploy( )
 	if (m_iClip > 0)
 		return DefaultDeploy( "models/v_m40a1.mdl", "models/p_m40a1.mdl", M40A1_DRAW, "m40a1" );
 	else
-		return DefaultDeploy( "models/v_m40a1.mdl", "models/p_m40a1.mdl", M40A1_DRAWEMPTY, "m40a1" );
+		return DefaultDeploy( "models/v_m40a1.mdl", "models/p_m40a1.mdl", M40A1_DRAW_EMPTY, "m40a1" );
 }
 
 
@@ -147,23 +156,33 @@ void CM40A1::Holster( int skiplocal /* = 0 */ )
 			//SendWeaponAnim( M40A1_HOLSTEREMPTY );
 }
 
-void CM40A1::SecondaryAttack( void )
+void CM40A1::SecondaryAttack()
 {
 	if ( m_pPlayer->pev->fov != 0 )
 	{
+		SendWeaponAnim( M40A1_EXIT_AIM );
 		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/sniper_zoom.wav", 0.8, ATTN_NORM);
 		m_fInZoom = FALSE;
 		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
+
 	}
 	else if ( m_pPlayer->pev->fov != 20 )
 	{
-		
-		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/sniper_zoom.wav", 0.8, ATTN_NORM);
+		SendWeaponAnim( M40A1_ENTER_AIM );
 		m_fInZoom = TRUE;
-		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 20;
+		SetThink( &CM40A1::Zoom );
+		pev->nextthink = gpGlobals->time + 0.36;		// YELLOWSHIFT  Required for delay to function until I figure something better out
+
 	}
 
-	m_flNextSecondaryAttack = 0.5;
+	m_flNextSecondaryAttack = 0.40;
+}
+
+void CM40A1::Zoom( void ) // YELLOWSHIFT  Required for delay to function until I figure something better out
+{
+		SendWeaponAnim( M40A1_IDLE_AIM );
+		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/sniper_zoom.wav", 0.8, ATTN_NORM);
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 20;
 }
 
 void CM40A1::PrimaryAttack()
@@ -183,6 +202,7 @@ void CM40A1::PrimaryAttack()
 		m_flNextPrimaryAttack = 0.15;
 		return;
 	}
+
 
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
@@ -210,14 +230,21 @@ void CM40A1::PrimaryAttack()
 	flags = 0;
 #endif
 
-	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireM40A1, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, m_iClip, 0 );
-	//	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), fUseAutoAim ? m_usFireGlock1 : m_usFireGlock2, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, m_iClip, 0 );
-	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
-		// HEV suit - indicate out of ammo condition
+	if ( m_pPlayer->pev->fov != 0 ) // YELLOWSHIFT Scoped Anims
+	{  //Just edit m_useFireM40a1 in ev_hldm.cpp instead of this sick fucking hack job of copy/pasting
+		PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireM40A1Scoped, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, m_iClip, 0 );
+		if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0) // HEV suit - indicate out of ammo condition	
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+		m_flNextPrimaryAttack = 2.19; //1.78 original ROF
+		m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	}
+	else
+		PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFireM40A1, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, m_iClip, 0 );
+		if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0) // HEV suit - indicate out of ammo condition	
+		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
+		m_flNextPrimaryAttack = 2.19; //1.78 original ROF
+		m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 
-	m_flNextPrimaryAttack = 2.19; //1.78 original ROF
-	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
 
@@ -241,7 +268,7 @@ void CM40A1::Reload( void )
 
 	if (m_iClip <= 0)
 	{
-		DefaultReload( 5, M40A1_RELOADLAST, 3.82, bUseScope );
+		DefaultReload( 5, M40A1_RELOAD_EMPTY, 3.82, bUseScope );
 	}
 	else
 	DefaultReload( 5, M40A1_RELOAD, 2.35, bUseScope );
@@ -255,19 +282,27 @@ void CM40A1::WeaponIdle( void )
 	ResetEmptySound( );
 	m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES ); 
 
-
 	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
-	
-	if(m_iClip > 0)
-		{iAnim = M40A1_IDLE1;}
-	
+
+	if (m_pPlayer->pev->fov != 0)
+			{
+				if(m_iClip > 0)
+				{iAnim = M40A1_IDLE_AIM;}	
+				else
+				{iAnim = M40A1_IDLE_EMPTY;} // REPLACE WITH EMPTY IDLE ONCE DONE
+			}
 	else
-		{iAnim = M40A1_IDLEEMPTY;}
+		if(m_iClip > 0)
+			{iAnim = M40A1_IDLE1;}	
+		else
+			{iAnim = M40A1_IDLE_EMPTY;}
 
 	SendWeaponAnim( iAnim );
 
 	//m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
+
+	//if (!m_fInZoom)
 	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
 
 

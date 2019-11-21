@@ -149,6 +149,7 @@ public:
 	float				m_flgeigerRange;		// range to nearest radiation source
 	float				m_flgeigerDelay;		// delay per update of range msg to client
 	float				m_flheartDelay;
+	bool				m_specialHeartBeat; // Is the player's heart and ears ringing from houndeyes and explosions? Then don't overlap sounds.
 	int					m_igeigerRangePrev;
 	int					m_iStepLeft;			// alternate left/right foot stepping sound
 	char				m_szTextureName[CBTEXTURENAMEMAX];	// current texture name we're standing on

@@ -485,31 +485,35 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	//TODO Randomize Punch and Shake, add your damage to it but cap it to a maximum
 	if ( ( bitsDamageType & DMG_BLAST ) )
 	{
-		if (flDamage >= 25) //if we hit a certain level of damage by an explosion
-		{
-		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/heartbeat_explosion.wav", 1, ATTN_NORM);
-		pev->punchangle.x = 5;
-		pev->punchangle.y = 4;
-		pev->punchangle.z = 3;
-		UTIL_ScreenShake( pev->origin, 30.0, 1.5, 1.0, 2,true );
-		}
+
 		if(g_pGameRules->IsMultiplayer())
-		{
-		// blasts damage armor more.
-			flBonus *= 2;
-		}
+			{
+			// blasts damage armor more.
+				flBonus *= 2;
+			}
+
+		if (flDamage >= 25) //if we hit a certain level of damage by an explosion
+			{
+			EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/heartbeat_explosion.wav", 1, ATTN_NORM);
+			pev->punchangle.x = 5;
+			pev->punchangle.y = 4;
+			pev->punchangle.z = 3;
+			UTIL_ScreenShake( pev->origin, 30.0, 1.5, 1.0, 2,true );
+			m_specialHeartBeat = true; // Make sure this becomes False after a length of time equvilent to the heartbeat_explosion.wav has played.
+			}
+
 	}
 	
 	//YELLOWSHIFT New effects for sonic damage by houndeyes.
 	if ( (bitsDamageType & DMG_SONIC) )
 	{
-	//if (flDamage >= 25) //if we hit a certain level of damage by an explosion
 		{
 		EMIT_SOUND(ENT(pev), CHAN_VOICE, "player/heartbeat_explosion.wav", 1, ATTN_NORM);
 		pev->punchangle.x = 10;
 		pev->punchangle.y = 7;
 		pev->punchangle.z = 5;
 		UTIL_ScreenShake( pev->origin, 30.0, 2, 1.0, 2,true );
+		m_specialHeartBeat = true; // Make sure this becomes False after a length of time equvilent to the heartbeat_explosion.wav has played.
 		}
 	}
 
@@ -2299,8 +2303,10 @@ Things powered by the battery
 
 void CBasePlayer :: HeartBeat ( void )
 {
+	if ( gpGlobals->time < 7.0)
+		{ m_specialHeartBeat = false;}
 
-	if (gpGlobals->time < m_flheartDelay)
+	if (m_specialHeartBeat || gpGlobals->time < m_flheartDelay )
 		return;
 		m_flheartDelay = gpGlobals->time +HEARTBEATDELAY;
 
@@ -2310,18 +2316,18 @@ void CBasePlayer :: HeartBeat ( void )
 	{
 		if (pev->health <= 75)
 			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.15, ATTN_NORM);
-			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(1,2.0) );
+			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(1.3,2.0) );
 		
 		if (pev->health <= 50)
-			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.38, ATTN_NORM);
-			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.9,1.4) );
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.35, ATTN_NORM);
+			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.9,1.3) );
 
 		if (pev->health <= 25)
-			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.47, ATTN_NORM);
-			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.7,1.2) );
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.40, ATTN_NORM);
+			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.7,1.1) );
 
 		if (pev->health <= 15)
-			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.68, ATTN_NORM);
+			EMIT_SOUND(ENT(pev), CHAN_AUTO, "player/heartbeat1.wav", 0.60, ATTN_NORM);
 			m_flheartDelay = gpGlobals->time + (HEARTBEATDELAY * RANDOM_FLOAT(0.50,0.85) );
 	}
 	
@@ -2377,8 +2383,10 @@ void CBasePlayer::CheckSuitUpdate()
 		return;
 
 	// if in range of radiation source, ping geiger counter
-	HeartBeat();
 	UpdateGeigerCounter();
+
+	// YELLOWSHIFT play heartbeat depending on health, unless a "cinematic" heartbeat is playing like from explosions.
+		HeartBeat();
 
 	if ( g_pGameRules->IsMultiplayer() )
 	{

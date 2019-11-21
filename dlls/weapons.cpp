@@ -764,14 +764,13 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 			}
 		}
 		else
-		{	//YELLOWSHIFT Automatic Reloads will be a gameplay option.
+		{	//YELLOWSHIFT Automatic Reloads will be a gameplay option. <-- NOV 2019 UPDATE: I may still do this. Requires more work than I expected. 
 			// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
 			if ( m_iClip == 0 && !(iFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < ( UseDecrement() ? 0.0 : gpGlobals->time ) )
 			{
-		//		Reload();
+				Reload();
 				return;
 			}
-			//return; YELLOWSHIFT testings
 		}
 
 		WeaponIdle( );

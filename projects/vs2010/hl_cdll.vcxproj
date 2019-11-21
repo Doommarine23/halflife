@@ -97,7 +97,7 @@
       </BaseAddress>
     </Link>
     <PostBuildEvent>
-      <Command>copy "$(TargetPath)" "D:\GAMES\Services\Steam\steamapps\common\Half-Life\yshift\cl_dlls\$(TargetName).dll"</Command>
+      <Command>copy "$(TargetPath)" "C:\Program Files (x86)\Steam\steamapps\common\Half-Life\yshift\cl_dlls\$(TargetName).dll"</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Performing Post-Build Event</Message>

@@ -276,12 +276,12 @@ void CMP5::Reload( void )
 	switch ( RANDOM_LONG( 0, 1 ) )
 	{
 	case 0:	
-		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY, 2.23 );
+		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY, 2.24 );
 		break;
 	
 	default:
 	case 1:
-		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY2, 2.23 );
+		DefaultReload( MP5_MAX_CLIP, MP5_RELOAD_EMPTY2, 2.24 );
 		break;
 	}
 	else

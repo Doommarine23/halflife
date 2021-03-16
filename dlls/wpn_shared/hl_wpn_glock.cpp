@@ -36,6 +36,7 @@ enum glock_e {
 	GLOCK_SHOOT_EMPTY,
 	GLOCK_RELOAD,
 	GLOCK_RELOAD_EMPTY,
+	GLOCK_RELOAD_EMPTY2,
 	GLOCK_DRAW,
 	GLOCK_DRAW_EMPTY,
 	GLOCK_HOLSTER,
@@ -122,7 +123,7 @@ void CGlock::SecondaryAttack( void )
 		return;
 	}
 	else
-	GlockFire( 0.09, 0.1, FALSE );
+	GlockFire( 0.065, 0.1, FALSE );
 }
 
 void CGlock::PrimaryAttack( void )
@@ -197,8 +198,8 @@ void CGlock::GlockFire( float flSpread , float flCycleTime, BOOL fUseAutoAim )
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
-
-	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+			m_flTimeWeaponIdle = 0.6;
+	//m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
 
@@ -210,17 +211,27 @@ void CGlock::Reload( void )
 	int iResult;
 
 	if (m_iClip == 0)
-		iResult = DefaultReload( 17, GLOCK_RELOAD_EMPTY, 2.35 );
-	else
-		iResult = DefaultReload( 17, GLOCK_RELOAD, 1.5 );
-
-	if (iResult)
+	switch ( RANDOM_LONG( 0, 1 ) )
 	{
-		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	case 0:	
+		iResult = DefaultReload( 17, GLOCK_RELOAD_EMPTY, 2.35 );
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.55;
+		break;
+
+	default:
+	case 1:
+		DefaultReload( MP5_MAX_CLIP, GLOCK_RELOAD_EMPTY2, 2.35 );
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 2.55;
+		break;
+	}
+	else
+	{
+		iResult = DefaultReload( 17, GLOCK_RELOAD, 1.5 ); 		
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.9;
 	}
 }
 
-//YELLOWSHIFT Re-Wrote IDLE using MP5's IDLE for better animation timing
+//YELLOWSHIFT Re-Wrote IDLE using Shotgun's Idle to better ensure animations do not cut out, and implemented empty idle animations.
 
 void CGlock::WeaponIdle( void )
 {
@@ -228,51 +239,51 @@ void CGlock::WeaponIdle( void )
 
 	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
-//YELLOWSHIFT implemented empty idles
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
+		return;
 
 int iAnim;
 
-	if (m_iClip != 0)
+if (m_iClip != 0)
 	{
-		if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
-		return;
-			switch ( RANDOM_LONG( 0, 2 ) )
+			float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
+			if (flRand <= 0.8) // Be very rare.
 			{
-			case 0:	
-				iAnim = GLOCK_IDLE1;	
-				break;
-			case 1:
+				iAnim = GLOCK_IDLE1;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (29.0/10.0);
+			}
+			else if (flRand <= 0.95)
+			{
 				iAnim = GLOCK_IDLE2;
-				break;
-			default:
-			case 2:
-				iAnim = GLOCK_IDLE3;
-				break;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (31.0/10.0);
 			}
-	}
-	else if (m_iClip >= 0)
-	{
-		if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
-		return;
-			switch ( RANDOM_LONG( 0, 2 ) )
+			else
 			{
-			case 0:	
-				iAnim = GLOCK_IDLE1_EMPTY;	
-				break;
-			case 1:
-				iAnim = GLOCK_IDLE2_EMPTY;
-				break;
-			default:
-			case 2:
-				iAnim = GLOCK_IDLE3_EMPTY;
-				break;
+				iAnim = GLOCK_IDLE3;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (111.0/20.0);
 			}
-
 	}
-
+	else if (m_iClip <= 0)
+	{
+			float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
+			if (flRand <= 0.8)
+			{
+				iAnim = GLOCK_IDLE1_EMPTY;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (28.0/10.0);
+			}
+			else if (flRand <= 0.95)
+			{
+				iAnim = GLOCK_IDLE2_EMPTY;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (30.0/10.0);
+			}
+			else
+			{
+				iAnim = GLOCK_IDLE3_EMPTY;
+				m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + (110.0/20.0);
+			}
+	}
 	SendWeaponAnim( iAnim );
 
-	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 ); // how long till we do this again.
 }
 
 

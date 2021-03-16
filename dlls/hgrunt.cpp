@@ -827,7 +827,7 @@ void CHGrunt :: Shotgun ( void )
 	UTIL_MakeVectors ( pev->angles );
 
 	//YELLOWSHIFT New fancy dynamic lighting, oh my!
-	UTIL_DynamicMuzzleFlash( vecShootOrigin, 29,  255,  255,  128,  1, 0.1);
+	UTIL_DynamicMuzzleFlash( vecShootOrigin, 32,  255,  255,  128,  1, 0.1);
 
 	Vector	vecShellVelocity = gpGlobals->v_right * RANDOM_FLOAT(40,90) + gpGlobals->v_up * RANDOM_FLOAT(75,200) + gpGlobals->v_forward * RANDOM_FLOAT(-40, 40);
 	EjectBrass ( vecShootOrigin - vecShootDir * 24, vecShellVelocity, pev->angles.y, m_iShotgunShell, TE_BOUNCE_SHOTSHELL); 

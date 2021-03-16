@@ -1172,7 +1172,7 @@ void EV_FireMP5( event_args_t *args )
 
 	EV_EjectBrass ( ShellOrigin, ShellVelocity, angles[ YAW ], shell, TE_BOUNCE_SHELL ); 
 
-	if(magazine <= 15)
+	/*if(magazine = 15)
 	switch( gEngfuncs.pfnRandomLong( 0, 2 ) )
 	{
 	case 0:
@@ -1187,7 +1187,7 @@ void EV_FireMP5( event_args_t *args )
 
 	}
 	
-	else
+	else*/
 	
 	switch( gEngfuncs.pfnRandomLong( 0, 2 ) ) //YELLOWSHIFT Valve didn't use hks3.wav for some reason, this has been changed.
 	{

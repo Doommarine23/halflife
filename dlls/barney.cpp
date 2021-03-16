@@ -336,9 +336,23 @@ DEFINE_CUSTOM_SCHEDULES( CBarney )
 
 IMPLEMENT_CUSTOM_SCHEDULES( CBarney, CTalkMonster );
 
-void CBarney :: StartTask( Task_t *pTask )
+void CBarney :: StartTask( Task_t *pTask ) // lots of code yoinked from the hgrunt.cpp -YELLOWSHIFT
 {
-	CTalkMonster::StartTask( pTask );	
+	m_iTaskStatus = TASKSTATUS_RUNNING;
+
+	switch ( pTask->iTask )
+	{
+	case TASK_WALK_PATH:
+	case TASK_RUN_PATH:
+		// Barney no longer assumes he is covered if he moves
+		Forget( bits_MEMORY_INCOVER );
+		CTalkMonster::StartTask( pTask );
+		break;
+		
+	default: 
+		CTalkMonster::StartTask( pTask );
+		break;
+	}
 }
 
 void CBarney :: RunTask( Task_t *pTask )
@@ -679,6 +693,7 @@ static BOOL IsFacing( entvars_t *pevTest, const Vector &reference )
 
 int CBarney :: TakeDamage( entvars_t* pevInflictor, entvars_t* pevAttacker, float flDamage, int bitsDamageType)
 {
+	Forget( bits_MEMORY_INCOVER ); // If we're damaged, we aren't safe anymore. YELLOWSHIFT
 	// make sure friends talk about it if player hurts talkmonsters...
 	int ret = CTalkMonster::TakeDamage(pevInflictor, pevAttacker, flDamage, bitsDamageType);
 	if ( !IsAlive() || pev->deadflag == DEAD_DYING )

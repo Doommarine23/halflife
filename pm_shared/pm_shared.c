@@ -308,7 +308,7 @@ void PM_PlayStepSound( int step, float fvol )
 	
 	//irand = pmove->RandomLong(0,1) + ( pmove->iStepLeft * 2 ); // Yellowshift Valve why?... Changed to a more logical randomlong
 	irand = pmove->RandomLong(0,4);
-		irand2 = pmove->RandomLong(0,5);
+	irand2 = pmove->RandomLong(0,5);
 	// FIXME mp_footsteps needs to be a movevar
 	if ( pmove->multiplayer && !pmove->movevars->footsteps )
 		return;
@@ -330,7 +330,9 @@ void PM_PlayStepSound( int step, float fvol )
 		case STEP_CONCRETE:
 	//	if ( !pmove->RandomLong(0,4) )
 		///	irand = 4;
-		switch (irand2)
+		// irand2 = 5, unused currently.
+	//YELLOWSHIFT Add 5th footstep sound to all texture sets.
+		switch (irand)
 		{
 		// right foot
 		case 0:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
@@ -339,8 +341,6 @@ void PM_PlayStepSound( int step, float fvol )
 		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
 		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
 		case 4:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_step5.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 5:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_stepskid1.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-
 		}
 		break;
 	case STEP_METAL:
@@ -414,7 +414,7 @@ void PM_PlayStepSound( int step, float fvol )
 		// left foot
 		case 2:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_grate2.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
 		case 3:	pmove->PM_PlaySound( CHAN_BODY, "player/pl_grate4.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
-		case 4: pmove->PM_PlaySound( CHAN_BODY, "player/pl_step5.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
+		case 4: pmove->PM_PlaySound( CHAN_BODY, "player/pl_grate5.wav", fvol, ATTN_NORM, 0, PITCH_NORM );	break;
 		}
 		break;
 	case STEP_TILE:

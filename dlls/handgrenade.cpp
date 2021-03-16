@@ -12,6 +12,8 @@
 *   without written permission from Valve LLC.
 *
 ****/
+
+//YELLOWSHIFT TODO - Fix Idle Loop
 #include "extdll.h"
 #include "util.h"
 #include "cbase.h"
